@@ -1079,6 +1079,7 @@
                                 android:layout_height="30dp"
                                 android:layout_marginTop="2dp"
                                 android:src="@mipmap/ic_calender"
+                                android:visibility="gone"
                                 android:id="@+id/im_next_Testdate"
                                 android:layout_alignParentRight="true"/>
                         </RelativeLayout>

@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.i_tankdepo.R.id.GateIn;
 import static com.i_tankdepo.R.id.im_add;
 import static com.i_tankdepo.R.id.sp_fields;
 import static com.i_tankdepo.R.id.sp_operators;
@@ -131,6 +133,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         listview=(ListView)findViewById(R.id.list_view);
         searchlist=(ListView)findViewById(R.id.search_list);
         searchView2=(EditText)findViewById(R.id.searchView2);
+
 
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
@@ -290,6 +293,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
         navigationView.setNavigationItemSelectedListener(this);
     }
+
 
 
     @Override
@@ -548,6 +552,52 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                  adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
                 listview.setAdapter(adapter);
 
+                searchView2.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                      //  GateIn.this.adapter.getFilter().filter(arg0);
+                        adapter.getFilter().filter(arg0);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+/*
+                searchView2.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                       // adapter.getFilter().filter(arg0);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+*/
+
             }
             else if(pending_arraylist.size()<1)
             {
@@ -559,14 +609,14 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
     }
 
-
     public class UserListAdapter extends BaseAdapter {
 
+        private ArrayList<PendingBean> list;
         Context context;
-        ArrayList<PendingBean> list = new ArrayList<>();
+
         int resource;
         private PendingBean userListBean;
-        int lastPosition=-1;
+        int lastPosition = -1;
 
         public UserListAdapter(Context context, int resource, ArrayList<PendingBean> list) {
             this.context = context;
@@ -629,17 +679,17 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            if (list.size() < 1){
+            if (list.size() < 1) {
                 Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
-            }else {
+            } else {
                 userListBean = list.get(position);
                 String[] parts = userListBean.getDate().split(" ");
                 String part1_date = parts[0];
                 String part1_time = parts[1];
                 System.out.println("from date after split" + part1_date);
-                holder.equip_no.setText(userListBean.getEquipmentNo()+","+ userListBean.getType());
+                holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date+ " & " +part1_time);
+                holder.time.setText(part1_date + " & " + part1_time);
                 holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());
@@ -670,42 +720,36 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.pre_adv_id.setText(userListBean.getPR_ADVC_CD());
 
 
-
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        equipment_no=list.get(position).getEquipmentNo();
+                        equipment_no = list.get(position).getEquipmentNo();
 
 
-                        Cust_Name= list.get(position).getCustomerName();
-                        Gate_In= list.get(position).getGateIn_Id();
-                        equip_no= list.get(position).getEquipmentNo();
-                        type= list.get(position).getType();
-                        code= list.get(position).getCode();
-                        status= list.get(position).getStatus();
-                        location= list.get(position).getLocation();
-                        date= list.get(position).getDate();
-                        time= list.get(position).getTime();
-                        previous_crg= list.get(position).getPreviousCargo();
-                        Eir_no= list.get(position).getEir_no();
-                        vechicle= list.get(position).getVechicle();
-                        transport= list.get(position).getTransport();
-                        heating_bt= list.get(position).getHeating_bt();
-                        rental_bt= list.get(position).getRental_bt();
-                        remark= list.get(position).getRemark();
-                        cust_code= list.get(position).getCust_code();
-                        type_id= list.get(position).getType_code();
-                        code_id= list.get(position).getCode_Id();
-                        pre_code= list.get(position).getPrev_code();
-                        attachmentstatus= list.get(position).getAttachmentStatus();
-                        pre_id= list.get(position).getPrev_Id();
-                        pre_adv_id= list.get(position).getPR_ADVC_CD();
+                        Cust_Name = list.get(position).getCustomerName();
+                        Gate_In = list.get(position).getGateIn_Id();
+                        equip_no = list.get(position).getEquipmentNo();
+                        type = list.get(position).getType();
+                        code = list.get(position).getCode();
+                        status = list.get(position).getStatus();
+                        location = list.get(position).getLocation();
+                        date = list.get(position).getDate();
+                        time = list.get(position).getTime();
+                        previous_crg = list.get(position).getPreviousCargo();
+                        Eir_no = list.get(position).getEir_no();
+                        vechicle = list.get(position).getVechicle();
+                        transport = list.get(position).getTransport();
+                        heating_bt = list.get(position).getHeating_bt();
+                        rental_bt = list.get(position).getRental_bt();
+                        remark = list.get(position).getRemark();
+                        cust_code = list.get(position).getCust_code();
+                        type_id = list.get(position).getType_code();
+                        code_id = list.get(position).getCode_Id();
+                        pre_code = list.get(position).getPrev_code();
+                        attachmentstatus = list.get(position).getAttachmentStatus();
+                        pre_id = list.get(position).getPrev_Id();
+                        pre_adv_id = list.get(position).getPR_ADVC_CD();
                         new Get_GateIn_Lock_Check().execute();
-
-
-
-
-
 
 
                     }
@@ -715,6 +759,90 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             return convertView;
         }
 
+
+        /*   public Filter getFilter() {
+   //              Filter filter = null;
+
+               if(filter == null)
+                   filter = new CheeseFilter();
+               return filter;
+           }
+           public class CheeseFilter extends Filter {
+
+               @Override
+               protected FilterResults performFiltering(CharSequence constraint) {
+                   // TODO Auto-generated method stub
+
+                   constraint = constraint.toString().toLowerCase();
+
+                   FilterResults newFilterResults = new FilterResults();
+
+                   if (constraint != null && constraint.length() > 0) {
+
+
+                       ArrayList<PendingBean> auxData = new ArrayList<PendingBean>();
+
+                       for (int i = 0; i < list.size(); i++) {
+                           if (list.get(i).getCustomerName().toLowerCase().contains(constraint))
+                               auxData.add(list.get(i));
+                       }
+
+                       newFilterResults.count = auxData.size();
+                       newFilterResults.values = auxData;
+                   } else {
+
+                       newFilterResults.count = list.size();
+                       newFilterResults.values = list;
+                   }
+
+                   return newFilterResults;
+               }
+
+               @Override
+               protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                   ArrayList<String> resultData = new ArrayList<String>();
+
+                   resultData = (ArrayList<String>) results.values;
+
+                   adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
+                   listview.setAdapter(adapter);
+
+   //              notifyDataSetChanged();
+               }
+
+           }    }*/
+
+
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults results = new FilterResults();
+
+                    if (constraint == null || constraint.length() == 0) {
+                        //no constraint given, just return all the data. (no search)
+                        results.count = list.size();
+                        results.values = list;
+                    } else {//do the search
+                        List<String> resultsData = new ArrayList<>();
+                        String searchStr = constraint.toString().toUpperCase();
+                        for (PendingBean s : list)
+                            if (s.getCustomerName().toUpperCase().contains(searchStr)) resultsData.add(s.getCustomerName());
+                        results.count = resultsData.size();
+                        results.values = resultsData;
+                    }
+
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    list = (ArrayList<PendingBean>) results.values;
+                    notifyDataSetChanged();
+                }
+            };
+        }
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
@@ -1340,5 +1468,4 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
             progressDialog.dismiss();
         progressDialog = null;
     }
-
 }

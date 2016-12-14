@@ -93,7 +93,7 @@ public class Update_GateIn extends CommonActivity {
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
     private TextView tv_toolbarTitle,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
-    private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date;
+    private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date,im_last_testDate;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private Intent mServiceIntent;
@@ -107,6 +107,8 @@ public class Update_GateIn extends CommonActivity {
     private String systemDate,get_equipment,getType,get_date,get_time,get_code,get_status,get_location,get_vechicle,get_transport,get_eir_no,get_remark;
     private String curTime,get_swt_heating,get_swt_rental;
     int mHour,mMinute;
+    private boolean manuf_date=false;
+
     TimePickerDialog timePickerDialog;
 
     ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
@@ -198,9 +200,17 @@ public class Update_GateIn extends CommonActivity {
         tv_cargo = (TextView)findViewById(R.id.tv_cargo);
         ed_date = (EditText)findViewById(R.id.ed_date);
         ed_time = (EditText)findViewById(R.id.ed_time);
+
+        im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
+        ed_last_test_date=(EditText)findViewById(R.id.ed_test_date);
+        ed_last_test_date.setOnClickListener(this);
+        im_last_testDate.setOnClickListener(this);
         ed_customer = (EditText)findViewById(R.id.ed_customer);
         ed_type = (EditText)findViewById(R.id.ed_type);
-
+        im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
+        ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
+        ed_manuf_date.setOnClickListener(this);
+        im_manuf_date.setOnClickListener(this);
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
         ed_tare_weight=(EditText)findViewById(R.id.ed_tare_weight);
         ed_Gross_weight=(EditText)findViewById(R.id.ed_gross_weight);
@@ -355,7 +365,8 @@ public class Update_GateIn extends CommonActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     get_swt_info_active="True";
-                }else
+                }
+                else
                 {
                     get_swt_info_active="False";
                 }
@@ -417,8 +428,7 @@ public class Update_GateIn extends CommonActivity {
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
-
-
+        ed_manuf_date.setText(systemDate);
 
 
         String customer = getColoredSpanned("Customer","#bbbbbb");
@@ -620,6 +630,12 @@ public class Update_GateIn extends CommonActivity {
 
                 }
                 break;
+            case R.id.ed_test_date:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_last_Testdate:
+                showDialog(DATE_DIALOG_ID);
+                break;
             case R.id.ed_time:
                 mHour = c.get(Calendar.HOUR_OF_DAY);
                 mMinute = c.get(Calendar.MINUTE);
@@ -668,6 +684,19 @@ public class Update_GateIn extends CommonActivity {
                 selectImage();
 
                 break;
+
+            case R.id.ed_manfu:
+            manuf_date=true;
+
+            showDialog(DATE_DIALOG_ID);
+            break;
+            case R.id.im_manuf_date:
+
+                manuf_date=true;
+                showDialog(DATE_DIALOG_ID);
+                break;
+
+
         }
     }
 
