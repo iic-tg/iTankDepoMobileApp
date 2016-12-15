@@ -13,6 +13,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -95,6 +97,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Intent mServiceIntent;
     private EditText ed_text1, searchview1, searchview2;
     private Button heat_refresh, heat_home, heat_submit;
+    private String getEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,17 +134,24 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         sp_fields = (Spinner) findViewById(R.id.sp_heat_customer);
         sp_operator = (Spinner) findViewById(R.id.sp_heat_operator);
 
-
-
-//        heating_list_view.setOnItemClickListener(this);
+        searchview2.requestFocus();
         im_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
+        ed_text1.addTextChangedListener(editTextWatcher);
+
         im_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LL_hole.setVisibility(View.VISIBLE);
                 im_down.setVisibility(View.GONE);
                 im_up.setVisibility(View.VISIBLE);
+                if(cd.isConnectingToInternet()) {
+                    getEditText = "";
+                    new Get_Heating_filter().execute();
+                }else
+                {
+                    shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                }
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -198,22 +208,12 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 opratorItems = sp_operator.getSelectedItem().toString();
 
-                /*Similar,
-                Contains
-                Equals*/
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
                 }
 
-
-                if (cd.isConnectingToInternet()) {
-                    new Get_Heating_filter().execute();
-                } else {
-                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
-                }
-                Log.i("Selected item : ", opratorItems);
             }
 
             @Override
@@ -222,18 +222,6 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             }
         });
 
-
-//
-//        ArrayAdapter<String> adapter=new ArrayAdapter<String>(getApplicationContext(),R.layout.list_item_row,R.id.text1,name);
-//        heating_list_view.setAdapter(adapter);
-
-       /* heating_list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                startActivity(new Intent(getApplicationContext(),Create_Heating.class));
-            }
-        });*/
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -255,6 +243,25 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private final TextWatcher editTextWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+        public void afterTextChanged(Editable s) {
+
+            getEditText = ed_text1.getText().toString();
+
+            if (cd.isConnectingToInternet()) {
+                new Get_Heating_filter().execute();
+            } else {
+                shortToast(getApplicationContext(), "Please check Your Internet Connection");
+            }
+        }
+    };
 
 
 
@@ -364,10 +371,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             HttpEntity httpEntity = null;
             HttpResponse response = null;
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLHeatingList);
-            // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
-//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+
             try {
                 JSONObject jsonObject = new JSONObject();
 
@@ -514,8 +519,6 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 LayoutInflater inflater = LayoutInflater.from(context);
                 convertView = inflater.inflate(resource, null);
                 holder = new Heating.ViewHolder();
-
-
                 holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
@@ -632,7 +635,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override
@@ -652,7 +655,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("filterCondition", opratorItems);
-                jsonObject.put("filterValue", "");
+                jsonObject.put("filterValue", getEditText);
                 jsonObject.put("Mode", "");
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());

@@ -13,6 +13,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -92,10 +94,11 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
     private UserListAdapter adapter;
-    private EditText searchView2;
+    private EditText searchView2,searchView1,ed_text;
     private ProgressDialog progressDialog;
     private String filename;
     private String Lock_return_Message;
+    private String getEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         listview=(ListView)findViewById(R.id.list_view);
         searchlist=(ListView)findViewById(R.id.search_list);
         searchView2=(EditText)findViewById(R.id.searchView2);
+        ed_text=(EditText)findViewById(R.id.editText2);
 
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
@@ -150,8 +154,11 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         im_print.setVisibility(View.GONE);
         RL_pending.setBackgroundColor(Color.parseColor("#ffffff"));
 
+        searchView2.requestFocus();
         im_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
+
+        ed_text.addTextChangedListener(editTextWatcher);
 
         if(cd.isConnectingToInternet())
         {
@@ -168,6 +175,13 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 LL_hole.setVisibility(View.VISIBLE);
                 im_down.setVisibility(View.GONE);
                 im_up.setVisibility(View.VISIBLE);
+                if(cd.isConnectingToInternet()) {
+                    getEditText = "";
+                    new Get_GateIn_Dropdown_details().execute();
+                }else
+                {
+                    shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                }
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -236,13 +250,6 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }
 
 
-                if(cd.isConnectingToInternet()) {
-                    new Get_GateIn_Dropdown_details().execute();
-                }else
-                {
-                    shortToast(getApplicationContext(),"Please check Your Internet Connection");
-                }
-                Log.i("Selected item : ", opratorItems);
             }
 
             @Override
@@ -271,6 +278,28 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+
+    private final TextWatcher editTextWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+        public void afterTextChanged(Editable s) {
+
+            getEditText = ed_text.getText().toString();
+
+            if(cd.isConnectingToInternet()) {
+                new Get_GateIn_Dropdown_details().execute();
+            }else
+            {
+                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+            }
+        }
+    };
 
 
     @Override
@@ -448,13 +477,11 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                             JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
 
-
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
                                 filename=filenamejson.getString("fileName");
                             }
-
 
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
                             pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
@@ -477,6 +504,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
                             pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
                             pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
+                            pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
                                 pending_bean.setAttachmentStatus("False");
@@ -827,22 +856,16 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
-
-                    startActivity(i);
                     startActivity(i);
                 }else {
                     shortToast(getApplicationContext(),Lock_return_Message);
                 }
-
             }
             else
             {
 
-
             }
-
             progressDialog.dismiss();
-
 
         }
 
@@ -861,7 +884,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override
@@ -873,17 +896,16 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             HttpEntity httpEntity = null;
             HttpResponse response = null;
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGatePendingFIlter);
-            // httpPost.setHeader("Accept", "application/json");
+
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
-//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+
             try{
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("filterCondition", opratorItems);
-                jsonObject.put("filterValue", "");
+                jsonObject.put("filterValue", getEditText);
                 jsonObject.put("Mode", "edit");
 
                /* JSONObject jsonObject1 = new JSONObject();
@@ -911,7 +933,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
                                 pending_accordion_arraylist.clear();
-                                // LL_hole.setVisibility(View.GONE);
+                                LL_hole.setVisibility(View.GONE);
                             }
                         });
                     }else {

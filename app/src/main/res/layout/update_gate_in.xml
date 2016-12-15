@@ -1080,6 +1080,7 @@
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginTop="2dp"
+                                    android:visibility="gone"
                                     android:src="@mipmap/ic_calender"
                                     android:id="@+id/im_next_Testdate"
                                     android:layout_alignParentRight="true"/>

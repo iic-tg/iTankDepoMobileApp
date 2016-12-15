@@ -93,7 +93,7 @@ public class Update_GateIn extends CommonActivity {
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
     private TextView tv_toolbarTitle,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
-    private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date;
+    private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date,im_last_testDate;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private Intent mServiceIntent;
@@ -142,6 +142,7 @@ public class Update_GateIn extends CommonActivity {
     private Previous_CargoDropdownBean cargo_DropdownBean;
     private String equipement_code,equipement_id;
     public static boolean isCamPermission;
+
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String TAG="Create_GateIn";
     private String encodedImage,selectedImagePath,filename,IfAttchment;
@@ -212,6 +213,7 @@ public class Update_GateIn extends CommonActivity {
         ed_next_type=(EditText)findViewById(R.id.ed_next_testtype);
         ed_info_remark=(EditText)findViewById(R.id.ed_info_remark);
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
+        im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
       //  ed_previous = (EditText)findViewById(R.id.ed_previous);
         sp_previous_cargo = (Spinner)findViewById(R.id.sp_previ_cargo);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
@@ -312,30 +314,33 @@ public class Update_GateIn extends CommonActivity {
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
         }
 
+        get_swt_heating="False";
         heating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    heating_bt="True";
+                    get_swt_heating="True";
                 }else
                 {
-                    heating_bt="False";
+                    get_swt_heating="False";
 
                 }
             }
         });
+        get_swt_rental="False";
         rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    rental_bt="True";
+
+                    new Post_Verify_Rental_Entry().execute();
+
                 }else
                 {
-                    rental_bt="False";
+                    get_swt_rental="False";
                 }
             }
         });
-
         get_swt_info_rental="False";
         info_rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -392,6 +397,10 @@ public class Update_GateIn extends CommonActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        ed_manuf_date.setOnClickListener(this);
+        im_manuf_date.setOnClickListener(this);
+        ed_last_test_date.setOnClickListener(this);
+        im_last_testDate.setOnClickListener(this);
         iv_back.setOnClickListener(this);
         ed_time.setOnClickListener(this);
         ed_date.setOnClickListener(this);
@@ -417,7 +426,26 @@ public class Update_GateIn extends CommonActivity {
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
+        ed_manuf_date.setText(systemDate);
+        ed_last_test_date.setText(systemDate);
 
+        sp_last_test_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i == 0){
+                    ed_next_type.setText(dropdown_MoreInfo_arraylist.get(1).getCode());
+                }else if(i==1)
+                {
+                    ed_next_type.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
 
@@ -536,6 +564,20 @@ public class Update_GateIn extends CommonActivity {
 
                 showDialog(DATE_DIALOG_ID);
 
+                break;
+            case R.id.ed_manfu:
+
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_manuf_date:
+
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.ed_test_date:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_last_Testdate:
+                showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.iv_back:
                 onBackPressed();
@@ -1358,6 +1400,8 @@ public class Update_GateIn extends CommonActivity {
 
     }
 
+
+
     public class Create_GateIn_moreInfo_list_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
@@ -1488,5 +1532,89 @@ public class Update_GateIn extends CommonActivity {
         }
 
     }
+
+    public class Post_Verify_Rental_Entry extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        JSONObject jsonobject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            //  progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_Rental_Entry);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("EquipmentNo", get_equipment);
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("responce", resp);
+                Log.d("req", jsonObject.toString());
+                JSONObject jsonResp = new JSONObject(resp);
+
+                jsonobject = jsonResp.getJSONObject("d");
+
+                if (jsonobject != null) {
+
+                    validationStatus=jsonobject.getString("statusText");
+
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            if(jsonobject!=null)
+            {
+                if(validationStatus.equalsIgnoreCase("Success"))
+                {
+                    get_swt_rental="True";
+
+                }else if(validationStatus.contains("cannot be marked for Rental Gate In"))
+                {
+                    longToast(getApplicationContext(),"Equipment" +get_equipment+ "cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
+                    get_swt_rental="False";
+                }
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+            }
+
+            progressDialog.dismiss();
+
+        }
+    }
+
 
 }

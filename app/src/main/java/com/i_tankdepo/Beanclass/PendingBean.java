@@ -32,6 +32,7 @@ public class PendingBean implements Serializable {
     String prev_Id;
     String PR_ADVC_CD;
 
+
     public String getCustomerName() {
         return customerName;
     }

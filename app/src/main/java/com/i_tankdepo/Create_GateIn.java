@@ -92,12 +92,12 @@ public class Create_GateIn extends CommonActivity   {
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
     private TextView tv_toolbarTitle,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
-    private ImageView menu,im_date,im_time,im_Attachment,im_manuf_date,iv_back;
+    private ImageView menu,im_date,im_time,im_Attachment,im_manuf_date,iv_back,im_last_Testdate;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private Intent mServiceIntent;
     private String userChoosenTask;
-    private boolean manuf_date=false;
+    private boolean manuf_date=false,last_test_date=false;
     private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
     private Spinner sp_equip_type,sp_customer,sp_previous_cargo,sp_last_test_type;
     private EditText ed_time,ed_attach,ed_date,ed_equipement,ed_code,ed_status,ed_location,
@@ -212,6 +212,7 @@ public class Create_GateIn extends CommonActivity   {
         ed_next_type=(EditText)findViewById(R.id.ed_next_testtype);
         ed_info_remark=(EditText)findViewById(R.id.ed_info_remark);
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
+        im_last_Testdate = (ImageView)findViewById(R.id.im_last_Testdate);
 
         ed_eir_no = (EditText)findViewById(R.id.ed_eir_no);
         ed_location = (EditText)findViewById(R.id.ed_location);
@@ -345,6 +346,8 @@ public class Create_GateIn extends CommonActivity   {
         im_time.setOnClickListener(this);
         ed_manuf_date.setOnClickListener(this);
         im_manuf_date.setOnClickListener(this);
+        im_last_Testdate.setOnClickListener(this);
+        ed_last_test_date.setOnClickListener(this);
         bt_home = (Button)findViewById(R.id.home);
         bt_home.setOnClickListener(this);
         bt_refresh = (Button)findViewById(R.id.refresh);
@@ -366,6 +369,7 @@ public class Create_GateIn extends CommonActivity   {
         ed_date.setText(systemDate);
         ed_manuf_date.setText(systemDate);
         ed_time.setText(curTime);
+        ed_last_test_date.setText(systemDate);
         sp_customer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -406,6 +410,7 @@ public class Create_GateIn extends CommonActivity   {
 
             }
         });
+
         get_equipment="AAAL8445312";
         get_sp_customer="TSTCUST";
 
@@ -467,24 +472,6 @@ public class Create_GateIn extends CommonActivity   {
             }
         });
 
-        sp_last_test_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                get_sp_previous_code=dropdown_equipment_info_arraylist.get(position).getCode();
-                if(position == 0){
-                //    ed_next_type.setText(dropdown_equipment_info_arraylist.get(1).getCode());
-                }else if(position==1)
-                {
-                 //   ed_next_type.setText(dropdown_equipment_info_arraylist.get(0).getCode());
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
 
 
@@ -601,22 +588,33 @@ public class Create_GateIn extends CommonActivity   {
                 break;
             case R.id.ed_date:
                 manuf_date=false;
+                last_test_date = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_date:
                 manuf_date=false;
-
+                last_test_date = false;
                 showDialog(DATE_DIALOG_ID);
 
                 break;
             case R.id.ed_manfu:
                 manuf_date=true;
-
+                last_test_date = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_manuf_date:
-
+                last_test_date = false;
                 manuf_date=true;
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.ed_test_date:
+                manuf_date=false;
+                last_test_date = true;
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_last_Testdate:
+                manuf_date=false;
+                last_test_date = true;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.iv_back:
@@ -1078,8 +1076,13 @@ public class Create_GateIn extends CommonActivity   {
             if(manuf_date==true)
             {
                 ed_manuf_date.setText(formatDate(year, month, day));
-            }else {
 
+            }else if(last_test_date ==true) {
+
+                ed_last_test_date.setText(formatDate(year, month, day));
+
+            }else
+            {
                 ed_date.setText(formatDate(year, month, day));
             }
 
@@ -1231,7 +1234,6 @@ public class Create_GateIn extends CommonActivity   {
             else if(dropdown_customer_list.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
-
 
             }
 

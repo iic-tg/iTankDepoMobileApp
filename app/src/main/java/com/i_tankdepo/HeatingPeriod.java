@@ -110,7 +110,7 @@ public class HeatingPeriod extends CommonActivity  {
         add_new_heating = (ImageView)findViewById(R.id.im_add);
         menu.setVisibility(View.GONE);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
-        tv_toolbarTitle.setText("Heating Period");
+        tv_toolbarTitle.setText("Heating Periods");
 
         LL_Add_New=(LinearLayout)findViewById(R.id.LL_add_new_heating);
 
@@ -237,7 +237,7 @@ public class HeatingPeriod extends CommonActivity  {
         tv_startTime.setText(Html.fromHtml(startTime+" "+surName));
         tv_endDate.setText(Html.fromHtml(endDate+" "+surName));
         tv_endTime.setText(Html.fromHtml(endTime+" "+surName));
-        tv_temp.setText(Html.fromHtml(temp+ degree +surName));
+        tv_temp.setText(Html.fromHtml(temp+ degree +" "+surName));
 
 
 

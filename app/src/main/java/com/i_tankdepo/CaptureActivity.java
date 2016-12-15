@@ -70,6 +70,7 @@ import com.i_tankdepo.language.TranslateAsyncTask;
 import java.io.File;
 import java.io.IOException;
 
+import static com.i_tankdepo.R.id.iv_back;
 import static com.i_tankdepo.R.id.tv_add;
 
 
@@ -175,11 +176,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private TextView statusViewBottom;
   private TextView statusViewTop;
   private TextView ocrResultView;
-  private TextView translationView,tv_add;
+  private TextView translationView,tv_add,tv_toolbarTitle;
   private View cameraButtonView;
   private View resultView;
   private View progressView;
-  ImageView im_skip;
+  ImageView im_skip,iv_back,menu,changeOfStatus;
   private OcrResult lastResult;
   private Bitmap lastBitmap;
   private boolean hasSurface;
@@ -234,7 +235,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
     setContentView(R.layout.ocr);
-    im_add = (Button)findViewById(R.id.add);
+
     im_print = (Button)findViewById(R.id.print);
 
     pendingsize= GlobalConstants.pendingcount;
@@ -247,7 +248,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
     tv_add = (TextView) findViewById(R.id.tv_add);
     tv_add.setText("Print");
-    im_add = (Button)findViewById(R.id.add);
+
     home = (Button)findViewById(R.id.home);
     refresh = (Button)findViewById(R.id.refresh);
     LL_Submit.setAlpha(0.5f);
@@ -257,6 +258,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     im_add.setVisibility(View.GONE);
     LL_print.setAlpha(0.5f);
     LL_print.setClickable(false);
+    menu=(ImageView)findViewById(R.id.iv_menu) ;
+    iv_back = (ImageView)findViewById(R.id.iv_back);
+    menu.setVisibility(View.GONE);
+    changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+    changeOfStatus.setVisibility(View.GONE);
+    tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
+    tv_toolbarTitle.setText("Image Processing");
 
     statusViewBottom = (TextView) findViewById(R.id.status_view_bottom);
     registerForContextMenu(statusViewBottom);
@@ -277,11 +285,19 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       }
     });
 
+    iv_back.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onBackPressed();
+      }
+    });
+
+
     handler = null;
     lastResult = null;
     hasSurface = false;
     beepManager = new BeepManager(this);
-    
+
     // Camera shutter button
     if (DISPLAY_SHUTTER_BUTTON) {
       shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
@@ -1034,7 +1050,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   void showLanguageName() {   
     Toast toast = Toast.makeText(this, "OCR: " + sourceLanguageReadable, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.TOP, 0, 0);
-    toast.show();
+//    toast.show();
   }
   
   /**

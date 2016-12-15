@@ -681,6 +681,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:text="Equipment Info"
+                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:gravity="center|left"
                         android:layout_marginLeft="5dp"
@@ -1078,6 +1079,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="2dp"
+                                android:visibility="gone"
                                 android:src="@mipmap/ic_calender"
                                 android:id="@+id/im_next_Testdate"
                                 android:layout_alignParentRight="true"/>
