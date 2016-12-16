@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/toolbar"
+            android:id="@+id/scrollbar"
             android:layout_above="@+id/footer"
             android:fillViewport="true">
 
@@ -126,12 +127,31 @@
 
 
                    </LinearLayout>
-                   <TextView
+
+                   <LinearLayout
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
-                       android:layout_marginTop="2dp"
-                       android:id="@+id/tv_search_options"
-                       android:layout_marginLeft="5dp"/>
+                       android:orientation="horizontal"
+                       android:id="@+id/LL_search_Value"
+                       >
+
+                       <TextView
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_marginTop="2dp"
+                           android:text="Values: "
+                           android:textColor="@color/toolbar_right"
+                           android:layout_marginLeft="5dp"/>
+                       <TextView
+                           android:layout_width="match_parent"
+                           android:layout_height="wrap_content"
+                           android:layout_marginTop="2dp"
+                           android:id="@+id/tv_search_options"
+                           android:textColor="@color/toolbar_right"
+                           android:layout_marginLeft="5dp"/>
+
+
+                   </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -182,15 +202,29 @@
                                     android:text="Customer Name"/>
 
                             </LinearLayout>
-
-                            <ListView
+                            <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1.5"
-                                android:divider="@null"
-                                android:layout_marginLeft="2dp"
-                                android:id="@+id/search_list">
-                            </ListView>
+                                android:layout_gravity="center">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:text="No Records Found"
+                                    android:gravity="center"
+                                    android:visibility="gone"
+                                    android:id="@+id/no_data"
+                                    />
+                                <ListView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:divider="@null"
+                                    android:layout_marginLeft="2dp"
+                                    android:id="@+id/search_list">
+                                </ListView>
+
+                            </RelativeLayout>
+
 
                 <View style="@style/View_horizontal_line_two"
                     android:layout_marginRight="5dp"

@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -44,6 +45,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +77,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import static android.R.id.list;
 import static com.i_tankdepo.R.id.im_add;
 import static com.i_tankdepo.R.id.sp_fields;
 import static com.i_tankdepo.R.id.sp_operators;
@@ -93,12 +96,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
-    LinearLayout LL_hole, LL_Submit, LL_footer_delete;
+    LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value;
     Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data;
     private Intent mServiceIntent;
     private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
     private PendingBean pending_bean;
@@ -122,6 +125,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private ImageView iv_back;
     private String getEditText;
     private UserListAdapter.ContactsFilter mContactsFilter;
+    private ListAdapter.ContactsFilterBox mContactsFilterBox;
+    private ScrollView scrollbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +142,10 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         listview = (ListView) findViewById(R.id.list_view);
         searchlist = (ListView) findViewById(R.id.search_list);
         searchView2 = (EditText) findViewById(R.id.searchView2);
+        searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
-
+        no_data = (TextView)findViewById(R.id.no_data);
+        no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
@@ -167,7 +175,10 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_add = (TextView) findViewById(R.id.tv_add);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
-        tv_search_options.setVisibility(View.GONE);
+        LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
+        scrollbar = (ScrollView)findViewById(R.id.scrollbar);
+        LL_search_Value.setVisibility(View.GONE);
+
         tv_add.setOnClickListener(this);
         tv_toolbarTitle.setText("Gate In");
         im_add = (Button) findViewById(R.id.add);
@@ -176,6 +187,17 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
         searchView2.requestFocus();
+
+
+        searchlist.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
 
         im_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
@@ -220,11 +242,13 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         ArrayAdapter<String> FieldsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Fields);
+
         FieldsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fieldSpinner.setAdapter(FieldsAdapter);
 
 
         ArrayAdapter<String> OperatorAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Operators);
+
         OperatorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         operatorSpinner.setAdapter(OperatorAdapter);
 
@@ -236,12 +260,18 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
+                    new Get_GateIn_Dropdown_details().execute();
+                    LL_hole.setVisibility(View.GONE);
+
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
+                    new Get_GateIn_Dropdown_details().execute();
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
+                    new Get_GateIn_Dropdown_details().execute();
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
-                    fieldItems = "PRDCT_DSCRPTN_VC4";
+                    fieldItems = "PRDCT_DSCRPTN_VC";
+                    new Get_GateIn_Dropdown_details().execute();
                 }
             }
 
@@ -257,8 +287,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
+                    new Get_GateIn_Dropdown_details().execute();
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
+                    new Get_GateIn_Dropdown_details().execute();
+                }else{
+                    new Get_GateIn_Dropdown_details().execute();
                 }
             }
 
@@ -302,10 +336,14 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         public void afterTextChanged(Editable s) {
 
             getEditText = ed_text.getText().toString();
-
+            no_data.setVisibility(View.GONE);
+            LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
                 new Get_GateIn_Dropdown_details().execute();
-            } else {
+            }else if(getEditText.length()==0){
+
+            }
+            else {
                 shortToast(getApplicationContext(), "Please check Your Internet Connection");
             }
 
@@ -357,6 +395,10 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             LL_hole.setVisibility(View.GONE);
                             im_down.setVisibility(View.VISIBLE);
                             im_up.setVisibility(View.GONE);
+                            /*for(int i=0;i<selected_name.size();i++) {
+                                tv_search_options.append(selected_name.get(i)+", ");
+                            }
+                                LL_search_Value.setVisibility(View.VISIBLE);*/
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
@@ -556,39 +598,27 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        adapter.getFilter().filter(s);
                     }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                        if(s.length()==0) {
-//
-//                            new Get_GateIn_details().execute();
-//
-//                        }else
-//                        {
-//                            adapter.getFilter().filter(s);
-//
-//                        }
-                        adapter.getFilter().filter(s);
+
                     }
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
-                     adapter.getFilter().filter(s);
+                        if (s.length() == 0){
+                            new Get_GateIn_details().execute();
+                        }
+                        adapter.getFilter().filter(s);
                     }
                 });
-
-
-
             }
             else if(pending_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
             }
         }
-
     }
 
 
@@ -768,8 +798,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
 
                     for (PendingBean c : list) {
-                        if (c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase())) {
-
+                        if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getEquipmentNo().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getType().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getPreviousCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getDate().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getTime().toUpperCase().contains(constraint.toString().toUpperCase()))) {
                             filteredContacts.add(c);
                         }
                     }
@@ -934,7 +968,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             else
             {
 
-
             }
 
             progressDialog.dismiss();
@@ -1002,10 +1035,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
-                                pending_accordion_arraylist.clear();
-                                im_up.setVisibility(View.GONE);
-                                LL_hole.setVisibility(View.GONE);
+//                                shortToast(getApplicationContext(), "No Records Found");
+                                products.clear();
+                                no_data.setVisibility(View.VISIBLE);
 
                             }
                         });
@@ -1022,7 +1054,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             pending_accordion_bean.setValues(jsonObject.getString("Values"));
                             products.add(new Product(jsonObject.getString("Values"),false));
 
-                           // pending_accordion_arraylist.add(pending_accordion_bean);
+                           pending_accordion_arraylist.add(pending_accordion_bean);
 
                         }
                     }
@@ -1033,10 +1065,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found.");
-                            pending_accordion_arraylist.clear();
-                            im_up.setVisibility(View.GONE);
-                            LL_hole.setVisibility(View.GONE);
+//                            shortToast(getApplicationContext(),"No Records Found.");
+                            products.clear();
+                            no_data.setVisibility(View.VISIBLE);
 
                         }
                     });
@@ -1061,17 +1092,38 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
             if(pending_accordion_arraylist!=null)
             {
-
                 boxAdapter = new ListAdapter(GateIn.this, products);
                 searchlist.setAdapter(boxAdapter);
+
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
                 searchlist.setAdapter(adapter);*/
-                LL_hole.setVisibility(View.VISIBLE);
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                        boxAdapter.getFilter().filter(s);
+                    }
+                });
+
+
             }
             else if(pending_accordion_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
                 LL_hole.setVisibility(View.GONE);
+                no_data.setVisibility(View.VISIBLE);
+                searchlist.setVisibility(View.GONE);
 
 
             }
@@ -1162,6 +1214,55 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 getProduct((Integer) buttonView.getTag()).box = isChecked;
             }
         };
+
+        public Filter getFilter() {
+            if (mContactsFilterBox == null)
+                mContactsFilterBox = new ContactsFilterBox();
+
+            return mContactsFilterBox;
+        }
+
+        // Filter
+
+        private class ContactsFilterBox extends Filter {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+
+
+                if (constraint == null || constraint.length() == 0) {
+                    results.values = objects;
+                    results.count = objects.size();
+                }
+                else {
+
+                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
+
+
+                    for (Product c : objects) {
+                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
+                            filteredContacts.add(c);
+                        }
+                    }
+
+
+                    results.values = filteredContacts;
+                    results.count = filteredContacts.size();
+                }
+
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                objects = (ArrayList<Product>) results.values;
+                notifyDataSetChanged();
+            }
+        }
+
+
     }
 
 /*
@@ -1285,14 +1386,13 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
 
             preadvicejsonlist = new JSONArray();
             SearchValuesObject=new JSONObject();
-            preadvicejsonObject=new JSONObject();
 
-                for (int i = 0; i < selected_name.size(); i++) {
-
+                for (int i = 0; i <selected_name.size(); i++) {
+                    preadvicejsonObject=new JSONObject();
                     preadvicejsonObject.put("values", selected_name.get(i));
-
+                    preadvicejsonlist.put(preadvicejsonObject);
                 }
-            preadvicejsonlist.put(preadvicejsonObject);
+
             SearchValuesObject.put("SearchValues",preadvicejsonlist);
 
 
@@ -1313,7 +1413,7 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
             String resp = EntityUtils.toString(httpEntity);
 
             Log.d("rep", resp);
-            Log.d("request", jsonObject.toString());
+            Log.d("Search_request", jsonObject.toString());
             JSONObject jsonrootObject = new JSONObject(resp);
             JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 

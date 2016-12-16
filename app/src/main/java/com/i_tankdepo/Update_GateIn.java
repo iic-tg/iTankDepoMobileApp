@@ -92,7 +92,7 @@ public class Update_GateIn extends CommonActivity {
 
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
-    private TextView tv_toolbarTitle,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
+    private TextView tv_toolbarTitle,tv_next_text_id,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
     private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date,im_last_testDate;
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -127,10 +127,10 @@ public class Update_GateIn extends CommonActivity {
     List<String> Cargo_ID = new ArrayList<>();
     List<String> Cargo_Code = new ArrayList<>();
     List<String> Cargo_Description = new ArrayList<>();
-    LinearLayout LL_Equipment_Info,LL_Submit;
+    LinearLayout LL_Equipment_Info,LL_Submit,LL_footer_delete;
     private int pendingsize;
     String equip_no, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
-            vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
+            trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
     Switch heating,rental,info_active,info_rental;
     private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id;
     private CustomerDropdownBean customer_DropdownBean;
@@ -167,7 +167,7 @@ public class Update_GateIn extends CommonActivity {
         Cust_Name= GlobalConstants.customer_name;
         attachmentstatus= GlobalConstants.attachmentStatus;
         Log.i("transactionNO",attachmentstatus);
-
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         equip_no= GlobalConstants.equipment_no;
         gateIn_Id= GlobalConstants.GateInId;
         pre_adv_id= GlobalConstants.pre_adv_id;
@@ -175,6 +175,7 @@ public class Update_GateIn extends CommonActivity {
         code= GlobalConstants.code;
         status= GlobalConstants.status;
         location= GlobalConstants.location;
+        trans_no= GlobalConstants.gateIn_Trans_no;
         date= GlobalConstants.date;
         time= GlobalConstants.time;
         get_sp_previous= GlobalConstants.previous_cargo;
@@ -201,6 +202,9 @@ public class Update_GateIn extends CommonActivity {
         ed_time = (EditText)findViewById(R.id.ed_time);
         ed_customer = (EditText)findViewById(R.id.ed_customer);
         ed_type = (EditText)findViewById(R.id.ed_type);
+        LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
+        LL_footer_delete.setAlpha(0.5f);
+        LL_footer_delete.setClickable(false);
 
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
         ed_tare_weight=(EditText)findViewById(R.id.ed_tare_weight);
@@ -237,6 +241,7 @@ public class Update_GateIn extends CommonActivity {
         im_Attachment =(ImageView)findViewById(R.id.im_Attachment);
         im_time =(ImageView)findViewById(R.id.im_time);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
+        tv_next_text_id = (TextView) findViewById(R.id.tv_next_text_id);
         LL_Equipment_Info = (LinearLayout) findViewById(R.id.LL_Equipment_Info);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
         ed_customer.setFocusable(false);
@@ -388,7 +393,7 @@ public class Update_GateIn extends CommonActivity {
             }
         });
 
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
 
 
        
@@ -434,9 +439,13 @@ public class Update_GateIn extends CommonActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i == 0){
                     ed_next_type.setText(dropdown_MoreInfo_arraylist.get(1).getCode());
+                    tv_next_text_id.setText(dropdown_MoreInfo_arraylist.get(1).getId());
+                    get_last_test_type=dropdown_MoreInfo_arraylist.get(i).getId();
                 }else if(i==1)
                 {
                     ed_next_type.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
+                    tv_next_text_id.setText(dropdown_MoreInfo_arraylist.get(0).getId());
+                    get_last_test_type=dropdown_MoreInfo_arraylist.get(i).getId();
 
                 }
             }
@@ -619,7 +628,8 @@ public class Update_GateIn extends CommonActivity {
                 get_capacity = ed_capacity.getText().toString();
                 get_last_test_date = ed_last_test_date.getText().toString();
                 get_next_date = ed_next_date.getText().toString();
-                get_next_type = ed_next_type.getText().toString();
+                get_next_type = tv_next_text_id.getText().toString();
+              //  get_last_test_type=sp_last_test_type.getSelectedItem().toString();
                 get_info_remark = ed_info_remark.getText().toString();
 
                 if((get_equipment.trim().equals("") || get_equipment==null) ||
@@ -651,7 +661,7 @@ public class Update_GateIn extends CommonActivity {
 
                     } else {
 
-                        changes = "true";
+                        changes = "True";
                         if (cd.isConnectingToInternet()) {
                             new PostInfo().execute();
                         } else {
@@ -950,7 +960,7 @@ public class Update_GateIn extends CommonActivity {
                         invitejsonObject.put("ContentLength",encodedImage.length());
                         invitejsonObject.put("base64imageString",encodedImage);
                         invite_jsonlist.put(invitejsonObject);
-                    reqObj.put("ArrayOfFileParams",invite_jsonlist);
+                        reqObj.put("ArrayOfFileParams",invite_jsonlist);
 
 
 
@@ -1004,7 +1014,7 @@ public class Update_GateIn extends CommonActivity {
 
                 jsonObject.put("IfAttchment",IfAttchment );
                 jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("Mode", "new");
+                jsonObject.put("Mode", "edit");
 
                 jsonObject.put("EIMNFCTR_DT", get_manu_date);
                 jsonObject.put("EITR_WGHT_NC", get_tare_weight);
@@ -1021,7 +1031,7 @@ public class Update_GateIn extends CommonActivity {
                 jsonObject.put("EIAttachment", "False");
                 jsonObject.put("EIHasChanges", changes);
                 jsonObject.put("PageName", "GateIn");
-                jsonObject.put("GateinTransactionNo", "");
+                jsonObject.put("GateinTransactionNo",trans_no);
 
 
 
@@ -1071,13 +1081,19 @@ public class Update_GateIn extends CommonActivity {
                     Intent i = new Intent(getApplicationContext(), GateIn.class);
                     startActivity(i);
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "GateIn Updated Faild", Toast.LENGTH_SHORT).show();
+                } else if(responseString.equalsIgnoreCase("GateIn Not Updated")) {
+
+                    Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
+
+                }else if(responseString.equalsIgnoreCase("EINotUpdated"))
+                {
+
+                    Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
 
                 }
             }else
             {
-                Toast.makeText(getApplicationContext(), "Connection TimeOut", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Unable to connect the Server..!", Toast.LENGTH_SHORT).show();
 
             }
             progressDialog.dismiss();

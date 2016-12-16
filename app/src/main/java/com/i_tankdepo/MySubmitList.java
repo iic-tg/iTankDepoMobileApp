@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -29,6 +30,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -74,12 +76,12 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     LinearLayout LL_hole, LL_Submit;
     Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh;
     String equip_no, equipment_no,Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,Gate_In,cust_code,type_id,code_id,pre_code,pre_id,
-            vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id;
+            vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,gatin_transaction_no;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options;
-    private LinearLayout footer_add_btn,LL_footer_delete;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data;
+    private LinearLayout footer_add_btn,LL_footer_delete,LL_search_Value;
     private Intent mServiceIntent;
     private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
     private PendingBean pending_bean;
@@ -99,6 +101,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String filename;
     private String Lock_return_Message;
     private String getEditText;
+    private UserListAdapter.ContactsFilter mContactsFilter;
+    private ListAdapter.ContactsFilterBox mContactsFilterBox;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +119,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         searchlist=(ListView)findViewById(R.id.search_list);
         searchView2=(EditText)findViewById(R.id.searchView2);
         ed_text=(EditText)findViewById(R.id.editText2);
-
+        searchView1 = (EditText) findViewById(R.id.searchView1);
+        no_data = (TextView)findViewById(R.id.no_data);
+        no_data.setVisibility(View.GONE);
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
@@ -146,7 +153,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_add = (TextView) findViewById(R.id.tv_add);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
-        tv_search_options.setVisibility(View.GONE);
+        LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
+        LL_search_Value.setVisibility(View.GONE);
+//        tv_search_options.setVisibility(View.GONE);
         tv_add.setOnClickListener(this);
         tv_toolbarTitle.setText("Gate In");
         im_add = (Button)findViewById(R.id.add);
@@ -155,6 +164,17 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         RL_pending.setBackgroundColor(Color.parseColor("#ffffff"));
 
         searchView2.requestFocus();
+
+        searchlist.setOnTouchListener(new View.OnTouchListener() {
+            // Setting on Touch Listener for handling the touch inside ScrollView
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Disallow the touch request for parent scroll on touch of child view
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+                return false;
+            }
+        });
+
         im_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
 
@@ -215,15 +235,21 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(fieldItems.equalsIgnoreCase("Customer"))
                 {
                     fieldItems="CSTMR_CD";
+                    new Get_GateIn_Dropdown_details().execute();
+                    LL_hole.setVisibility(View.GONE);
+
                 }else if(fieldItems.equalsIgnoreCase("Equipment No"))
                 {
                     fieldItems="EQPMNT_NO";
+                    new Get_GateIn_Dropdown_details().execute();
                 }else if(fieldItems.equalsIgnoreCase("Type"))
                 {
                     fieldItems="EQPMNT_TYP_CD";
+                    new Get_GateIn_Dropdown_details().execute();
                 }else if(fieldItems.equalsIgnoreCase("Previous Cargo"))
                 {
-                    fieldItems="PRDCT_DSCRPTN_VC4";
+                    fieldItems="PRDCT_DSCRPTN_VC";
+                    new Get_GateIn_Dropdown_details().execute();
                 }
 
             }
@@ -247,6 +273,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }else if(opratorItems.equalsIgnoreCase("Not Similar"))
                 {
                     opratorItems="";
+                }else{
+                    new Get_GateIn_Dropdown_details().execute();
                 }
 
 
@@ -291,7 +319,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         public void afterTextChanged(Editable s) {
 
             getEditText = ed_text.getText().toString();
-
+            no_data.setVisibility(View.GONE);
+            LL_hole.setVisibility(View.VISIBLE);
             if(cd.isConnectingToInternet()) {
                 new Get_GateIn_Dropdown_details().execute();
             }else
@@ -353,6 +382,13 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             LL_hole.setVisibility(View.GONE);
                             im_down.setVisibility(View.VISIBLE);
                             im_up.setVisibility(View.GONE);
+
+                           /* for(int i=0;i<selected_name.size();i++) {
+                                tv_search_options.append(selected_name.get(i)+", ");
+                            }
+
+                            LL_search_Value.setVisibility(View.VISIBLE);*/
+
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
@@ -505,6 +541,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
                             pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
                             pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+                            pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
 
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -552,8 +589,31 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
 
             if (pending_arraylist != null) {
-                UserListAdapter adapter = new UserListAdapter(MySubmitList.this, R.layout.list_item_row, pending_arraylist);
+                 adapter = new UserListAdapter(MySubmitList.this, R.layout.list_item_row, pending_arraylist);
                 listview.setAdapter(adapter);
+
+                searchView2.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() == 0){
+                            new Get_GateIn_MySubmit_details().execute();
+
+                        }
+
+                        adapter.getFilter().filter(s);
+                    }
+                });
+
 
             } else if (pending_arraylist.size() < 1) {
                 shortToast(getApplicationContext(), "Data Not Found");
@@ -630,6 +690,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.gatin_trans_no = (TextView) convertView.findViewById(R.id.text12);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -653,6 +714,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());
                 holder.location.setText(userListBean.getLocation());
                 holder.vechicle.setText("");
+                holder.gatin_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
 /*
                 if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
                 {
@@ -689,6 +751,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         Gate_In= list.get(position).getGateIn_Id();
                         equip_no= list.get(position).getEquipmentNo();
                         type= list.get(position).getType();
+                        gatin_transaction_no= list.get(position).getGI_TRNSCTN_NO();
                         code= list.get(position).getCode();
                         status= list.get(position).getStatus();
                         location= list.get(position).getLocation();
@@ -709,13 +772,6 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         pre_id= list.get(position).getPrev_Id();
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
                         new Get_GateIn_Lock_Check().execute();
-
-
-
-
-
-
-
                     }
                 });
 
@@ -723,9 +779,64 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             return convertView;
         }
 
+        public Filter getFilter() {
+            if (mContactsFilter == null)
+                mContactsFilter = new ContactsFilter();
+
+            return mContactsFilter;
+        }
+
+        // Filter
+
+        private class ContactsFilter extends Filter {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+
+
+                if (constraint == null || constraint.length() == 0) {
+                    results.values = list;
+                    results.count = list.size();
+                }
+                else {
+
+                    ArrayList<PendingBean> filteredContacts = new ArrayList<PendingBean>();
+
+
+                    for (PendingBean c : list) {
+                        if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getEquipmentNo().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getType().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getPreviousCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getDate().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getTime().toUpperCase().contains(constraint.toString().toUpperCase()))) {
+                            filteredContacts.add(c);
+                        }
+                    }
+
+
+                    results.values = filteredContacts;
+                    results.count = filteredContacts.size();
+                }
+
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                list = (ArrayList<PendingBean>) results.values;
+                notifyDataSetChanged();
+            }
+        }
+
+
+
+
     }
     static class ViewHolder {
-        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
+        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,gatin_trans_no,cust_code,type_id,code_id,
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
@@ -839,6 +950,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.customer_name=Cust_Name;
                     GlobalConstants.code=code;
                     GlobalConstants.type=type;
+                    GlobalConstants.gateIn_Trans_no=gatin_transaction_no;
                     GlobalConstants.status=status;
                     GlobalConstants.date=date;
                     GlobalConstants.time=time;
@@ -931,9 +1043,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
-                                pending_accordion_arraylist.clear();
-                                LL_hole.setVisibility(View.GONE);
+//                                shortToast(getApplicationContext(), "No Records Found");
+                                products.clear();
+                                no_data.setVisibility(View.VISIBLE);
+
                             }
                         });
                     }else {
@@ -952,7 +1065,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_accordion_bean.setValues(jsonObject.getString("Values"));
                             products.add(new Product(jsonObject.getString("Values"),false));
 
-                            // pending_accordion_arraylist.add(pending_accordion_bean);
+                            pending_accordion_arraylist.add(pending_accordion_bean);
 
 
 
@@ -965,8 +1078,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found.");
-                            // LL_hole.setVisibility(View.GONE);
+//                            shortToast(getApplicationContext(),"No Records Found.");
+
+                            products.clear();
+                            no_data.setVisibility(View.VISIBLE);
 
                         }
                     });
@@ -996,13 +1111,35 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 searchlist.setAdapter(boxAdapter);
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
                 searchlist.setAdapter(adapter);*/
-                LL_hole.setVisibility(View.VISIBLE);
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length()==0){
+                            new Get_GateIn_Dropdown_details().execute();
+                        }
+                        boxAdapter.getFilter().filter(s);
+                    }
+                });
+
+
             }
             else if(pending_accordion_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
                 LL_hole.setVisibility(View.GONE);
-
+                no_data.setVisibility(View.VISIBLE);
+                searchlist.setVisibility(View.GONE);
 
             }
 
@@ -1092,6 +1229,53 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 getProduct((Integer) buttonView.getTag()).box = isChecked;
             }
         };
+
+        public Filter getFilter() {
+            if (mContactsFilterBox == null)
+                mContactsFilterBox = new ContactsFilterBox();
+
+            return mContactsFilterBox;
+        }
+
+        // Filter
+
+        private class ContactsFilterBox extends Filter {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults results = new FilterResults();
+
+
+                if (constraint == null || constraint.length() == 0) {
+                    results.values = objects;
+                    results.count = objects.size();
+                } else {
+
+                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
+
+
+                    for (Product c : objects) {
+                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
+                            filteredContacts.add(c);
+                        }
+                    }
+
+
+                    results.values = filteredContacts;
+                    results.count = filteredContacts.size();
+                }
+
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                objects = (ArrayList<Product>) results.values;
+                notifyDataSetChanged();
+            }
+
+        }
     }
 
     /*
@@ -1215,14 +1399,14 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                 preadvicejsonlist = new JSONArray();
                 SearchValuesObject=new JSONObject();
-                preadvicejsonObject=new JSONObject();
+
 
                 for (int i = 0; i < selected_name.size(); i++) {
-
+                    preadvicejsonObject=new JSONObject();
                     preadvicejsonObject.put("values", selected_name.get(i));
-
+                    preadvicejsonlist.put(preadvicejsonObject);
                 }
-                preadvicejsonlist.put(preadvicejsonObject);
+
                 SearchValuesObject.put("SearchValues",preadvicejsonlist);
 
 
@@ -1256,7 +1440,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
+//                                shortToast(getApplicationContext(), "No Records Found");
+                                products.clear();
+
                             }
                         });
                     }else {
@@ -1291,7 +1477,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+//                            shortToast(getApplicationContext(),"No Records Found");
+                            products.clear();
 
 
                         }

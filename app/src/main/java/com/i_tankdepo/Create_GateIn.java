@@ -173,7 +173,7 @@ public class Create_GateIn extends CommonActivity   {
         menu=(ImageView)findViewById(R.id.iv_menu) ;
         iv_back = (ImageView)findViewById(R.id.iv_back);
         menu.setVisibility(View.GONE);
-
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         pendingsize= GlobalConstants.pendingcount;
         tv_name = (TextView)findViewById(R.id.tv_name);
@@ -330,7 +330,7 @@ public class Create_GateIn extends CommonActivity   {
 
 
 
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
 
 
 
