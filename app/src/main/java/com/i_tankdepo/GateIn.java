@@ -130,6 +130,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         iv_back.setVisibility(View.GONE);
         im_down=(ImageView)findViewById(R.id.im_down) ;
         im_up=(ImageView)findViewById(R.id.im_up) ;
+        im_up.setVisibility(View.GONE);
         listview=(ListView)findViewById(R.id.list_view);
         searchlist=(ListView)findViewById(R.id.search_list);
         searchView2=(EditText)findViewById(R.id.searchView2);
@@ -138,6 +139,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
+        LL_hole.setVisibility(View.GONE);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         im_ok = (ImageView)findViewById(R.id.im_ok);
@@ -172,8 +174,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         im_print.setVisibility(View.GONE);
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
-        im_up.setVisibility(View.GONE);
-        LL_hole.setVisibility(View.GONE);
+
 
         if(cd.isConnectingToInternet())
         {
@@ -182,7 +183,15 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         else{
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
         }
-
+        LL_hole.setVisibility(View.GONE);
+        im_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LL_hole.setVisibility(View.GONE);
+                im_down.setVisibility(View.VISIBLE);
+                im_up.setVisibility(View.GONE);
+            }
+        });
 
         im_down.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,14 +199,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 LL_hole.setVisibility(View.VISIBLE);
                 im_down.setVisibility(View.GONE);
                 im_up.setVisibility(View.VISIBLE);
-            }
-        });
-        im_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LL_hole.setVisibility(View.GONE);
-                im_down.setVisibility(View.VISIBLE);
-                im_up.setVisibility(View.GONE);
             }
         });
 

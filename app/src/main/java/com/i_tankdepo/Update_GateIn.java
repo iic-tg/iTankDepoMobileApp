@@ -322,30 +322,33 @@ public class Update_GateIn extends CommonActivity {
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
         }
 
+        get_swt_heating="False";
         heating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    heating_bt="True";
+                    get_swt_heating="True";
                 }else
                 {
-                    heating_bt="False";
+                    get_swt_heating="False";
 
                 }
             }
         });
+        get_swt_rental="False";
         rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    rental_bt="True";
+
+                    new Post_Verify_Rental_Entry().execute();
+
                 }else
                 {
-                    rental_bt="False";
+                    get_swt_rental="False";
                 }
             }
         });
-
         get_swt_info_rental="False";
         info_rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -365,8 +368,7 @@ public class Update_GateIn extends CommonActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
                     get_swt_info_active="True";
-                }
-                else
+                }else
                 {
                     get_swt_info_active="False";
                 }
@@ -1517,5 +1519,89 @@ public class Update_GateIn extends CommonActivity {
         }
 
     }
+
+    public class Post_Verify_Rental_Entry extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        JSONObject jsonobject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            //  progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_Rental_Entry);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("EquipmentNo", get_equipment);
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("responce", resp);
+                Log.d("req", jsonObject.toString());
+                JSONObject jsonResp = new JSONObject(resp);
+
+                jsonobject = jsonResp.getJSONObject("d");
+
+                if (jsonobject != null) {
+
+                    validationStatus=jsonobject.getString("statusText");
+
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            if(jsonobject!=null)
+            {
+                if(validationStatus.equalsIgnoreCase("Success"))
+                {
+                    get_swt_rental="True";
+
+                }else if(validationStatus.contains("cannot be marked for Rental Gate In"))
+                {
+                    longToast(getApplicationContext(),"Equipment" +get_equipment+ "cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
+                    get_swt_rental="False";
+                }
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+            }
+
+            progressDialog.dismiss();
+
+        }
+    }
+
 
 }
