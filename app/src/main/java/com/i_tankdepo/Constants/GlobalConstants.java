@@ -28,7 +28,9 @@ public class GlobalConstants {
     public static String location="";
     public static String date="";
     public static String type="";
+
     public static String gateIn_Trans_no="";
+
     public static String time="";
     public static String previous_cargo="";
     public static String eir_no="";

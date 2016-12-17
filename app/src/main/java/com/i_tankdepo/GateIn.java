@@ -45,7 +45,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+
 import android.widget.ScrollView;
+
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,15 +75,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-
 import static android.R.id.list;
+import static com.i_tankdepo.R.layout.list_item_row_accordion;
+import static com.i_tankdepo.R.id.GateIn;
 import static com.i_tankdepo.R.id.im_add;
 import static com.i_tankdepo.R.id.sp_fields;
 import static com.i_tankdepo.R.id.sp_operators;
-import static com.i_tankdepo.R.layout.list_item_row_accordion;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -91,6 +94,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
+
     private ListView listview, searchlist;
     private RelativeLayout RL_musubmit, RL_pending;
     private ImageView menu, im_up, im_down, im_ok, im_close;
@@ -112,6 +116,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private Spinner fieldSpinner, operatorSpinner;
     private String fieldItems, opratorItems;
     private EditText searchView2, searchView1, ed_text;
+
     private UserListAdapter adapter;
     ArrayList<Product> products = new ArrayList<Product>();
     private ListAdapter boxAdapter;
@@ -123,6 +128,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private String equipment_no;
     private String Lock_return_Message;
     private ImageView iv_back;
+
     private String getEditText;
     private UserListAdapter.ContactsFilter mContactsFilter;
     private ListAdapter.ContactsFilterBox mContactsFilterBox;
@@ -134,6 +140,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gate_in);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
@@ -153,6 +160,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         im_ok = (ImageView) findViewById(R.id.im_ok);
         im_close = (ImageView) findViewById(R.id.im_close);
+
         im_ok.setOnClickListener(this);
         im_close.setOnClickListener(this);
 
@@ -162,6 +170,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         LL_Submit.setClickable(false);
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
+
         bt_mysubmit = (Button) findViewById(R.id.bt_mysubmit);
         bt_add = (Button) findViewById(R.id.add);
         bt_add.setOnClickListener(this);
@@ -211,14 +220,13 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         } else {
             shortToast(getApplicationContext(), "Please check your Internet Connection.");
         }
-
-
         im_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LL_hole.setVisibility(View.VISIBLE);
                 im_down.setVisibility(View.GONE);
                 im_up.setVisibility(View.VISIBLE);
+
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
                     new Get_GateIn_Dropdown_details().execute();
@@ -243,12 +251,13 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
         ArrayAdapter<String> FieldsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Fields);
 
+
         FieldsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fieldSpinner.setAdapter(FieldsAdapter);
 
 
-        ArrayAdapter<String> OperatorAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Operators);
 
+        ArrayAdapter<String> OperatorAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Operators);
         OperatorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         operatorSpinner.setAdapter(OperatorAdapter);
 
@@ -283,6 +292,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         operatorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 opratorItems = operatorSpinner.getSelectedItem().toString();
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
@@ -294,6 +304,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 }else{
                     new Get_GateIn_Dropdown_details().execute();
                 }
+
             }
 
             @Override
@@ -312,7 +323,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (drawer.isDrawerOpen(Gravity.START))
+
                     drawer.closeDrawer(Gravity.END);
                 else
                     drawer.openDrawer(Gravity.START);
@@ -321,6 +334,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
         navigationView.setNavigationItemSelectedListener(this);
     }
+
 
 
 
@@ -350,7 +364,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         }
     };
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId())
@@ -362,15 +375,21 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             case R.id.footer_add_btn:
                 startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));
+
                 break;
             case R.id.tv_add:
                 startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));
+
+
                 break;
 
             case R.id.bt_mysubmit:
+
                 finish();
                 startActivity(new Intent(getApplicationContext(),MySubmitList.class));
+
+
                 break;
             case R.id.home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
@@ -385,6 +404,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
+
                 for (Product p : boxAdapter.getBox()) {
                     if (p.box){
                         if(p.box==true) {
@@ -395,10 +415,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             LL_hole.setVisibility(View.GONE);
                             im_down.setVisibility(View.VISIBLE);
                             im_up.setVisibility(View.GONE);
+
                             /*for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
                             }
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
+
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
@@ -412,8 +434,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         }
                     }
                 }
+
+
                 break;
+
         }
+
     }
 
     @Override
@@ -473,11 +499,13 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             HttpResponse response = null;
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGatePending);
             httpPost.setHeader("Content-Type", "application/json");
+
             try{
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("Mode", "new");
+
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);
                 response = httpClient.execute(httpPost);
@@ -597,15 +625,23 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                      //  GateIn.this.adapter.getFilter().filter(arg0);
+                        adapter.getFilter().filter(arg0);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                        // TODO Auto-generated method stub
+
 
                     }
 
                     @Override
+
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0){
                             new Get_GateIn_details().execute();
@@ -617,19 +653,21 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             else if(pending_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
+
+
             }
         }
-    }
 
+    }
 
     public class UserListAdapter extends BaseAdapter {
 
+        private ArrayList<PendingBean> list;
         Context context;
-        ArrayList<PendingBean> list = new ArrayList<>();
+
         int resource;
         private PendingBean userListBean;
-        int lastPosition=-1;
-
+        int lastPosition = -1;
         public UserListAdapter(Context context, int resource, ArrayList<PendingBean> list) {
             this.context = context;
             this.list = list;
@@ -694,14 +732,17 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             if (list.size() < 1){
                 Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
             }else {
+
                 userListBean = list.get(position);
                 String[] parts = userListBean.getDate().split(" ");
                 String part1_date = parts[0];
                 String part1_time = parts[1];
                 System.out.println("from date after split" + part1_date);
-                holder.equip_no.setText(userListBean.getEquipmentNo()+","+ userListBean.getType());
+
+                holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date+ " & " +part1_time);
+                holder.time.setText(part1_date + " & " + part1_time);
+
                 holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());
@@ -736,33 +777,35 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        equipment_no=list.get(position).getEquipmentNo();
+                        equipment_no = list.get(position).getEquipmentNo();
 
 
-                        Cust_Name= list.get(position).getCustomerName();
-                        Gate_In= list.get(position).getGateIn_Id();
-                        equip_no= list.get(position).getEquipmentNo();
-                        type= list.get(position).getType();
-                        code= list.get(position).getCode();
-                        status= list.get(position).getStatus();
-                        location= list.get(position).getLocation();
-                        date= list.get(position).getDate();
-                        time= list.get(position).getTime();
-                        previous_crg= list.get(position).getPreviousCargo();
-                        Eir_no= list.get(position).getEir_no();
-                        vechicle= list.get(position).getVechicle();
-                        transport= list.get(position).getTransport();
-                        heating_bt= list.get(position).getHeating_bt();
-                        rental_bt= list.get(position).getRental_bt();
-                        remark= list.get(position).getRemark();
-                        cust_code= list.get(position).getCust_code();
-                        type_id= list.get(position).getType_code();
-                        code_id= list.get(position).getCode_Id();
-                        pre_code= list.get(position).getPrev_code();
-                        attachmentstatus= list.get(position).getAttachmentStatus();
-                        pre_id= list.get(position).getPrev_Id();
-                        pre_adv_id= list.get(position).getPR_ADVC_CD();
+                        Cust_Name = list.get(position).getCustomerName();
+                        Gate_In = list.get(position).getGateIn_Id();
+                        equip_no = list.get(position).getEquipmentNo();
+                        type = list.get(position).getType();
+                        code = list.get(position).getCode();
+                        status = list.get(position).getStatus();
+                        location = list.get(position).getLocation();
+                        date = list.get(position).getDate();
+                        time = list.get(position).getTime();
+                        previous_crg = list.get(position).getPreviousCargo();
+                        Eir_no = list.get(position).getEir_no();
+                        vechicle = list.get(position).getVechicle();
+                        transport = list.get(position).getTransport();
+                        heating_bt = list.get(position).getHeating_bt();
+                        rental_bt = list.get(position).getRental_bt();
+                        remark = list.get(position).getRemark();
+                        cust_code = list.get(position).getCust_code();
+                        type_id = list.get(position).getType_code();
+                        code_id = list.get(position).getCode_Id();
+                        pre_code = list.get(position).getPrev_code();
+                        attachmentstatus = list.get(position).getAttachmentStatus();
+                        pre_id = list.get(position).getPrev_Id();
+                        pre_adv_id = list.get(position).getPR_ADVC_CD();
                         new Get_GateIn_Lock_Check().execute();
+
+
                     }
                 });
 
@@ -991,6 +1034,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
 //            progressDialog.show();
+
         }
 
         @Override
@@ -1002,7 +1046,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             HttpEntity httpEntity = null;
             HttpResponse response = null;
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGatePendingFIlter);
-
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
@@ -1013,6 +1056,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 jsonObject.put("filterCondition", opratorItems);
                 jsonObject.put("filterValue", getEditText);
                 jsonObject.put("Mode", "new");
+
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -1117,6 +1161,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 });
 
 
+
+
             }
             else if(pending_accordion_arraylist.size()<1)
             {
@@ -1165,7 +1211,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
-                view = lInflater.inflate(list_item_row_accordion, parent, false);
+
+                view = lInflater.inflate(R.layout.list_item_row_accordion, parent, false);
             }
 
             p = getProduct(position);
@@ -1261,7 +1308,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 notifyDataSetChanged();
             }
         }
-
 
     }
 
@@ -1414,6 +1460,7 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
 
             Log.d("rep", resp);
             Log.d("Search_request", jsonObject.toString());
+
             JSONObject jsonrootObject = new JSONObject(resp);
             JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 

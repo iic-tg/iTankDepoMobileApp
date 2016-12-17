@@ -31,7 +31,9 @@ public class PendingBean implements Serializable {
     String prev_code;
     String prev_Id;
     String PR_ADVC_CD;
+
     String GI_TRNSCTN_NO;
+
 
 
     public String getCustomerName() {
@@ -226,6 +228,7 @@ public class PendingBean implements Serializable {
         this.PR_ADVC_CD = PR_ADVC_CD;
     }
 
+
     public String getGI_TRNSCTN_NO() {
         return GI_TRNSCTN_NO;
     }
@@ -233,4 +236,5 @@ public class PendingBean implements Serializable {
     public void setGI_TRNSCTN_NO(String GI_TRNSCTN_NO) {
         this.GI_TRNSCTN_NO = GI_TRNSCTN_NO;
     }
+
 }

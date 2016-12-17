@@ -93,6 +93,7 @@ public class Update_GateIn extends CommonActivity {
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
     private TextView tv_toolbarTitle,tv_next_text_id,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
+
     private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date,im_last_testDate;
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -107,6 +108,9 @@ public class Update_GateIn extends CommonActivity {
     private String systemDate,get_equipment,getType,get_date,get_time,get_code,get_status,get_location,get_vechicle,get_transport,get_eir_no,get_remark;
     private String curTime,get_swt_heating,get_swt_rental;
     int mHour,mMinute;
+
+    private boolean manuf_date=false;
+
     TimePickerDialog timePickerDialog;
 
     ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
@@ -131,6 +135,7 @@ public class Update_GateIn extends CommonActivity {
     private int pendingsize;
     String equip_no, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
             trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
+
     Switch heating,rental,info_active,info_rental;
     private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id;
     private CustomerDropdownBean customer_DropdownBean;
@@ -167,7 +172,9 @@ public class Update_GateIn extends CommonActivity {
         Cust_Name= GlobalConstants.customer_name;
         attachmentstatus= GlobalConstants.attachmentStatus;
         Log.i("transactionNO",attachmentstatus);
+
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         equip_no= GlobalConstants.equipment_no;
         gateIn_Id= GlobalConstants.GateInId;
         pre_adv_id= GlobalConstants.pre_adv_id;
@@ -175,7 +182,9 @@ public class Update_GateIn extends CommonActivity {
         code= GlobalConstants.code;
         status= GlobalConstants.status;
         location= GlobalConstants.location;
+
         trans_no= GlobalConstants.gateIn_Trans_no;
+
         date= GlobalConstants.date;
         time= GlobalConstants.time;
         get_sp_previous= GlobalConstants.previous_cargo;
@@ -206,6 +215,15 @@ public class Update_GateIn extends CommonActivity {
         LL_footer_delete.setAlpha(0.5f);
         LL_footer_delete.setClickable(false);
 
+        im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
+        ed_last_test_date=(EditText)findViewById(R.id.ed_test_date);
+        ed_last_test_date.setOnClickListener(this);
+        im_last_testDate.setOnClickListener(this);
+        ed_type = (EditText)findViewById(R.id.ed_type);
+        im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
+        ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
+        ed_manuf_date.setOnClickListener(this);
+        im_manuf_date.setOnClickListener(this);
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
         ed_tare_weight=(EditText)findViewById(R.id.ed_tare_weight);
         ed_Gross_weight=(EditText)findViewById(R.id.ed_gross_weight);
@@ -218,6 +236,7 @@ public class Update_GateIn extends CommonActivity {
         ed_info_remark=(EditText)findViewById(R.id.ed_info_remark);
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
         im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
+
       //  ed_previous = (EditText)findViewById(R.id.ed_previous);
         sp_previous_cargo = (Spinner)findViewById(R.id.sp_previ_cargo);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
@@ -406,6 +425,7 @@ public class Update_GateIn extends CommonActivity {
         im_manuf_date.setOnClickListener(this);
         ed_last_test_date.setOnClickListener(this);
         im_last_testDate.setOnClickListener(this);
+
         iv_back.setOnClickListener(this);
         ed_time.setOnClickListener(this);
         ed_date.setOnClickListener(this);
@@ -455,6 +475,7 @@ public class Update_GateIn extends CommonActivity {
 
             }
         });
+
 
 
 
@@ -574,6 +595,7 @@ public class Update_GateIn extends CommonActivity {
                 showDialog(DATE_DIALOG_ID);
 
                 break;
+
             case R.id.ed_manfu:
 
                 showDialog(DATE_DIALOG_ID);
@@ -588,6 +610,7 @@ public class Update_GateIn extends CommonActivity {
             case R.id.im_last_Testdate:
                 showDialog(DATE_DIALOG_ID);
                 break;
+
             case R.id.iv_back:
                 onBackPressed();
                 break;
@@ -630,6 +653,7 @@ public class Update_GateIn extends CommonActivity {
                 get_next_date = ed_next_date.getText().toString();
                 get_next_type = tv_next_text_id.getText().toString();
               //  get_last_test_type=sp_last_test_type.getSelectedItem().toString();
+
                 get_info_remark = ed_info_remark.getText().toString();
 
                 if((get_equipment.trim().equals("") || get_equipment==null) ||
@@ -662,6 +686,7 @@ public class Update_GateIn extends CommonActivity {
                     } else {
 
                         changes = "True";
+
                         if (cd.isConnectingToInternet()) {
                             new PostInfo().execute();
                         } else {
@@ -672,6 +697,7 @@ public class Update_GateIn extends CommonActivity {
 
                 }
                 break;
+
             case R.id.ed_time:
                 mHour = c.get(Calendar.HOUR_OF_DAY);
                 mMinute = c.get(Calendar.MINUTE);
@@ -720,6 +746,7 @@ public class Update_GateIn extends CommonActivity {
                 selectImage();
 
                 break;
+
         }
     }
 
@@ -964,6 +991,7 @@ public class Update_GateIn extends CommonActivity {
 
 
 
+
                 }catch (Exception e)
                 {
                     runOnUiThread(new Runnable() {
@@ -1089,6 +1117,7 @@ public class Update_GateIn extends CommonActivity {
                 {
 
                     Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
+
 
                 }
             }else
@@ -1415,8 +1444,6 @@ public class Update_GateIn extends CommonActivity {
         }
 
     }
-
-
 
     public class Create_GateIn_moreInfo_list_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;

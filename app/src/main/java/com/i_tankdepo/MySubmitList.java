@@ -31,6 +31,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -82,6 +83,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     ArrayList<String> selectedlist = new ArrayList<>();
     private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data;
     private LinearLayout footer_add_btn,LL_footer_delete,LL_search_Value;
+
     private Intent mServiceIntent;
     private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
     private PendingBean pending_bean;
@@ -96,6 +98,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
     private UserListAdapter adapter;
+
     private EditText searchView2,searchView1,ed_text;
     private ProgressDialog progressDialog;
     private String filename;
@@ -122,6 +125,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         searchView1 = (EditText) findViewById(R.id.searchView1);
         no_data = (TextView)findViewById(R.id.no_data);
         no_data.setVisibility(View.GONE);
+
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
@@ -156,6 +160,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         LL_search_Value.setVisibility(View.GONE);
 //        tv_search_options.setVisibility(View.GONE);
+
+
         tv_add.setOnClickListener(this);
         tv_toolbarTitle.setText("Gate In");
         im_add = (Button)findViewById(R.id.add);
@@ -180,6 +186,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
         ed_text.addTextChangedListener(editTextWatcher);
 
+
         if(cd.isConnectingToInternet())
         {
             new Get_GateIn_MySubmit_details().execute();
@@ -195,6 +202,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 LL_hole.setVisibility(View.VISIBLE);
                 im_down.setVisibility(View.GONE);
                 im_up.setVisibility(View.VISIBLE);
+
                 if(cd.isConnectingToInternet()) {
                     getEditText = "";
                     new Get_GateIn_Dropdown_details().execute();
@@ -202,6 +210,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 {
                     shortToast(getApplicationContext(),"Please check Your Internet Connection");
                 }
+
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -235,6 +244,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(fieldItems.equalsIgnoreCase("Customer"))
                 {
                     fieldItems="CSTMR_CD";
+
                     new Get_GateIn_Dropdown_details().execute();
                     LL_hole.setVisibility(View.GONE);
 
@@ -250,6 +260,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 {
                     fieldItems="PRDCT_DSCRPTN_VC";
                     new Get_GateIn_Dropdown_details().execute();
+
                 }
 
             }
@@ -276,7 +287,6 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }else{
                     new Get_GateIn_Dropdown_details().execute();
                 }
-
 
             }
 
@@ -330,7 +340,6 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         }
     };
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId())
@@ -382,6 +391,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             LL_hole.setVisibility(View.GONE);
                             im_down.setVisibility(View.VISIBLE);
                             im_up.setVisibility(View.GONE);
+
 
                            /* for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
@@ -693,6 +703,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.gatin_trans_no = (TextView) convertView.findViewById(R.id.text12);
 
 
+
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
                 convertView.setTag(holder);
             } else {
@@ -715,6 +726,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.location.setText(userListBean.getLocation());
                 holder.vechicle.setText("");
                 holder.gatin_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
+
 /*
                 if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
                 {
@@ -752,6 +764,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         equip_no= list.get(position).getEquipmentNo();
                         type= list.get(position).getType();
                         gatin_transaction_no= list.get(position).getGI_TRNSCTN_NO();
+
                         code= list.get(position).getCode();
                         status= list.get(position).getStatus();
                         location= list.get(position).getLocation();
@@ -837,6 +850,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,gatin_trans_no,cust_code,type_id,code_id,
+
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
@@ -951,6 +965,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.code=code;
                     GlobalConstants.type=type;
                     GlobalConstants.gateIn_Trans_no=gatin_transaction_no;
+
                     GlobalConstants.status=status;
                     GlobalConstants.date=date;
                     GlobalConstants.time=time;
@@ -969,15 +984,18 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     startActivity(i);
+
                 }else {
                     shortToast(getApplicationContext(),Lock_return_Message);
                 }
+
             }
             else
             {
 
             }
             progressDialog.dismiss();
+
 
         }
 
@@ -996,7 +1014,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
+
 //            progressDialog.show();
+
         }
 
         @Override
@@ -1009,7 +1029,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             HttpResponse response = null;
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGatePendingFIlter);
 
+
             httpPost.setHeader("Content-Type", "application/json");
+
 
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1017,7 +1039,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("filterCondition", opratorItems);
+
                 jsonObject.put("filterValue", getEditText);
+
                 jsonObject.put("Mode", "edit");
 
                /* JSONObject jsonObject1 = new JSONObject();
@@ -1043,9 +1067,11 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
+
 //                                shortToast(getApplicationContext(), "No Records Found");
                                 products.clear();
                                 no_data.setVisibility(View.VISIBLE);
+
 
                             }
                         });
@@ -1065,7 +1091,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_accordion_bean.setValues(jsonObject.getString("Values"));
                             products.add(new Product(jsonObject.getString("Values"),false));
 
+
                             pending_accordion_arraylist.add(pending_accordion_bean);
+
 
 
 
@@ -1078,10 +1106,12 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         public void run(){
                             //update ui here
                             // display toast here
+
 //                            shortToast(getApplicationContext(),"No Records Found.");
 
                             products.clear();
                             no_data.setVisibility(View.VISIBLE);
+
 
                         }
                     });
@@ -1112,6 +1142,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
                 searchlist.setAdapter(adapter);*/
 
+
                 searchView1.addTextChangedListener(new TextWatcher() {
 
                     @Override
@@ -1133,6 +1164,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 });
 
 
+
             }
             else if(pending_accordion_arraylist.size()<1)
             {
@@ -1140,6 +1172,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 LL_hole.setVisibility(View.GONE);
                 no_data.setVisibility(View.VISIBLE);
                 searchlist.setVisibility(View.GONE);
+
 
             }
 
@@ -1230,6 +1263,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             }
         };
 
+
         public Filter getFilter() {
             if (mContactsFilterBox == null)
                 mContactsFilterBox = new ContactsFilterBox();
@@ -1276,6 +1310,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             }
 
         }
+
     }
 
     /*
@@ -1401,11 +1436,13 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 SearchValuesObject=new JSONObject();
 
 
+
                 for (int i = 0; i < selected_name.size(); i++) {
                     preadvicejsonObject=new JSONObject();
                     preadvicejsonObject.put("values", selected_name.get(i));
                     preadvicejsonlist.put(preadvicejsonObject);
                 }
+
 
                 SearchValuesObject.put("SearchValues",preadvicejsonlist);
 
@@ -1440,8 +1477,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
+
 //                                shortToast(getApplicationContext(), "No Records Found");
                                 products.clear();
+
 
                             }
                         });
@@ -1477,8 +1516,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         public void run(){
                             //update ui here
                             // display toast here
+
 //                            shortToast(getApplicationContext(),"No Records Found");
                             products.clear();
+
 
 
                         }
