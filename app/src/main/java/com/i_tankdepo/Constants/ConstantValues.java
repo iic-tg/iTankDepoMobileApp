@@ -26,6 +26,11 @@ public class ConstantValues {
 	public static String baseURLHeatingList=Link+"HeatingMobile.asmx/HeatingList";
 	public static String baseURLCalcHeatingPeriod=Link+"HeatingMobile.asmx/CalculateHeatingPeriod";
 	public static String baseURLCalcTotalRate=Link+"HeatingMobile.asmx/CalculateTotalRate";
+	public static String baseURLHeatingUpdate=Link+"HeatingMobile.asmx/Update";
 	public static String baseURLHeatingFilter=Link+"HeatingMobile.asmx/filter";
 	public static String baseURLHeatingSearchList=Link+"HeatingMobile.asmx/SearchList";
+	public static String baseURLCleaningPreadvice=Link+"Cleaning.asmx/PendingList";
+	public static String baseURLCleaningMySubmit=Link+"Cleaning.asmx/MySubmit";
+	public static String baseURLCleaningFilter=Link+"CleaningMobile.asmx/filter";
+	public static String baseURLCleaninggSearchList=Link+"CleaningMobile.asmx/SearchList";
 }

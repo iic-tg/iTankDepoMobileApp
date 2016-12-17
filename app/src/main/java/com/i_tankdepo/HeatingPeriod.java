@@ -77,7 +77,8 @@ public class HeatingPeriod extends CommonActivity  {
     private ImageView menu,im_startDate,im_endDate,im_startTime,im_endTime,iv_back,add_new_heating,im_okay,im_cancel;
     private ListView heating_list_view;
 
-    private TextView tv_totalCost,text1,text2,text3,text4,tv_toolbarTitle,tv_startdate,tv_startTime,tv_endDate,tv_temp,tv_endTime;
+    private TextView tv_totalCost,tv_heat_refresh,text1,text2,text3,
+            df_startDate,df_endDate,df_temp,df_total_period,text4,tv_toolbarTitle,tv_startdate,tv_startTime,tv_endDate,tv_temp,tv_endTime;
     LinearLayout LL_Add_New,LL_heat_submit;
     private ProgressDialog progressDialog;
     private ArrayList<HeatingBean> heating_arraylist=new ArrayList<>();
@@ -85,7 +86,8 @@ public class HeatingPeriod extends CommonActivity  {
     /*private ViewHolder holder;
     private UserListAdapter adapter;*/
     private ListView listview,heat_list;
-    String curTime,systemDate,get_HourlyRate,get_MinRate ,Equip_NO,Cust_Name,Equip_Type,In_date,Cargo,Total_Peroid,Min_Rate,Hourly_Rate,Min_Htng_Prd,Total_Cost,get_startDate,get_startTime,get_endDate,get_htngPeriod,get_endTime,get_temp;
+    String curTime,systemDate,get_HourlyRate,get_MinRate,get_Totalheat_Cost,
+            heat_startDate,heat_endDate,heat_startTime,heat_temp,heat_endTime,get_Totalheat_Period ,Equip_NO,Cust_Name,Equip_Type,In_date,Cargo,Equipment_No,Total_Peroid,Min_Rate,Hourly_Rate,Min_Htng_Prd,Total_Cost,get_startDate,get_startTime,get_endDate,get_htngPeriod,get_endTime,get_temp;
     private Intent mServiceIntent;
     private EditText ed_startDate,ed_endTime,ed_startTime,ed_endDate,ed_temp,ed_totalPrd,ed_minRate,ed_hourlyRate;
     static final int DATE_DIALOG_ID = 1999;
@@ -98,30 +100,36 @@ public class HeatingPeriod extends CommonActivity  {
     private int hour,minute;
     private TimePickerDialog mTimePicker;
     private String total_htng_period,total_htng_rate;
-    private Button heat_refresh,heat_home,heat_submit;
+    private Button heat_refresh,heat_home,heat_submit,bt_heating;
+    private String responseStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.heating_period);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu=(ImageView)findViewById(R.id.iv_menu) ;
         iv_back = (ImageView)findViewById(R.id.iv_back);
         add_new_heating = (ImageView)findViewById(R.id.im_add);
         menu.setVisibility(View.GONE);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
-        tv_toolbarTitle.setText("Heating Periods");
+        tv_toolbarTitle.setText("Heating Update");
 
 
         LL_Add_New=(LinearLayout)findViewById(R.id.LL_add_new_heating);
 
-        LL_Add_New.setVisibility(View.GONE);
+//        LL_Add_New.setVisibility(View.GONE);
         heat_home = (Button)findViewById(R.id.heat_home);
         heat_refresh = (Button)findViewById(R.id.heat_refresh);
+        bt_heating = (Button)findViewById(R.id.heating);
         heat_submit = (Button)findViewById(R.id.heat_submit);
         LL_heat_submit = (LinearLayout)findViewById(R.id.LL_heat_submit);
-        LL_heat_submit.setAlpha(0.5f);
-        LL_heat_submit.setClickable(false);
+        tv_heat_refresh = (TextView)findViewById(R.id.tv_heat_refresh);
+        tv_heat_refresh.setText("Reset");
+
+        /*LL_heat_submit.setAlpha(0.5f);
+        LL_heat_submit.setClickable(false);*/
         ed_totalPrd = (EditText)findViewById(R.id.ed_totalPrd);
         ed_minRate = (EditText)findViewById(R.id.ed_minRate);
         ed_hourlyRate = (EditText)findViewById(R.id.ed_hourlyRate);
@@ -147,6 +155,11 @@ public class HeatingPeriod extends CommonActivity  {
         tv_endTime = (TextView)findViewById(R.id.tv_endTime);
         tv_temp = (TextView)findViewById(R.id.tv_temp);
 
+        df_startDate = (TextView)findViewById(R.id.startDate);
+        df_endDate = (TextView)findViewById(R.id.endDate);
+        df_temp = (TextView)findViewById(R.id.temp);
+        df_total_period = (TextView)findViewById(R.id.total_period);
+
         Cust_Name = GlobalConstants.customer_name;
         Equip_NO = GlobalConstants.equipment_no;
         Equip_Type = GlobalConstants.type;
@@ -157,17 +170,33 @@ public class HeatingPeriod extends CommonActivity  {
         Hourly_Rate = GlobalConstants.hourly_charge;
         Total_Cost = GlobalConstants.ttl_RT_NC;
         Min_Htng_Prd = GlobalConstants.min_htngPrd;
+        Equipment_No = GlobalConstants.equipment_no;
+        heat_startDate = GlobalConstants.htng_startDate;
+        heat_endDate = GlobalConstants.htng_EndDate;
+        heat_startTime = GlobalConstants.htng_startTime;
+        heat_endTime = GlobalConstants.htng_EndTime;
+        heat_temp = GlobalConstants.htng_temp;
 
         if((Min_Rate==null || Min_Rate.equals("") ||Min_Rate=="null") ||
                 (Hourly_Rate==null || Hourly_Rate.equals("") ||Hourly_Rate=="null") ||
-                (Min_Htng_Prd==null || Min_Htng_Prd.equals("") ||Min_Htng_Prd=="null")
-                )
+                (Min_Htng_Prd==null || Min_Htng_Prd.equals("") ||Min_Htng_Prd=="null")||
+                (Total_Peroid==null|| Total_Peroid.equals("") || Total_Peroid=="null"))
         {
-            Min_Rate="0";
-            Hourly_Rate="0";
-            Min_Htng_Prd="0";
+            Min_Rate="0.00";
+            Hourly_Rate="0.00";
+            Min_Htng_Prd="0.00";
+            Total_Peroid="0.00";
         }
 
+        ed_startDate.requestFocus();
+
+        ed_startDate.setText(systemDate);
+        ed_startTime.setText(curTime);
+        ed_endDate.setText(systemDate);
+        ed_endTime.setText(curTime);
+        get_HourlyRate = ed_hourlyRate.getText().toString();
+        get_MinRate = ed_minRate.getText().toString();
+/*
         add_new_heating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,6 +211,7 @@ public class HeatingPeriod extends CommonActivity  {
                 get_MinRate = ed_minRate.getText().toString();
             }
         });
+*/
         text1.setText(Cust_Name);
         text2.setText(Equip_NO +" , "+Equip_Type);
         text3.setText(In_date);
@@ -189,9 +219,26 @@ public class HeatingPeriod extends CommonActivity  {
         ed_totalPrd.setText(Total_Peroid);
         ed_minRate.setText(Min_Rate);
         ed_hourlyRate.setText(Hourly_Rate);
+        if((heat_startDate==null||heat_startDate=="null"|| heat_startDate.trim().equals("")) ||
+                (heat_startTime==null||heat_startTime=="null"|| heat_startTime.trim().equals("")) )
+        {
+            df_startDate.setText("Start Date, Start Time ");
+            df_endDate.setText("End Date, End Time");
+        }else{
+            String[] start_date = heat_startDate.split(" ");
+            String[] end_date = heat_endDate.split(" ");
+            String part1_startdate = start_date[0];
+            String part1_enddate = end_date[0];
+            df_startDate.setText(part1_startdate+","+heat_startTime );
+            df_endDate.setText(part1_enddate+","+ heat_endTime);
+        }
+
+
+        df_temp.setText(heat_temp);
+        df_total_period.setText(Total_Peroid);
 
         if(Total_Cost == null || Total_Cost.equals("")|| Total_Cost=="null"){
-            tv_totalCost.setText("0");
+            tv_totalCost.setText("0.00");
         }else{
             tv_totalCost.setText(Total_Cost);
         }
@@ -208,6 +255,8 @@ public class HeatingPeriod extends CommonActivity  {
         im_endTime.setOnClickListener(this);
         heat_home.setOnClickListener(this);
         heat_refresh.setOnClickListener(this);
+        heat_submit.setOnClickListener(this);
+        bt_heating.setOnClickListener(this);
 
         c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
@@ -221,7 +270,7 @@ public class HeatingPeriod extends CommonActivity  {
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
 
 
@@ -330,6 +379,29 @@ public class HeatingPeriod extends CommonActivity  {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         ed_endTime.setText(selectedHour + ":" + selectedMinute);
+
+                        get_startDate = ed_startDate.getText().toString();
+                        get_startTime = ed_startTime.getText().toString();
+                        get_endDate = ed_endDate.getText().toString();
+                        get_endTime = ed_endTime.getText().toString();
+
+                        if((get_startDate.equals("") || get_startDate == null) ||
+                                (get_startTime.equals("") || get_startTime == null ) ||
+                                (get_endDate.equals("") || get_endDate == null) ||
+                                (get_endTime.equals("")|| get_endTime == null) ){
+                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                        }else{
+                            if (cd.isConnectingToInternet()){
+                                new Post_Calc_Heating_period().execute();
+                               /* ed_startDate.setText("");
+                                ed_startTime.setText("");
+                                ed_endDate.setText("");
+                                ed_endTime.setText("");*/
+
+                            }else{
+                                shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                            }
+                        }
                     }
                 }, hour, minute,true
                 );
@@ -361,24 +433,47 @@ public class HeatingPeriod extends CommonActivity  {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         ed_endTime.setText(selectedHour + ":" + selectedMinute);
+
+                        get_startDate = ed_startDate.getText().toString();
+                        get_startTime = ed_startTime.getText().toString();
+                        get_endDate = ed_endDate.getText().toString();
+                        get_endTime = ed_endTime.getText().toString();
+
+                        if((get_startDate.equals("") || get_startDate == null) ||
+                                (get_startTime.equals("") || get_startTime == null ) ||
+                                (get_endDate.equals("") || get_endDate == null) ||
+                                (get_endTime.equals("")|| get_endTime == null) ){
+                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                        }else{
+                            if (cd.isConnectingToInternet()){
+                                new Post_Calc_Heating_period().execute();
+                                /*ed_startDate.setText("");
+                                ed_startTime.setText("");
+                                ed_endDate.setText("");
+                                ed_endTime.setText("");*/
+
+                            }else{
+                                shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                            }
+                        }
+
+
                     }
                 }, hour, minute,true
                 );
                 mTimePicker.show();
                 break;
-            case R.id.im_cancel:
-                LL_Add_New.setVisibility(View.GONE);
-                ed_startDate.setText("");
-                ed_startTime.setText("");
-                ed_endDate.setText("");
-                ed_endTime.setText("");
-                break;
-            case R.id.im_okay:
+
+            case R.id.heat_submit:
                 get_startDate = ed_startDate.getText().toString();
                 get_startTime = ed_startTime.getText().toString();
                 get_endDate = ed_endDate.getText().toString();
                 get_endTime = ed_endTime.getText().toString();
                 get_temp = ed_temp.getText().toString();
+                get_HourlyRate = ed_hourlyRate.getText().toString();
+                get_MinRate = ed_minRate.getText().toString();
+                get_Totalheat_Cost = tv_totalCost.getText().toString();
+                get_Totalheat_Period = ed_totalPrd.getText().toString();
 
                 if((get_startDate.equals("") || get_startDate == null) ||
                         (get_startTime.equals("") || get_startTime == null ) ||
@@ -387,18 +482,16 @@ public class HeatingPeriod extends CommonActivity  {
                         (get_temp.equals("") || get_temp == null)){
                    shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
                 }else{
-                    if (cd.isConnectingToInternet()){
-                        new Post_Calc_Heating_period().execute();
-                        ed_startDate.setText("");
-                        ed_startTime.setText("");
-                        ed_endDate.setText("");
-                        ed_endTime.setText("");
-                        LL_Add_New.setVisibility(View.GONE);
+                    if(cd.isConnectingToInternet()){
+                        new Post_Heating_Update().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 }
 //                LL_Add_New.setVisibility(View.GONE);
+                break;
+            case R.id.heating:
+                startActivity(new Intent(getApplicationContext(),Heating.class));
                 break;
         }
 
@@ -426,7 +519,7 @@ public class HeatingPeriod extends CommonActivity  {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -493,9 +586,9 @@ public class HeatingPeriod extends CommonActivity  {
             httpPost.setHeader("Content-Type", "application/json");
             try{
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("str_HeatingStartDate", get_startDate);
+                jsonObject.put("str_HeatingStartDate", get_startDate +" "+ get_startTime  );
                 jsonObject.put("str_HeatingStartTime",get_startTime);
-                jsonObject.put("str_HeatingEndDate", get_endDate);
+                jsonObject.put("str_HeatingEndDate", get_endDate+" "+ get_endTime);
                 jsonObject.put("str_HeatingEndTime", get_endTime);
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -505,7 +598,7 @@ public class HeatingPeriod extends CommonActivity  {
                 String resp = EntityUtils.toString(httpEntity);
 
                 Log.d("responce", resp);
-                Log.d("req", jsonObject.toString());
+                Log.d("req_heating_prd", jsonObject.toString());
                 JSONObject jsonResp = new JSONObject(resp);
 
                 jsonobject = jsonResp.getJSONObject("d");
@@ -533,7 +626,7 @@ public class HeatingPeriod extends CommonActivity  {
             if(jsonobject!=null)
             {
                 if(total_htng_period == null || total_htng_period.equals("")|| total_htng_period=="null") {
-                    ed_totalPrd.setText("0");
+                    ed_totalPrd.setText("0.00");
                     get_htngPeriod = ed_totalPrd.getText().toString();
                     new Post_Calc_Total_Rate().execute();
                     ed_temp.setText("");
@@ -620,6 +713,96 @@ public class HeatingPeriod extends CommonActivity  {
             if(jsonobject!=null)
             {
                 tv_totalCost.setText(total_htng_rate);
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+            }
+
+            progressDialog.dismiss();
+
+        }
+    }
+
+
+    public class Post_Heating_Update extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        JSONObject jsonobject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(HeatingPeriod.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLHeatingUpdate);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("UserName",sp.getString(SP_USER_ID, "user_Id"));
+                jsonObject.put("EquipmentNo",Equip_NO);
+                jsonObject.put("StartDate", get_startDate +" "+ get_startTime);
+                jsonObject.put("StartTime", get_startTime);
+                jsonObject.put("EndDate", get_endDate+" "+ get_endTime);
+                jsonObject.put("EndTime", get_endTime);
+                jsonObject.put("Temp", get_temp);
+                jsonObject.put("TotalPeriod", get_Totalheat_Period);
+                jsonObject.put("MinRate", get_MinRate);
+                jsonObject.put("HourlyRate", get_HourlyRate);
+                jsonObject.put("TotalRate", get_Totalheat_Cost);
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("total amount responce", resp);
+                Log.d("req", jsonObject.toString());
+                JSONObject jsonResp = new JSONObject(resp);
+
+                jsonobject = jsonResp.getJSONObject("d");
+
+                if (jsonobject != null) {
+
+                    responseStatus =jsonobject.getString("Status");
+
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            if(jsonobject!=null)
+            {
+                if(responseStatus.equalsIgnoreCase("Heating Updated")){
+                    shortToast(getApplicationContext(),responseStatus);
+                    startActivity(new Intent(getApplicationContext(),Heating.class));
+                }else{
+                    shortToast(getApplicationContext(),"Heating Not Updated..!");
+                }
             }
             else
             {

@@ -238,7 +238,7 @@
                 android:layout_weight="1"
                 android:id="@+id/text1"
                 android:focusable="false"
-                android:gravity="bottom"
+                android:gravity="center|left"
                 android:textColor="@color/list_text"
                 android:text="text1"/>
             <TextView
@@ -246,7 +246,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:focusable="false"
-                android:layout_gravity="center|left"
+                android:gravity="center|left"
                 android:id="@+id/text2"
                 android:textStyle="bold"
                 android:textColor="@color/list_text"

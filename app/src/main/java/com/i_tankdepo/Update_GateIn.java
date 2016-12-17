@@ -174,6 +174,7 @@ public class Update_GateIn extends CommonActivity {
         Log.i("transactionNO",attachmentstatus);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         equip_no= GlobalConstants.equipment_no;
         gateIn_Id= GlobalConstants.GateInId;
@@ -435,6 +436,7 @@ public class Update_GateIn extends CommonActivity {
         bt_home.setOnClickListener(this);
         bt_refresh = (Button)findViewById(R.id.refresh);
         bt_refresh.setOnClickListener(this);
+        bt_refresh.setText("Reset");
         c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
@@ -1156,7 +1158,7 @@ public class Update_GateIn extends CommonActivity {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInPreviousCargo);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1470,7 +1472,7 @@ public class Update_GateIn extends CommonActivity {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLEquipmentInfoDropdownType);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();

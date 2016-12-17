@@ -274,7 +274,7 @@ public class MainActivity extends CommonActivity
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLRoleBasedLogin);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try {
                 JSONObject jsonObject = new JSONObject();

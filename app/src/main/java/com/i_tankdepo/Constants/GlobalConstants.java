@@ -20,9 +20,12 @@ public class GlobalConstants {
     public static String PreAdviceId="";
     public static String GateInId="";
     public static String customer_name="";
+    public static String customer_Id="";
     public static String SubmitGateInId="";
     public static String AttachmentStatus="";
     public static String equipment_no="";
+    public static String equip_status="";
+    public static String equip_status_type="";
     public static String status="";
     public static String code="";
     public static String location="";

@@ -113,6 +113,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gate_in);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu=(ImageView)findViewById(R.id.iv_menu) ;
         iv_back = (ImageView)findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
@@ -478,7 +479,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateMySubmit);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try {
                 JSONObject jsonObject = new JSONObject();
@@ -761,7 +762,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                         Cust_Name= list.get(position).getCustomerName();
                         Gate_In= list.get(position).getGateIn_Id();
-                        equip_no= list.get(position).getEquipmentNo();
+//                        equip_no= list.get(position).getEquipmentNo();
                         type= list.get(position).getType();
                         gatin_transaction_no= list.get(position).getGI_TRNSCTN_NO();
 
@@ -882,7 +883,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_EquipmentNo_Lock);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1427,7 +1428,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateInSearchList);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();

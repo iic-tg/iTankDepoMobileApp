@@ -162,7 +162,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-
+                            android:focusable="false"
                             android:id="@+id/ed_totalPrd"
                             android:textColor="@color/list_text"
                             android:text="6 hours"/>
@@ -170,12 +170,14 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:focusable="false"
                             android:id="@+id/ed_minRate"
                             android:text="0.00"/>
                         <EditText
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:focusable="false"
                             android:id="@+id/ed_hourlyRate"
                             android:text="0.00"/>
 
@@ -236,7 +238,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Heating Periods"
+                        android:text="Heating Period"
                         android:gravity="center|left"
                         android:layout_toEndOf="@+id/im_info"
                         android:textSize="15dp"
@@ -248,11 +250,138 @@
                         android:layout_height="wrap_content"
                         android:src="@mipmap/ic_heating_add"
                         android:tint="@color/Title"
+                        android:visibility="gone"
                         android:id="@+id/im_add"
                         android:layout_alignParentRight="true"/>
                 </RelativeLayout>
+<!--
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/list_text"
+                            android:hint="Start Date,"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/list_text"
+                            android:hint="End Date"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/list_text"
+                            android:hint="Start Date,"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/list_text"
+                            android:hint="End Date"/>
+                    </LinearLayout>
+                </LinearLayout>
+-->              <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/LL_whole"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true">
 
-        <LinearLayout
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:orientation="horizontal"
+                    android:background="@color/search_bg"
+                    android:weightSum="1">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="0.65">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:id="@+id/startDate"
+                            android:focusable="false"
+                            android:gravity="center|left"
+                            android:textColor="@color/list_text"
+                            android:text="Start Date, Start Time "/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:focusable="false"
+                            android:gravity="center|left"
+                            android:id="@+id/endDate"
+                            android:textColor="@color/list_text"
+                            android:text="End Date, End Time"/>
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="5dp"
+                        android:weightSum="2"
+                        android:layout_weight="0.32">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:id="@+id/temp"
+                            android:textColor="@color/list_text_date"
+                            android:gravity="center|right"
+                            android:focusable="false"
+                            android:hint="Temp(°C)"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center|right"
+                            android:focusable="false"
+                            android:textColor="@color/list_text_date"
+                            android:id="@+id/total_period"
+                            android:hint="Total Period"/>
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+
+                <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/LL_add_new_heating"
@@ -266,7 +395,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Add New Heating Periods"
+                    android:text="Update Heating Period"
                     android:gravity="center|left"
                     android:layout_toEndOf="@+id/im_info1"
                     android:textSize="15dp"
@@ -542,6 +671,7 @@
                             android:src="@mipmap/ic_tick"
                             android:tint="@color/white"
                             android:id="@+id/im_okay"
+                            android:visibility="gone"
                             android:background="@color/toolbar_right"
                             android:layout_marginRight="10dp"
                             android:layout_weight="1"/>
@@ -552,6 +682,7 @@
                             android:layout_weight="1"
                             android:tint="@color/white"
                             android:id="@+id/im_cancel"
+                            android:visibility="gone"
                             android:background="@color/list_text"
                             android:src="@mipmap/ic_cancel"
                             />

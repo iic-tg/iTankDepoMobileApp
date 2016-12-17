@@ -104,7 +104,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
 
 
 
-            // check for Internet status
+            // check for Internet slabRate
 
             case R.id.login:
               //  Toast.makeText(getApplicationContext(), "Login Successfully", Toast.LENGTH_SHORT).show();
@@ -202,7 +202,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLLogin);
            // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-       //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+       //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();

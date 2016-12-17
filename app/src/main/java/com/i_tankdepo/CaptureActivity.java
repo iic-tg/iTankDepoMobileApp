@@ -81,7 +81,7 @@ import static com.i_tankdepo.R.id.tv_add;
  * viewfinder to help the user place the text correctly, shows feedback as the image processing
  * is happening, and then overlays the results when a scan is successful.
  * 
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
  */
 public final class CaptureActivity extends Activity implements SurfaceHolder.Callback,
   ShutterButton.OnShutterButtonListener {
@@ -90,10 +90,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   // Note: These constants will be overridden by any default values defined in preferences.xml.
   
-  /** ISO 639-3 language code indicating the default recognition language. */
+  /** ISO 639-3 language cleaningRate indicating the default recognition language. */
   public static final String DEFAULT_SOURCE_LANGUAGE_CODE = "eng";
   
-  /** ISO 639-1 language code indicating the default target language for translation. */
+  /** ISO 639-1 language cleaningRate indicating the default target language for translation. */
   public static final String DEFAULT_TARGET_LANGUAGE_CODE = "es";
   
   /** The default online machine translation service to use. */
@@ -191,10 +191,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private boolean hasSurface;
   private BeepManager beepManager;
   private TessBaseAPI baseApi; // Java interface for the Tesseract OCR engine
-  private String sourceLanguageCodeOcr; // ISO 639-3 language code
+  private String sourceLanguageCodeOcr; // ISO 639-3 language cleaningRate
   private String sourceLanguageReadable; // Language name, for example, "English"
-  private String sourceLanguageCodeTranslation; // ISO 639-1 language code
-  private String targetLanguageCodeTranslation; // ISO 639-1 language code
+  private String sourceLanguageCodeTranslation; // ISO 639-1 language cleaningRate
+  private String targetLanguageCodeTranslation; // ISO 639-1 language cleaningRate
   private String targetLanguageReadable; // Language name, for example, "English"
   private int pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
   private int ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
@@ -658,7 +658,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
   }
 
-  /** Sets the necessary language code values for the given OCR language. */
+  /** Sets the necessary language cleaningRate values for the given OCR language. */
   private boolean setSourceLanguage(String languageCode) {
     sourceLanguageCodeOcr = languageCode;
     sourceLanguageCodeTranslation = LanguageCodeHelper.mapLanguageCode(languageCode);
@@ -666,14 +666,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     return true;
   }
 
-  /** Sets the necessary language code values for the translation target language. */
+  /** Sets the necessary language cleaningRate values for the translation target language. */
   private boolean setTargetLanguage(String languageCode) {
     targetLanguageCodeTranslation = languageCode;
     targetLanguageReadable = LanguageCodeHelper.getTranslationLanguageName(this, languageCode);
     return true;
   }
 
-  /** Finds the proper location on the SD card where we can save files. */
+  /** Finds the proper lastStatusDate on the SD card where we can save files. */
   private File getStorageDirectory() {
     //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
     
@@ -723,8 +723,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   /**
    * Requests initialization of the OCR engine with the given parameters.
    * 
-   * @param storageRoot Path to location of the tessdata directory to use
-   * @param languageCode Three-letter ISO 639-3 language code for OCR 
+   * @param storageRoot Path to lastStatusDate of the tessdata directory to use
+   * @param languageCode Three-letter ISO 639-3 language cleaningRate for OCR
    * @param languageName Name of the language for OCR, for example, "English"
    */
   private void initOcrEngine(File storageRoot, String languageCode, String languageName) {

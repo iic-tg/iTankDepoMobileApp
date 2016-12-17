@@ -87,7 +87,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
 
     private TextView tv_toolbarTitle, tv_search_options,no_data;
-    LinearLayout LL_hole, LL_heat_submit,LL_search_Value;
+    LinearLayout LL_hole, LL_heat_submit,LL_search_Value,LL_heat;
 
     private Spinner sp_fields, sp_operator;
     private String fieldItems, opratorItems;
@@ -118,6 +118,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.heating);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
@@ -131,6 +132,9 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
+        LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
+        LL_heat.setAlpha(0.5f);
+        LL_heat.setClickable(false);
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
         ed_text1 = (EditText) findViewById(R.id.ed_text1);
 
@@ -149,7 +153,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
         LL_search_Value = (LinearLayout) findViewById(R.id.LL_search_Value);
 //        tv_search_options.setVisibility(View.GONE);
-
+        LL_search_Value.setVisibility(View.GONE);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Heating");
@@ -534,9 +538,9 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         protected void onPostExecute(Void aVoid) {
 
 
-            if ((progressDialog != null) && progressDialog.isShowing()) {
+//            if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.dismiss();
-            }
+//            }
             if (heating_arraylist != null) {
                 adapter = new UserListAdapter(Heating.this, R.layout.list_item_row, heating_arraylist);
                 listview.setAdapter(adapter);
@@ -550,6 +554,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                        adapter.getFilter().filter(s);
 
                     }
 
@@ -557,8 +562,11 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                     public void afterTextChanged(Editable s) {
                         if (s.length() == 0){
                             new Get_Heating_details().execute();
+                        }else
+                        {
+                            adapter.getFilter().filter(s);
                         }
-                        adapter.getFilter().filter(s);
+
                     }
                 });
 
@@ -729,7 +737,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                         if ((c.getCSTMR_CD().toUpperCase().contains(constraint.toString().toUpperCase()))
                                 || (c.getEQPMNT_NO().toUpperCase().contains(constraint.toString().toUpperCase()))
                                 || (c.getEQPMNT_TYP_CD().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPRDCT_DSCRPTN_VC().toUpperCase().contains(constraint.toString().toUpperCase()))) {
+                                || (c.getPRDCT_DSCRPTN_VC().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getGTN_DT().toUpperCase().contains(constraint.toString().toUpperCase()))) {
                             filteredContacts.add(c);
                         }
                     }
@@ -903,7 +912,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        if (s.length()==0){
+                        if (s.length()== 0){
                             new Get_Heating_filter().execute();
                         }
                         boxAdapter.getFilter().filter(s);

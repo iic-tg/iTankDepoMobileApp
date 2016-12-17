@@ -38,7 +38,7 @@ import java.util.List;
  * This view is overlaid on top of the camera preview. It adds the viewfinder rectangle and partial
  * transparency outside it, as well as the result text.
  *
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing
  */
 public final class ViewfinderView extends View {
   //private static final long ANIMATION_DELAY = 80L;

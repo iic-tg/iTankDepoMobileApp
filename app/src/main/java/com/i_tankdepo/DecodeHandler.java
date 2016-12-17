@@ -30,7 +30,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 /**
  * Class to send bitmap data for OCR.
  * 
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
  */
 final class DecodeHandler extends Handler {
 

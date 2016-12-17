@@ -140,7 +140,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gate_in);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
@@ -197,6 +197,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
         searchView2.requestFocus();
 
+        listview.setTextFilterEnabled(true);
 
         searchlist.setOnTouchListener(new View.OnTouchListener() {
             // Setting on Touch Listener for handling the touch inside ScrollView
@@ -628,8 +629,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                     public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
                         // TODO Auto-generated method stub
-                      //  GateIn.this.adapter.getFilter().filter(arg0);
-                        adapter.getFilter().filter(arg0);
+
                     }
 
                     @Override
@@ -647,6 +647,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             new Get_GateIn_details().execute();
                         }
                         adapter.getFilter().filter(s);
+
                     }
                 });
             }
@@ -782,7 +783,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                         Cust_Name = list.get(position).getCustomerName();
                         Gate_In = list.get(position).getGateIn_Id();
-                        equip_no = list.get(position).getEquipmentNo();
+//                        equip_no = list.get(position).getEquipmentNo();
                         type = list.get(position).getType();
                         code = list.get(position).getCode();
                         status = list.get(position).getStatus();
@@ -901,7 +902,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_EquipmentNo_Lock);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1155,7 +1156,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                     @Override
                     public void afterTextChanged(Editable s) {
-
+                        if(s.length() == 0){
+                            new Get_GateIn_Dropdown_details().execute();
+                        }
                         boxAdapter.getFilter().filter(s);
                     }
                 });
@@ -1425,7 +1428,7 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
         HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateInSearchList);
         // httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-Type", "application/json");
-        //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+        //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
         try{
             JSONObject jsonObject = new JSONObject();

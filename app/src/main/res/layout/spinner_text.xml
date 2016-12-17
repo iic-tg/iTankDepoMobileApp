@@ -5,5 +5,8 @@
     android:gravity="left"
     android:textStyle="bold"
     android:id="@+id/tv_spinner"
+    android:singleLine="true"
+    android:ellipsize="end"
+    android:paddingLeft="2dp"
     android:textColor="@color/list_text"
     />

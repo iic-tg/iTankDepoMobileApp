@@ -34,7 +34,7 @@ import android.widget.Button;
 /**
  * Activity to display informational pages to the user in a WebView.
  * 
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing
  */
 public final class HelpActivity extends Activity {
 

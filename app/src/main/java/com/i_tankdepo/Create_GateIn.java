@@ -175,6 +175,7 @@ public class Create_GateIn extends CommonActivity   {
         menu.setVisibility(View.GONE);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 
         pendingsize= GlobalConstants.pendingcount;
@@ -364,6 +365,7 @@ public class Create_GateIn extends CommonActivity   {
         bt_home.setOnClickListener(this);
         bt_refresh = (Button)findViewById(R.id.refresh);
         bt_refresh.setOnClickListener(this);
+        bt_refresh.setText("Reset");
         c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH);
@@ -1154,7 +1156,7 @@ public class Create_GateIn extends CommonActivity   {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
 //            httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-//            httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1298,7 +1300,7 @@ public class Create_GateIn extends CommonActivity   {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInEquipMentType);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1615,7 +1617,7 @@ public class Create_GateIn extends CommonActivity   {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLEquipmentInfoDropdownType);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -1747,7 +1749,7 @@ public class Create_GateIn extends CommonActivity   {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInPreviousCargo);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -2004,7 +2006,7 @@ public class Create_GateIn extends CommonActivity   {
                 // jsonarray = jsonobject.getJSONArray("subcategorylist");
                 if (jsonobject != null) {
 
-                    equipement_code=jsonobject.getString("code");
+                    equipement_code=jsonobject.getString("cleaningRate");
                     equipement_id=jsonobject.getString("id");
 
 /*
@@ -2336,7 +2338,7 @@ public class Create_GateIn extends CommonActivity   {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLEquipmentInfoDropdownType);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();

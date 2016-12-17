@@ -35,7 +35,7 @@ import com.i_tankdepo.language.TranslatorGoogle;
  * preferences are displayed in the options menu that is shown when the user
  * presses the MENU button.
  * 
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing
  */
 public class PreferencesActivity extends PreferenceActivity implements
         OnSharedPreferenceChangeListener {
@@ -174,7 +174,7 @@ public class PreferencesActivity extends PreferenceActivity implements
    * when the key for the current translator is changed.
    */
   void initTranslationTargetList() {
-    // Set the preference for the target language code, in case we've just switched from Google
+    // Set the preference for the target language cleaningRate, in case we've just switched from Google
     // to Bing, or Bing to Google.
     String currentLanguageCode = sharedPreferences.getString(KEY_TARGET_LANGUAGE_PREFERENCE,
         CaptureActivity.DEFAULT_TARGET_LANGUAGE_CODE);
@@ -190,18 +190,18 @@ public class PreferencesActivity extends PreferenceActivity implements
       listPreferenceTargetLanguage.setEntries(R.array.translationtargetlanguagenames_microsoft);
       listPreferenceTargetLanguage.setEntryValues(R.array.translationtargetiso6391_microsoft);
       
-      // Get the corresponding code for our language name
+      // Get the corresponding cleaningRate for our language name
       newLanguageCode = TranslatorBing.toLanguage(currentLanguage);
     } else if (translator.equals(translators[1])) { // Google
       // Update the list of available languages for the currently-chosen translation API.
       listPreferenceTargetLanguage.setEntries(R.array.translationtargetlanguagenames_google);
       listPreferenceTargetLanguage.setEntryValues(R.array.translationtargetiso6391_google);
       
-      // Get the corresponding code for our language name      
+      // Get the corresponding cleaningRate for our language name
       newLanguageCode = TranslatorGoogle.toLanguage(currentLanguage);
     }
 
-    // Store the code as the target language preference
+    // Store the cleaningRate as the target language preference
     String newLanguageName = LanguageCodeHelper.getTranslationLanguageName(getBaseContext(),
         newLanguageCode);
     listPreferenceTargetLanguage.setValue(newLanguageName); // Set the radio button in the list

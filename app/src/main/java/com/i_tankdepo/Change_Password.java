@@ -57,6 +57,7 @@ public class Change_Password extends CommonActivity {
         save.setOnClickListener(this);
         forgotLogin.setOnClickListener(this);
 
+
     }
     @Override
     public void onClick(View view) {
@@ -135,7 +136,7 @@ public class Change_Password extends CommonActivity {
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLChangePwd);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-type", "application/x-www-form-urlencoded");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();

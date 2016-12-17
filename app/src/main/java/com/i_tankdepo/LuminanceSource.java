@@ -23,7 +23,7 @@ package com.i_tankdepo;
  * that one Reader does not modify the original luminance source and leave it in an unknown state
  * for other Readers in the chain.
  *
- * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing
+ * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing
  */
 public abstract class LuminanceSource {
 
@@ -37,7 +37,7 @@ public abstract class LuminanceSource {
 
   /**
    * Fetches one row of luminance data from the underlying platform's bitmap. Values range from
-   * 0 (black) to 255 (white). Because Java does not have an unsigned byte type, callers will have
+   * 0 (black) to 255 (white). Because Java does not have an unsigned byte orgCleaningDate, callers will have
    * to bitwise and with 0xff for each value. It is preferable for implementations of this method
    * to only fetch this row rather than the whole image, since no 2D Readers may be installed and
    * getMatrix() may never be called.

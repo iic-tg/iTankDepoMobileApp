@@ -83,7 +83,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
    * @param indeterminateDialog
    *          Dialog box with indeterminate progress indicator
    * @param languageCode
-   *          ISO 639-2 OCR language code
+   *          ISO 639-2 OCR language cleaningRate
    * @param languageName
    *          Name of the OCR language, for example, "English"
    * @param ocrEngineMode
@@ -359,7 +359,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
     urlConnection.connect();
     if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
       Log.e(TAG, "Did not get HTTP_OK response.");
-      Log.e(TAG, "Response code: " + urlConnection.getResponseCode());
+      Log.e(TAG, "Response cleaningRate: " + urlConnection.getResponseCode());
       Log.e(TAG, "Response message: " + urlConnection.getResponseMessage().toString());
       return false;
     }

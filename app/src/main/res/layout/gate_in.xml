@@ -65,6 +65,7 @@
                                android:id="@+id/sp_fields"
                                android:textColor="@color/list_text"
                                android:gravity="center"
+
                                ></Spinner>
                        </LinearLayout>
 
@@ -80,6 +81,7 @@
                                android:id="@+id/sp_operators"
                                android:textColor="@color/list_text"
                                android:gravity="center"
+
                                ></Spinner>
                        </LinearLayout>
                        <LinearLayout
