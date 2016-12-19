@@ -286,7 +286,7 @@
                                android:background="@color/white"
                                android:text="Preadvice"
                                android:textColor="@color/list_text"
-                               android:layout_marginBottom="2dp"
+                               android:layout_marginBottom="3dp"
                                android:id="@+id/bt_pending"
                                android:textAllCaps="false"
                                android:gravity="center"
@@ -307,7 +307,7 @@
                                android:text="My Submits"
                                android:textColor="@color/list_text"
                                android:id="@+id/bt_mysubmit"
-                               android:layout_marginBottom="2dp"
+                               android:layout_marginBottom="3dp"
                                android:textAllCaps="false"
                                android:gravity="center"/>
                        </RelativeLayout>

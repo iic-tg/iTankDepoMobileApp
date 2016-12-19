@@ -71,6 +71,19 @@
         <activity android:name=".HeatingPeriod"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Cleaning"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".CleaningMySubmit"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".InspectionPending"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".InspectionMySubmit"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
 
     </application>
 

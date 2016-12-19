@@ -202,7 +202,7 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:background="@color/white"
-        android:weightSum="1">
+        android:weightSum="3">
         <!--<CheckBox-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="match_parent"-->
@@ -231,14 +231,14 @@
             android:orientation="vertical"
             android:weightSum="2"
             android:layout_marginLeft="5dp"
-            android:layout_weight="0.65">
+            android:layout_weight="1">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:id="@+id/text1"
                 android:focusable="false"
-                android:gravity="center|left"
+                android:gravity="bottom"
                 android:textColor="@color/list_text"
                 android:text="text1"/>
             <TextView
@@ -261,12 +261,42 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="5dp"
             android:weightSum="2"
-            android:layout_weight="0.32">
+            android:layout_weight="1">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:id="@+id/text3"
+                android:textColor="@color/list_text_date"
+                android:gravity="center|left"
+                android:focusable="false"
+                android:text="17-OCt-16"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:focusable="false"
+                android:textColor="@color/list_text_date"
+                android:id="@+id/text4"
+                android:text="08:15 am"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="5dp"
+            android:weightSum="2"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/tv_cleaning_method"
                 android:textColor="@color/list_text_date"
                 android:gravity="center|right"
                 android:focusable="false"
@@ -278,45 +308,15 @@
                 android:gravity="center|right"
                 android:focusable="false"
                 android:textColor="@color/list_text_date"
-                android:id="@+id/text4"
+                android:id="@+id/tv_additional_cleraning"
                 android:text="08:15 am"/>
 
 
         </LinearLayout>
 
-
     </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/LL_username"
-            android:background="@color/white"
-            android:weightSum="4">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5"
-                android:gravity="center|right"
-                android:textColor="@color/list_text"
-                android:text="Submitted By :"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center|right"
-                android:layout_marginRight="5dp"
-                android:textColor="@color/list_text"
-                android:id="@+id/tv_username"/>
-        </LinearLayout>
+
+
 
     </LinearLayout>
 </RelativeLayout>

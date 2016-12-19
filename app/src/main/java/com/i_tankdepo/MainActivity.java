@@ -46,7 +46,7 @@ public class MainActivity extends CommonActivity
     Toolbar toolbar;
     private ImageView menu,up,down,iv_back;
     private DrawerLayout drawer;
-    private LinearLayout LL_Gatein,LL_Heating;
+    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest;
     LinearLayout LL_hole;
     private TextView tv_toolbarTitle;
     private Intent mServiceIntent;
@@ -136,6 +136,8 @@ public class MainActivity extends CommonActivity
 
         LL_Gatein = (LinearLayout) findViewById(R.id.LL_GateIn);
         LL_Heating = (LinearLayout) findViewById(R.id.LL_Heating);
+        Ll_Cleaning = (LinearLayout)findViewById(R.id.LL_Cleaning);
+        LL_Leaktest = (LinearLayout)findViewById(R.id.LL_Leaktest);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Home");
@@ -144,6 +146,9 @@ public class MainActivity extends CommonActivity
 
         LL_Gatein.setOnClickListener(this);
         LL_Heating.setOnClickListener(this);
+        Ll_Cleaning.setOnClickListener(this);
+        LL_Leaktest.setOnClickListener(this);
+
          drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -237,6 +242,12 @@ public class MainActivity extends CommonActivity
                 break;
             case R.id.LL_Heating:
                 startActivity(new Intent(getApplicationContext(),Heating.class));
+                break;
+            case R.id.LL_Cleaning:
+                startActivity(new Intent(getApplicationContext(),Cleaning.class));
+                break;
+            case R.id.LL_Leaktest:
+                startActivity(new Intent(getApplicationContext(),InspectionPending.class));
                 break;
         }
     }

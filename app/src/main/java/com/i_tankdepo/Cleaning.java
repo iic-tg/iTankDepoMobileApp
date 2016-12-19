@@ -66,6 +66,8 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import static com.i_tankdepo.R.layout.heating;
+
 /**
  * Created by Metaplore on 10/18/2016.
  */
@@ -80,12 +82,12 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
-    LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print;
+    LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
+    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text;
     private Intent mServiceIntent;
     private ArrayList<CleaningBean> cleaning_arraylist = new ArrayList<>();
     private CleaningBean cleaning_bean;
@@ -133,47 +135,58 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
         no_data = (TextView)findViewById(R.id.no_data);
+        cleaning_text = (TextView)findViewById(R.id.tv_heating);
+        heating = (Button)findViewById(R.id.heating);
+        cleaning = (Button)findViewById(R.id.cleaning);
+        inspection = (Button)findViewById(R.id.inspection);
+        inspection.setVisibility(View.GONE);
+        heating.setVisibility(View.GONE);
+        cleaning_text.setText("Cleaning");
+
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
-        LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
-        LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
+        LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
+        LL_heat = (LinearLayout) findViewById(R.id.LL_heat);
+
+
         im_ok = (ImageView) findViewById(R.id.im_ok);
         im_close = (ImageView) findViewById(R.id.im_close);
 
         im_ok.setOnClickListener(this);
         im_close.setOnClickListener(this);
 
-        LL_Submit.setAlpha(0.5f);
-        LL_footer_delete.setAlpha(0.5f);
-        LL_footer_delete.setClickable(false);
-        LL_Submit.setClickable(false);
+        LL_heat_submit.setAlpha(0.5f);
+        LL_heat_submit.setClickable(false);
+
+        LL_heat.setAlpha(0.5f);
+        LL_heat.setClickable(false);
+
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
 
         bt_mysubmit = (Button) findViewById(R.id.bt_mysubmit);
-        bt_add = (Button) findViewById(R.id.add);
-        bt_add.setOnClickListener(this);
+
+
         bt_mysubmit.setOnClickListener(this);
-        bt_home = (Button) findViewById(R.id.home);
+        bt_home = (Button) findViewById(R.id.heat_home);
         bt_home.setOnClickListener(this);
-        bt_refresh = (Button) findViewById(R.id.refresh);
+        bt_refresh = (Button) findViewById(R.id.heat_refresh);
         bt_refresh.setOnClickListener(this);
         fieldSpinner = (Spinner) findViewById(R.id.sp_fields);
         operatorSpinner = (Spinner) findViewById(R.id.sp_operators);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
-        tv_add = (TextView) findViewById(R.id.tv_add);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         scrollbar = (ScrollView)findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
 
-        tv_add.setOnClickListener(this);
+
         tv_toolbarTitle.setText("Cleaning");
-        im_add = (Button) findViewById(R.id.add);
-        im_print = (Button) findViewById(R.id.print);
-        im_print.setVisibility(View.GONE);
+
+
+
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
         searchView2.requestFocus();
@@ -211,7 +224,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
@@ -251,18 +264,18 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                     LL_hole.setVisibility(View.GONE);
 
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 }
             }
 
@@ -279,12 +292,12 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 }else{
-                    new Get_GateIn_Dropdown_details().execute();
+                    new Get_Cleaning_Dropdown_details().execute();
                 }
 
             }
@@ -335,7 +348,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             no_data.setVisibility(View.GONE);
             LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
-                new Get_GateIn_Dropdown_details().execute();
+                new Get_Cleaning_Dropdown_details().execute();
             }else if(getEditText.length()==0){
 
             }
@@ -350,33 +363,15 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     public void onClick(View view) {
         switch (view.getId())
         {
-            case R.id.add:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
-                GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(cleaning_arraylist.size()));
-                break;
-            case R.id.footer_add_btn:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
-                GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(cleaning_arraylist.size()));
-
-                break;
-            case R.id.tv_add:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
-                GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(cleaning_arraylist.size()));
-
-
-                break;
 
             case R.id.bt_mysubmit:
-
                 finish();
-                startActivity(new Intent(getApplicationContext(),MySubmitList.class));
-
-
+                startActivity(new Intent(getApplicationContext(),CleaningMySubmit.class));
                 break;
-            case R.id.home:
+            case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
-            case R.id.refresh:
+            case R.id.heat_refresh:
                 finish();
                 startActivity(getIntent());
                 break;
@@ -386,7 +381,6 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
-
                 for (Product p : boxAdapter.getBox()) {
                     if (p.box){
                         if(p.box==true) {
@@ -406,7 +400,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
-                                new  Get_GateIn_SearchList_details().execute();
+                                new  Get_Cleaning_SearchList_details().execute();
                             }else{
                                 shortToast(getApplicationContext(),"Please check Your Internet Connection");
                             }
@@ -416,10 +410,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         }
                     }
                 }
-
-
                 break;
-
         }
 
     }
@@ -512,7 +503,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         });
                     }else {
 
-                        cleaning_arraylist = new ArrayList<>();
+                        cleaning_arraylist = new ArrayList<CleaningBean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
@@ -520,14 +511,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             cleaning_bean = new CleaningBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
-                            JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
 
-
-                            for(int j=0;j<attachmentjson.length();j++)
-                            {
-                                filenamejson=attachmentjson.getJSONObject(j);
-                                filename=filenamejson.getString("fileName");
-                            }
 
                             cleaning_bean.setCustomerName(jsonObject.getString("Customer"));
                             cleaning_bean.setCustomerId(jsonObject.getString("CustomerId"));
@@ -545,15 +529,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             cleaning_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
                             cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
                             cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
-
-
-                           /* if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
-                            {
-                                cleaning_bean.setAttachmentStatus("False");
-                            }else
-                            {
-                                cleaning_bean.setAttachmentStatus("True");
-                            }*/
+                            cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
 
                             cleaning_arraylist.add(cleaning_bean);
 
@@ -596,7 +572,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             }
             if(cleaning_arraylist!=null)
             {
-                adapter = new UserListAdapter(Cleaning.this, R.layout.list_item_row, cleaning_arraylist);
+                adapter = new UserListAdapter(Cleaning.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
                 listview.setAdapter(adapter);
 
                 searchView2.addTextChangedListener(new TextWatcher() {
@@ -699,6 +675,9 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.cleaningMethod = (TextView) convertView.findViewById(R.id.tv_cleaning_method);
+                holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
+
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -718,8 +697,9 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 */
                 holder.equip_no.setText(userListBean.getEquipno() + "," + userListBean.getEquipStatusType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.date.setText(userListBean.getInDate());
+                holder.time.setText(userListBean.getInDate());
                 holder.previous_crg.setText(userListBean.getPrevoiusCargo());
+                holder.cleaningMethod.setText(userListBean.getCleaningmethod());
 
 
 
@@ -755,7 +735,18 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         GlobalConstants.customer_Id = list.get(position).getCustomerId();
                         GlobalConstants.equip_status = list.get(position).getEquipStatus();
                         GlobalConstants.equip_status_type = list.get(position).getEquipStatusType();
-                        GlobalConstants.equip_status_type = list.get(position).getEquipStatusType();
+                        GlobalConstants.indate = list.get(position).getInDate();
+                        GlobalConstants.previous_cargo = list.get(position).getPrevoiusCargo();
+                        GlobalConstants.lastStatusDate = list.get(position).getLastStatusDate();
+                        GlobalConstants.add_cleaning_bit = list.get(position).getAdditionalCleaningBit();
+                        GlobalConstants.cleaning_id = list.get(position).getCleaningId();
+                        GlobalConstants.cleaning_RefNo = list.get(position).getCleaningReferenceNo();
+                        GlobalConstants.remark = list.get(position).getRemarks();
+                        GlobalConstants.org_cleaningDate = list.get(position).getOriginalCleaningDate();
+                        GlobalConstants.clean_rate = list.get(position).getCleaningRate();
+                        GlobalConstants.cleaning_method = list.get(position).getCleaningmethod();
+                        GlobalConstants.slab_rate = list.get(position).getSlabRate();
+                        GlobalConstants.gi_trans_no = list.get(position).getGiTransactionNo();
 
 
 
@@ -794,14 +785,14 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
 
                     for (CleaningBean c : list) {
-                        /*if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquipmentNo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getType().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPreviousCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getDate().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getTime().toUpperCase().contains(constraint.toString().toUpperCase()))) {
+                        if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getEquipno().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getEquipStatusType().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getPrevoiusCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getInDate().toUpperCase().contains(constraint.toString().toUpperCase()))
+                                || (c.getCleaningmethod().toUpperCase().contains(constraint.toString().toUpperCase())) ) {
                             filteredContacts.add(c);
-                        }*/
+                        }
                     }
 
 
@@ -822,160 +813,16 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
     }
     static class ViewHolder {
-        TextView equip_no,time, date,Cust_Name,previous_crg, equipStatus, customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
+        TextView equip_no,time, date,Cust_Name,previous_crg, equipStatus,cleaningMethod,add_Cleaning,customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
                 vechicle, add_cleaning_bit, cleaningId, cleaningRefNo,rental_bt,remark, slabRate,pre_adv_id, orgCleaningDate;
         CheckBox checkBox;
 
         LinearLayout whole;
     }
-  /*  public class Get_GateIn_Lock_Check extends AsyncTask<Void, Void, Void> {
-        ProgressDialog progressDialog;
-        private JSONArray jsonarray;
-        private JSONObject jsonrootObject;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(Cleaning.this);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            ServiceHandler sh = new ServiceHandler();
-            HttpParams httpParameters = new BasicHttpParams();
-            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
-            HttpEntity httpEntity = null;
-            HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_EquipmentNo_Lock);
-            // httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
-//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
-            try{
-                JSONObject jsonObject = new JSONObject();
-
-                jsonObject.put("bv_userName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("bv_strEquipmentNo", equipment_no);
-                jsonObject.put("strMode", "new");
 
 
 
-                StringEntity stringEntity = new StringEntity(jsonObject.toString());
-                httpPost.setEntity(stringEntity);
-                response = httpClient.execute(httpPost);
-                httpEntity = response.getEntity();
-                String resp = EntityUtils.toString(httpEntity);
-
-                Log.d(" Lock rep", resp);
-                Log.d("Lock req", jsonObject.toString());
-                jsonrootObject = new JSONObject(resp);
-                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
-
-
-                //   jsonarray = getJsonObject.getJSONArray("ListGateInss");
-                if (jsonrootObject != null) {
-
-                    System.out.println("Am HashMap list"+jsonarray);
-                    if (jsonrootObject.length() < 1) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-//                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
-
-                            }
-                        });
-                    }else {
-
-                        Lock_return_Message= getJsonObject.getString("lockDataValidation");
-
-                    }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
-
-                        @Override
-                        public void run(){
-                            //update ui here
-                            // display toast here
-                            shortToast(getApplicationContext(),"No Records Found.");
-                            // LL_hole.setVisibility(View.GONE);
-
-                        }
-                    });
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute (Void aVoid){
-
-
-
-            if(jsonrootObject!=null)
-            {
-                if(Lock_return_Message.equalsIgnoreCase("Success"))
-                {
-                    Intent i=new Intent(getApplicationContext(),Update_GateIn.class);
-                    GlobalConstants.GateInId=Gate_In;
-                    GlobalConstants.equipment_no= equipment_no;
-                    GlobalConstants.lastStatusDate=lastStatusDate;
-                    GlobalConstants.customer_name=Cust_Name;
-                    GlobalConstants.cleaningRate=cleaningRate;
-                    GlobalConstants.orgCleaningDate=orgCleaningDate;
-                    GlobalConstants.slabRate=slabRate;
-                    GlobalConstants.date=date;
-                    GlobalConstants.time=time;
-                    GlobalConstants.previous_cargo=previous_crg;
-                    GlobalConstants.eir_no=cleaningId;
-                    GlobalConstants.vechicle_no=vechicle;
-                    GlobalConstants.Transport_No=add_cleaning_bit;
-                    GlobalConstants.cleaningRefNo=cleaningRefNo;
-                    GlobalConstants.rental_bt=rental_bt;
-                    GlobalConstants.remark=remark;
-                    GlobalConstants.cust_code=cust_code;
-                    GlobalConstants.type_id=type_id;
-                    GlobalConstants.code_id=code_id;
-                    GlobalConstants.pre_code=pre_code;
-                    GlobalConstants.gi_transNo=gi_transNo;
-                    GlobalConstants.pre_adv_id=pre_adv_id;
-                    GlobalConstants.attachmentStatus=equipStatus;
-
-                    startActivity(i);
-                    startActivity(i);
-                }else {
-                    shortToast(getApplicationContext(),Lock_return_Message);
-                }
-
-            }
-            else
-            {
-
-            }
-
-            progressDialog.dismiss();
-
-
-        }
-
-    }*/
-
-
-
-    public class Get_GateIn_Dropdown_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Cleaning_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
 
@@ -1109,7 +956,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                     @Override
                     public void afterTextChanged(Editable s) {
                         if(s.length() == 0){
-                            new Get_GateIn_Dropdown_details().execute();
+                            new Get_Cleaning_Dropdown_details().execute();
                         }
                         boxAdapter.getFilter().filter(s);
                     }
@@ -1349,7 +1196,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         }
     }
 */
-    public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Cleaning_SearchList_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
         private JSONArray preadvicejsonlist;
         private JSONObject preadvicejsonObject;
@@ -1420,7 +1267,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("ListGateInss");
+                jsonarray = getJsonObject.getJSONArray("ArrayOfCleaning");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -1433,7 +1280,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         });
                     }else {
 
-                        cleaning_arraylist = new ArrayList<>();
+                        cleaning_arraylist = new ArrayList<CleaningBean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
@@ -1444,12 +1291,23 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
 
 
-                           /* cleaning_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
-                            cleaning_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
-                            cleaning_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
-                            cleaning_bean.setDate(jsonObject.getString("GTN_DT"));
-                            cleaning_bean.setTime(jsonObject.getString("GTN_TM"));
-                            cleaning_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));*/
+                            cleaning_bean.setCustomerName(jsonObject.getString("Customer"));
+                            cleaning_bean.setCustomerId(jsonObject.getString("CustomerId"));
+                            cleaning_bean.setEquipno(jsonObject.getString("EquipmentNo"));
+                            cleaning_bean.setEquipStatus(jsonObject.getString("EquipmentStatus"));
+                            cleaning_bean.setEquipStatusType(jsonObject.getString("EquipmentStatusType"));
+                            cleaning_bean.setInDate(jsonObject.getString("InDate"));
+                            cleaning_bean.setPrevoiusCargo(jsonObject.getString("PrevoiusCargo"));
+                            cleaning_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
+                            cleaning_bean.setAdditionalCleaningBit(jsonObject.getString("AdditionalCleaningBit"));
+                            cleaning_bean.setCleaningId(jsonObject.getString("CleaningId"));
+                            cleaning_bean.setCleaningReferenceNo(jsonObject.getString("CleaningReferenceNo"));
+                            cleaning_bean.setRemarks(jsonObject.getString("Remarks"));
+                            cleaning_bean.setOriginalCleaningDate(jsonObject.getString("OriginalCleaningDate"));
+                            cleaning_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
+                            cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
+                            cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
+                            cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
                             cleaning_arraylist.add(cleaning_bean);
 
 
@@ -1489,7 +1347,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
             if(cleaning_arraylist!=null)
             {
-                adapter = new UserListAdapter(Cleaning.this, R.layout.list_item_row, cleaning_arraylist);
+                adapter = new UserListAdapter(Cleaning.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
                 listview.setAdapter(adapter);
 
             }

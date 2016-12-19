@@ -101,21 +101,43 @@
         android:id="@+id/LL_heat"
         android:orientation="vertical"
         android:background="@color/submit">
-
-        <Button
-            android:id="@+id/heating"
+            <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@mipmap/ic_heat"
-            android:gravity="center"
-            android:drawableTint="@color/white"
-            />
+            android:layout_height="35dp">
+                <Button
+                    android:id="@+id/heating"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@mipmap/ic_heat"
+                    android:gravity="center"
+                    android:drawableTint="@color/white"
+                />
+                 <Button
+                    android:id="@+id/cleaning"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@mipmap/cleaning_footer"
+                    android:gravity="center"
+                    android:drawableTint="@color/white"
+                />
+                <Button
+                    android:id="@+id/inspection"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@android:color/transparent"
+                    android:drawableTop="@mipmap/insp_footer"
+                    android:gravity="center"
+                    android:drawableTint="@color/white"
+                    />
+            </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:id="@+id/tv_heating"
             android:textColor="@color/white"
             android:background="@android:color/transparent"
             android:text="Heating"/>

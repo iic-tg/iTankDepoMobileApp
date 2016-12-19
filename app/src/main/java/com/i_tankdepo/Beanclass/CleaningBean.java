@@ -21,6 +21,7 @@ public class CleaningBean {
     String cleaningRate;
     String slabRate;
     String giTransactionNo;
+    String Cleaningmethod;
 
     public String getEquipno() {
         return equipno;
@@ -146,7 +147,16 @@ public class CleaningBean {
         return giTransactionNo;
     }
 
+    public String getCleaningmethod() {
+        return Cleaningmethod;
+    }
+
+    public void setCleaningmethod(String cleaningmethod) {
+        Cleaningmethod = cleaningmethod;
+    }
+
     public void setGiTransactionNo(String giTransactionNo) {
         this.giTransactionNo = giTransactionNo;
+
     }
 }

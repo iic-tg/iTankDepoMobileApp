@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.i_tankdepo.Constants.GlobalConstants.equipment_no;
+import static com.i_tankdepo.R.layout.heating;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -107,7 +108,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Intent mServiceIntent;
 
     private EditText ed_text1, searchView1, searchView2;
-    private Button heat_refresh, heat_home, heat_submit;
+    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection;
     private String getEditText;
     private ListAdapter.ContactsFilterBox mContactsFilterBox;
     private UserListAdapter.ContactsFilter mContactsFilter;
@@ -144,6 +145,13 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         im_heat_ok = (ImageView) findViewById(R.id.im_heat_ok);
         no_data = (TextView)findViewById(R.id.no_data);
         no_data.setVisibility(View.GONE);
+
+        heating = (Button)findViewById(R.id.heating);
+        cleaning = (Button)findViewById(R.id.cleaning);
+        inspection = (Button)findViewById(R.id.inspection);
+        inspection.setVisibility(View.GONE);
+        cleaning.setVisibility(View.GONE);
+
 
         im_heat_close.setOnClickListener(this);
         im_heat_ok.setOnClickListener(this);
@@ -289,7 +297,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (drawer.isDrawerOpen(Gravity.START))
+                if (drawer.isDrawerOpen(
+                        Gravity.START))
                     drawer.closeDrawer(Gravity.END);
                 else
                     drawer.openDrawer(Gravity.START);
@@ -636,6 +645,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 holder.cust_currency = (TextView) convertView.findViewById(R.id.tv_status);
                 holder.min_htngPRD_NC = (TextView) convertView.findViewById(R.id.text9);
                 holder.TTL_RT_NC = (TextView) convertView.findViewById(R.id.tv_pre_code);
+                holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
+                holder.LL_username.setVisibility(View.GONE);
 
                 convertView.setTag(holder);
             } else {
@@ -768,7 +779,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 endTime, endDate, temp, min_htngPRD_NC, hourly_charge, ttl_htngPrd, cust_currency, min_htngRate_NC, type;
         CheckBox checkBox;
 
-        LinearLayout whole;
+        LinearLayout whole,LL_username;
     }
 
 
@@ -1162,17 +1173,25 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             heating_bean = new HeatingBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
-
-
-
-                            heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
                             heating_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
+                            heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
                             heating_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
-                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
                             heating_bean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
+                            heating_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
+                            heating_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+                            heating_bean.setHTNG_STRT_DT(jsonObject.getString("HTNG_STRT_DT"));
+                            heating_bean.setHTNG_STRT_TM(jsonObject.getString("HTNG_STRT_TM"));
+                            heating_bean.setHTNG_END_DT(jsonObject.getString("HTNG_END_DT"));
+                            heating_bean.setHTNG_END_TM(jsonObject.getString("HTNG_END_TM"));
+                            heating_bean.setHTNG_TMPRTR(jsonObject.getString("HTNG_TMPRTR"));
+                            heating_bean.setTTL_HTN_PRD(jsonObject.getString("TTL_HTN_PRD"));
+                            heating_bean.setMIN_HTNG_RT_NC(jsonObject.getString("MIN_HTNG_RT_NC"));
+                            heating_bean.setHRLY_CHRG_NC(jsonObject.getString("HRLY_CHRG_NC"));
+                            heating_bean.setCSTMR_CRRNCY_CD(jsonObject.getString("CSTMR_CRRNCY_CD"));
+                            heating_bean.setMIN_HTNG_PRD_NC(jsonObject.getString("MIN_HTNG_PRD_NC"));
+                            heating_bean.setTTL_RT_NC(jsonObject.getString("TTL_RT_NC"));
                             heating_arraylist.add(heating_bean);
-
-
 
                         }
                     }

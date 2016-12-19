@@ -163,6 +163,7 @@ public class Create_GateIn extends CommonActivity   {
     private ArrayList<Equipment_Info_TypeDropdownBean> dropdown_MoreInfo_arraylist;
     private Equipment_Info_TypeDropdownBean moreInfo_DropdownBean;
     private String infoId,infoCode;
+    private String getStatus,getYardLocation,getEquipment_Type_code,getEquipment_Type;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -438,6 +439,8 @@ public class Create_GateIn extends CommonActivity   {
 
             new Create_GateIn_EquipmentType_details().execute();
            new Create_GateIn_moreInfo_list_details().execute();
+            new GateIn_Default_Values().execute();
+
         }else
         {
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
@@ -457,6 +460,27 @@ public class Create_GateIn extends CommonActivity   {
         else{
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
         }
+
+        sp_equip_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                get_sp_equipe_code=dropdown_equipment_arraylist.get(i).getCode();
+                get_sp_equipe = sp_equip_type.getSelectedItem().toString();
+
+                // shortToast(getApplicationContext(),"get_sp_equipe_code==>"+get_sp_equipe_code);
+
+
+                new PostCustomer_Code().execute();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+/*
         sp_equip_type.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -475,6 +499,7 @@ public class Create_GateIn extends CommonActivity   {
                 return false;
             }
         });
+*/
 
         sp_previous_cargo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -1392,24 +1417,6 @@ public class Create_GateIn extends CommonActivity   {
                 ArrayAdapter<String> EquipmentAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_list);
                 EquipmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_equip_type.setAdapter(EquipmentAdapter);
-                sp_equip_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        get_sp_equipe_code=dropdown_equipment_arraylist.get(i).getCode();
-                        get_sp_equipe = sp_equip_type.getSelectedItem().toString();
-
-                        // shortToast(getApplicationContext(),"get_sp_equipe_code==>"+get_sp_equipe_code);
-
-
-                        new PostCustomer_Code().execute();
-
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
             }
             else if(dropdown_equipment_list.size()<1)
             {
@@ -2006,7 +2013,7 @@ public class Create_GateIn extends CommonActivity   {
                 // jsonarray = jsonobject.getJSONArray("subcategorylist");
                 if (jsonobject != null) {
 
-                    equipement_code=jsonobject.getString("cleaningRate");
+                    equipement_code=jsonobject.getString("code");
                     equipement_id=jsonobject.getString("id");
 
 /*
@@ -2311,10 +2318,8 @@ public class Create_GateIn extends CommonActivity   {
         }
     }
 
-/*
-    public class GateIn_Equipment_Info_Type_details extends AsyncTask<Void, Void, Void> {
+    public class GateIn_Default_Values extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
-        private JSONArray jsonarray;
         private JSONObject jsongetObject;
 
         @Override
@@ -2335,20 +2340,12 @@ public class Create_GateIn extends CommonActivity   {
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLEquipmentInfoDropdownType);
-            // httpPost.setHeader("Accept", "application/json");
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreate_GateIn_DefaultValues);
             httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
-//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try{
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-
-               */
-/* JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("Credentials",jsonObject);*//*
-
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);
@@ -2359,55 +2356,24 @@ public class Create_GateIn extends CommonActivity   {
                 Log.d("rep", resp);
                 Log.d("request", jsonObject.toString());
                 JSONObject jsonrootObject = new JSONObject(resp);
-                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+                getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
-                if (jsonarray != null) {
-
-                    System.out.println("Am HashMap list"+jsonarray);
-                    if (jsonarray.length() < 1) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-//                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found.");
-                            }
-                        });
-                    }else {
-
-                        dropdown_equipment_info_arraylist = new ArrayList<Equipment_Info_TypeDropdownBean>();
 
 
-                        for (int i = 0; i < jsonarray.length(); i++) {
 
-                            typeDropdownBean = new Equipment_Info_TypeDropdownBean();
-                            jsongetObject = jsonarray.getJSONObject(i);
-
-                            typeDropdownBean.setId(jsongetObject.getString("ENM_ID"));
-                            typeDropdownBean.setCode(jsongetObject.getString("ENM_CD"));
-
-
-                            String[] set1 = new String[3];
-                            set1[0] = ENM_ID;
-                            set1[1] = ENM_Code;
-
-                            dropdown_equipment_info_list.add(ENM_Code);
-                            ENM_ID_LIST.add(set1[0]);
-                            ENM_Code_LIST.add(set1[1]);
-
-                            dropdown_equipment_info_arraylist.add(typeDropdownBean);
-                        }
-                    }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
-
-                        @Override
-                        public void run(){
-                            //update ui here
-                            // display toast here
-                            shortToast(getApplicationContext(),"No Records Found.");
+                System.out.println("Am HashMap list"+getJsonObject);
+                if (getJsonObject.length() < 1) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            shortToast(getApplicationContext(), "No Records Found.");
                         }
                     });
+                }else {
+                    getStatus=getJsonObject.getString("EquipmentStatus");
+                    getYardLocation=getJsonObject.getString("YardLocation");
+                    getEquipment_Type=getJsonObject.getString("EquipmentType");
+                    equipement_code=getJsonObject.getString("EquipmentCode");
 
                 }
 
@@ -2427,13 +2393,24 @@ public class Create_GateIn extends CommonActivity   {
 
 
 
-            if(jsonarray!=null)
+            if(getJsonObject!=null)
             {
-//                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
-//                listview.setAdapter(adapter);
-                ArrayAdapter<String> TypeAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_info_list);
+                for(int i=0;i<dropdown_equipment_list.size();i++)
+                {
+                    if(getEquipment_Type.equals(dropdown_equipment_arraylist.get(i).getName()))
+                    {
+
+                        sp_equip_type.setSelection(i);
+                    }
+                }
+
+                ed_location.setText(getYardLocation);
+                ed_status.setText(getStatus);
+                ed_code.setText(equipement_code);
+
+               /* ArrayAdapter<String> TypeAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_info_list);
                 TypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_last_test_type.setAdapter(TypeAdapter);
+                sp_last_test_type.setAdapter(TypeAdapter);*/
 
             }
             else
@@ -2449,7 +2426,9 @@ public class Create_GateIn extends CommonActivity   {
         }
 
     }
-*/
+
+
+
 
 
 

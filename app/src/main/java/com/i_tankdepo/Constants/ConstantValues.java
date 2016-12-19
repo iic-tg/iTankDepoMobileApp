@@ -31,6 +31,11 @@ public class ConstantValues {
 	public static String baseURLHeatingSearchList=Link+"HeatingMobile.asmx/SearchList";
 	public static String baseURLCleaningPreadvice=Link+"Cleaning.asmx/PendingList";
 	public static String baseURLCleaningMySubmit=Link+"Cleaning.asmx/MySubmit";
-	public static String baseURLCleaningFilter=Link+"CleaningMobile.asmx/filter";
-	public static String baseURLCleaninggSearchList=Link+"CleaningMobile.asmx/SearchList";
+	public static String baseURLCleaningFilter=Link+"Cleaning.asmx/filter";
+	public static String baseURLCleaninggSearchList=Link+"Cleaning.asmx/SearchList";
+	public static String baseURLCreate_GateIn_DefaultValues=Link+"GateinMobile.asmx/OnCreateNew";
+	public static String baseURLInspectionPreadvice=Link+"InspectionMobile.asmx/IPendingList";
+	public static String baseURLInspectionMySubmit=Link+"InspectionMobile.asmx/MySubmit";
+	public static String baseURLInspectionFilter=Link+"InspectionMobile.asmx/filter";
+	public static String baseURLInspectionSearchList=Link+"InspectionMobile.asmx/SearchList";
 }

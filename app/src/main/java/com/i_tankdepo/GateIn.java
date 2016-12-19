@@ -723,6 +723,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
+                holder.LL_username.setVisibility(View.GONE);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -874,7 +876,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
-        LinearLayout whole;
+        LinearLayout whole,LL_username;
     }
     public class Get_GateIn_Lock_Check extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;

@@ -31,6 +31,20 @@ public class GlobalConstants {
     public static String location="";
     public static String date="";
     public static String type="";
+    public static String cleaning_method="";
+    public static String indate="";
+    public static String lastStatusDate="";
+    public static String add_cleaning_bit="";
+    public static String cleaning_id="";
+    public static String cleaning_RefNo="";
+    public static String org_cleaningDate="";
+    public static String org_inspectionDate="";
+    public static String clean_unclean="";
+    public static String seal_no="";
+
+    public static String clean_rate="";
+    public static String slab_rate="";
+    public static String gi_trans_no="";
 
     public static String gateIn_Trans_no="";
 
