@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -76,7 +77,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     private Toolbar toolbar;
 
     private ListView listview, searchlist;
-    private RelativeLayout RL_musubmit, RL_pending;
+    private RelativeLayout RL_musubmit, RL_pending,RL_heating,RL_Repair;
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
@@ -108,10 +109,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     private String equipment_no;
     private String Lock_return_Message;
     private ImageView iv_back;
-
     private String getEditText;
-    private UserListAdapter.ContactsFilter mContactsFilter;
-    private ListAdapter.ContactsFilterBox mContactsFilterBox;
     private ScrollView scrollbar;
 
 
@@ -155,6 +153,10 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
 
         bt_mysubmit = (Button) findViewById(R.id.bt_mysubmit);
+        RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
+        RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_Repair.setVisibility(View.GONE);
+
 
 
         bt_mysubmit.setOnClickListener(this);
@@ -626,28 +628,22 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
-
-                    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                    public void afterTextChanged(Editable arg0) {
                         // TODO Auto-generated method stub
-
+                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                        adapter.filter(text);
                     }
 
                     @Override
-                    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                                  int arg3) {
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
                         // TODO Auto-generated method stub
-
-
                     }
 
                     @Override
-
-                    public void afterTextChanged(Editable s) {
-                        if (s.length() == 0){
-                            new Get_Cleaning_Mysubmit_details().execute();
-                        }
-                        adapter.getFilter().filter(s);
-
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
             }
@@ -662,7 +658,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     }
 
     public class UserListAdapter extends BaseAdapter {
-
+        private final ArrayList<CleaningBean> arraylist;
         private ArrayList<CleaningBean> list;
         Context context;
 
@@ -673,6 +669,8 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
             this.context = context;
             this.list = list;
             this.resource = resource;
+            this.arraylist = new ArrayList<CleaningBean>();
+            this.arraylist.addAll(list);
         }
 
         @Override
@@ -807,56 +805,24 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
 
 
 
-        public Filter getFilter() {
-            if (mContactsFilter == null)
-                mContactsFilter = new ContactsFilter();
-
-            return mContactsFilter;
-        }
-
-        // Filter
-
-        private class ContactsFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = list;
-                    results.count = list.size();
-                }
-                else {
-
-                    ArrayList<CleaningBean> filteredContacts = new ArrayList<CleaningBean>();
-
-
-                    for (CleaningBean c : list) {
-                        if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquipno().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquipStatusType().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPrevoiusCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getInDate().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getCleaningmethod().toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            list.clear();
+            if (charText.length() == 0) {
+                list.addAll(arraylist);
+            } else {
+                for (CleaningBean wp : arraylist) {
+                    if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquipno().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getPrevoiusCargo().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquipStatusType().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
+                            ) {
+                        list.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                list = (ArrayList<CleaningBean>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
 
     }
@@ -993,25 +959,22 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
                 searchView1.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if(s.length() == 0){
-                            if(cd.isConnectingToInternet()){
-                                new Get_Cleaning_Mysubmit_Dropdown_details().execute();
-
-                            }else{
-                                shortToast(getApplicationContext(),"Please check your Internet Connection.!");
-                            }
-                        }
-                        boxAdapter.getFilter().filter(s);
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -1035,6 +998,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
 
     }
     public class ListAdapter extends BaseAdapter {
+        private final ArrayList<Product> arraylist;
         Context ctx;
         LayoutInflater lInflater;
         ArrayList<Product> objects;
@@ -1043,6 +1007,8 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
         ListAdapter(Context context, ArrayList<Product> products) {
             ctx = context;
             objects = products;
+            this.arraylist = new ArrayList<Product>();
+            this.arraylist.addAll(objects);
             lInflater = (LayoutInflater) ctx
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -1117,52 +1083,22 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
             }
         };
 
-        public Filter getFilter() {
-            if (mContactsFilterBox == null)
-                mContactsFilterBox = new ContactsFilterBox();
-
-            return mContactsFilterBox;
-        }
-
-        // Filter
-
-        private class ContactsFilterBox extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = objects;
-                    results.count = objects.size();
-                }
-                else {
-
-                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
-
-
-                    for (Product c : objects) {
-                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            objects.clear();
+            if (charText.length() == 0) {
+                objects.addAll(arraylist);
+            } else {
+                for (Product wp : arraylist) {
+                    if (wp.name.toLowerCase(Locale.getDefault())
+                            .contains(charText)) {
+                        objects.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                objects = (ArrayList<Product>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
+
 
     }
 

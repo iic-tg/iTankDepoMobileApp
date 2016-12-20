@@ -34,6 +34,11 @@ public class GlobalConstants {
     public static String cleaning_method="";
     public static String indate="";
     public static String lastStatusDate="";
+    public static String last_testType="";
+    public static String next_testType="";
+    public static String last_testDate="";
+    public static String next_testDate="";
+    public static String lobor_rate="";
     public static String add_cleaning_bit="";
     public static String cleaning_id="";
     public static String cleaning_RefNo="";
@@ -41,6 +46,23 @@ public class GlobalConstants {
     public static String org_inspectionDate="";
     public static String clean_unclean="";
     public static String seal_no="";
+    public static String lastSurveyor="";
+    public static String ValidityPeriodforTest="";
+    public static String repair_TypeID="";
+    public static String repair_TypeCD="";
+    public static String invoice_PartyCD="";
+    public static String invoice_PartyID="";
+    public static String invoice_PartyName="";
+    public static String repair_EstimateID="";
+    public static String Cust_AppRef="";
+    public static String approvalDate="";
+    public static String Party_AppRef="";
+    public static String revisionNo="";
+    public static String Surveyor_name="";
+    public static String Survey_CompletionDate="";
+    public static String lineItems="";
+    public static String attchement="";
+    public static String repairEstimateNo="";
 
     public static String clean_rate="";
     public static String slab_rate="";

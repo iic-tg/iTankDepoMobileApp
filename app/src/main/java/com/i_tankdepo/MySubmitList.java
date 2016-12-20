@@ -62,6 +62,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -104,8 +105,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String filename;
     private String Lock_return_Message;
     private String getEditText;
-    private UserListAdapter.ContactsFilter mContactsFilter;
-    private ListAdapter.ContactsFilterBox mContactsFilterBox;
+
+
 
 
     @Override
@@ -246,22 +247,37 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(fieldItems.equalsIgnoreCase("Customer"))
                 {
                     fieldItems="CSTMR_CD";
-
-                    new Get_GateIn_Dropdown_details().execute();
-                    LL_hole.setVisibility(View.GONE);
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                        LL_hole.setVisibility(View.GONE);
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
 
                 }else if(fieldItems.equalsIgnoreCase("Equipment No"))
                 {
                     fieldItems="EQPMNT_NO";
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else if(fieldItems.equalsIgnoreCase("Type"))
                 {
                     fieldItems="EQPMNT_TYP_CD";
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else if(fieldItems.equalsIgnoreCase("Previous Cargo"))
                 {
                     fieldItems="PRDCT_DSCRPTN_VC";
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
 
                 }
 
@@ -283,11 +299,25 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(opratorItems.equalsIgnoreCase("Does Not Contain"))
                 {
                     opratorItems="";
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else if(opratorItems.equalsIgnoreCase("Not Similar"))
                 {
                     opratorItems="";
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else{
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }
 
             }
@@ -607,22 +637,22 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                        adapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if (s.length() == 0){
-                            new Get_GateIn_MySubmit_details().execute();
-
-                        }
-
-                        adapter.getFilter().filter(s);
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -641,7 +671,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
 
     public class UserListAdapter extends BaseAdapter {
-
+        private final ArrayList<PendingBean> arraylist;
         Context context;
         ArrayList<PendingBean> list = new ArrayList<>();
         int resource;
@@ -652,6 +682,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             this.context = context;
             this.list = list;
             this.resource = resource;
+            this.arraylist = new ArrayList<PendingBean>();
+            this.arraylist.addAll(list);
         }
 
         @Override
@@ -796,57 +828,27 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             return convertView;
         }
 
-        public Filter getFilter() {
-            if (mContactsFilter == null)
-                mContactsFilter = new ContactsFilter();
-
-            return mContactsFilter;
-        }
-
-        // Filter
-
-        private class ContactsFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = list;
-                    results.count = list.size();
-                }
-                else {
-
-                    ArrayList<PendingBean> filteredContacts = new ArrayList<PendingBean>();
-
-
-                    for (PendingBean c : list) {
-                        if ((c.getCustomerName().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquipmentNo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getType().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPreviousCargo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getDate().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getTime().toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            list.clear();
+            if (charText.length() == 0) {
+                list.addAll(arraylist);
+            } else {
+                for (PendingBean wp : arraylist) {
+                    if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquipmentNo().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getPreviousCargo().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getDate().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getType().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
+                            ) {
+                        list.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                list = (ArrayList<PendingBean>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
+
 
 
 
@@ -1150,20 +1152,22 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 searchView1.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if (s.length()==0){
-                            new Get_GateIn_Dropdown_details().execute();
-                        }
-                        boxAdapter.getFilter().filter(s);
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -1186,6 +1190,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
     }
     public class ListAdapter extends BaseAdapter {
+        private final ArrayList<Product> arraylist;
         Context ctx;
         LayoutInflater lInflater;
         ArrayList<Product> objects;
@@ -1194,6 +1199,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         ListAdapter(Context context, ArrayList<Product> products) {
             ctx = context;
             objects = products;
+            this.arraylist = new ArrayList<Product>();
+            this.arraylist.addAll(objects);
             lInflater = (LayoutInflater) ctx
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -1268,51 +1275,20 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         };
 
 
-        public Filter getFilter() {
-            if (mContactsFilterBox == null)
-                mContactsFilterBox = new ContactsFilterBox();
-
-            return mContactsFilterBox;
-        }
-
-        // Filter
-
-        private class ContactsFilterBox extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = objects;
-                    results.count = objects.size();
-                } else {
-
-                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
-
-
-                    for (Product c : objects) {
-                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            objects.clear();
+            if (charText.length() == 0) {
+                objects.addAll(arraylist);
+            } else {
+                for (Product wp : arraylist) {
+                    if (wp.name.toLowerCase(Locale.getDefault())
+                            .contains(charText)) {
+                        objects.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                objects = (ArrayList<Product>) results.values;
-                notifyDataSetChanged();
-            }
-
+            notifyDataSetChanged();
         }
 
     }

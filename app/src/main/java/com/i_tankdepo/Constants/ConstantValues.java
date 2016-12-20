@@ -38,4 +38,13 @@ public class ConstantValues {
 	public static String baseURLInspectionMySubmit=Link+"InspectionMobile.asmx/MySubmit";
 	public static String baseURLInspectionFilter=Link+"InspectionMobile.asmx/filter";
 	public static String baseURLInspectionSearchList=Link+"InspectionMobile.asmx/SearchList";
+	public static String baseURLRepairEstimateList=Link+"RepairEstimateMobile.asmx/RepairList";
+	public static String baseURLRepairEstimateFilter=Link+"RepairEstimateMobile.asmx/filter";
+	public static String baseURLRepairEstimateSearchList=Link+"RepairEstimateMobile.asmx/SearchList";
+	public static String baseURLRepairApprovalList=Link+"RepairEstimateMobile.asmx/RepairList";
+	public static String baseURLRepairApprovalFilter=Link+"RepairEstimateMobile.asmx/filter";
+	public static String baseURLRepairApprovalSearchList=Link+"RepairEstimateMobile.asmx/SearchList";
+	public static String baseURLSurveyCompletionList=Link+"RepairEstimateMobile.asmx/RepairList";
+	public static String baseURLSurveyCompletionFilter=Link+"RepairEstimateMobile.asmx/filter";
+	public static String baseURLSurveyCompletionSearchList=Link+"RepairEstimateMobile.asmx/SearchList";
 }

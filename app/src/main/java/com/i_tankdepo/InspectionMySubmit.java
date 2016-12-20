@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.Locale;
 
 import static com.i_tankdepo.R.layout.heating;
 
@@ -77,7 +78,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private Toolbar toolbar;
 
     private ListView listview, searchlist;
-    private RelativeLayout RL_musubmit, RL_pending;
+    private RelativeLayout RL_musubmit, RL_pending,RL_heating,RL_Repair;
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
@@ -109,10 +110,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private String equipment_no;
     private String Lock_return_Message;
     private ImageView iv_back;
-
     private String getEditText;
-    private UserListAdapter.ContactsFilter mContactsFilter;
-    private ListAdapter.ContactsFilterBox mContactsFilterBox;
     private ScrollView scrollbar;
 
 
@@ -145,6 +143,10 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
+        RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
+        RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_Repair.setVisibility(View.GONE);
+
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
         LL_heat = (LinearLayout) findViewById(R.id.LL_heat);
@@ -263,18 +265,34 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
-                    new Get_Inspection_Dropdown_details().execute();
-                    LL_hole.setVisibility(View.GONE);
+                   if(cd.isConnectingToInternet()) {
+                       new Get_Inspection_Dropdown_details().execute();
+                       LL_hole.setVisibility(View.GONE);
+                   }else{
+                       shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                   }
 
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
-                    new Get_Inspection_Dropdown_details().execute();
+                   if(cd.isConnectingToInternet()) {
+                       new Get_Inspection_Dropdown_details().execute();
+                   }else{
+                       shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                   }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
-                    new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Inspection_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
-                    new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Inspection_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }
             }
 
@@ -291,12 +309,24 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Inspection_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Inspection_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else{
-                    new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Inspection_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }
 
             }
@@ -581,28 +611,22 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
-
-                    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                    public void afterTextChanged(Editable arg0) {
                         // TODO Auto-generated method stub
-
+                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                        adapter.filter(text);
                     }
 
                     @Override
-                    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                                  int arg3) {
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
                         // TODO Auto-generated method stub
-
-
                     }
 
                     @Override
-
-                    public void afterTextChanged(Editable s) {
-                        if (s.length() == 0){
-                            new Get_Cleaning_details().execute();
-                        }
-                        adapter.getFilter().filter(s);
-
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
             }
@@ -617,7 +641,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     }
 
     public class UserListAdapter extends BaseAdapter {
-
+        private final ArrayList<InspectionBean> arraylist;
         private ArrayList<InspectionBean> list;
         Context context;
 
@@ -628,6 +652,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             this.context = context;
             this.list = list;
             this.resource = resource;
+            this.arraylist = new ArrayList<InspectionBean>();
+            this.arraylist.addAll(list);
         }
 
         @Override
@@ -768,56 +794,26 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
 
 
-        public Filter getFilter() {
-            if (mContactsFilter == null)
-                mContactsFilter = new ContactsFilter();
-
-            return mContactsFilter;
-        }
-
-        // Filter
-
-        private class ContactsFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = list;
-                    results.count = list.size();
-                }
-                else {
-
-                    ArrayList<InspectionBean> filteredContacts = new ArrayList<InspectionBean>();
-
-
-                    for (InspectionBean c : list) {
-                        if ((c.getCustomer().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquip_no().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEquip_statusType().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPrevious_cargo().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getInDate().toUpperCase().contains(constraint.toString().toUpperCase())) ) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            list.clear();
+            if (charText.length() == 0) {
+                list.addAll(arraylist);
+            } else {
+                for (InspectionBean wp : arraylist) {
+                    if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquip_no().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getPrevious_cargo().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
+                            ) {
+                        list.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                list = (ArrayList<InspectionBean>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
+
 
     }
     static class ViewHolder {
@@ -952,20 +948,22 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 searchView1.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if(s.length() == 0){
-                            new Get_Inspection_Dropdown_details().execute();
-                        }
-                        boxAdapter.getFilter().filter(s);
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -989,6 +987,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
     }
     public class ListAdapter extends BaseAdapter {
+        private final ArrayList<Product> arraylist;
         Context ctx;
         LayoutInflater lInflater;
         ArrayList<Product> objects;
@@ -997,6 +996,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         ListAdapter(Context context, ArrayList<Product> products) {
             ctx = context;
             objects = products;
+            this.arraylist = new ArrayList<Product>();
+            this.arraylist.addAll(objects);
             lInflater = (LayoutInflater) ctx
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -1061,52 +1062,22 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             }
         };
 
-        public Filter getFilter() {
-            if (mContactsFilterBox == null)
-                mContactsFilterBox = new ContactsFilterBox();
-
-            return mContactsFilterBox;
-        }
-
-        // Filter
-
-        private class ContactsFilterBox extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = objects;
-                    results.count = objects.size();
-                }
-                else {
-
-                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
-
-
-                    for (Product c : objects) {
-                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            objects.clear();
+            if (charText.length() == 0) {
+                objects.addAll(arraylist);
+            } else {
+                for (Product wp : arraylist) {
+                    if (wp.name.toLowerCase(Locale.getDefault())
+                            .contains(charText)) {
+                        objects.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                objects = (ArrayList<Product>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
+
 
     }
 

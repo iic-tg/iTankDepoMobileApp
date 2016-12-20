@@ -40,6 +40,7 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +69,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.i_tankdepo.Constants.GlobalConstants.equipment_no;
 import static com.i_tankdepo.R.layout.heating;
@@ -110,8 +112,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private EditText ed_text1, searchView1, searchView2;
     private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection;
     private String getEditText;
-    private ListAdapter.ContactsFilterBox mContactsFilterBox;
-    private UserListAdapter.ContactsFilter mContactsFilter;
+    private RelativeLayout RL_heating,RL_Repair;
 
 
     @Override
@@ -138,6 +139,11 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_heat.setClickable(false);
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
         ed_text1 = (EditText) findViewById(R.id.ed_text1);
+
+        RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
+        RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_Repair.setVisibility(View.GONE);
+
 
         searchView1 = (EditText) findViewById(R.id.searchView1);
         searchView2 = (EditText) findViewById(R.id.searchView2);
@@ -237,18 +243,33 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
-
-                    new Get_Heating_filter().execute();
-                    LL_hole.setVisibility(View.GONE);
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                        LL_hole.setVisibility(View.GONE);
+                    }else{
+                        shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
+                    }
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
 
                 }
 
@@ -268,12 +289,24 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }else{
-                    new Get_Heating_filter().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Heating_filter().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }
 
 
@@ -558,24 +591,22 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                        adapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                        adapter.getFilter().filter(s);
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if (s.length() == 0){
-                            new Get_Heating_details().execute();
-                        }else
-                        {
-                            adapter.getFilter().filter(s);
-                        }
-
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -589,7 +620,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     }
 
     public class UserListAdapter extends BaseAdapter {
-
+        private final ArrayList<HeatingBean> arraylist;
         Context context;
         ArrayList<HeatingBean> list = new ArrayList<>();
         int resource;
@@ -600,6 +631,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             this.context = context;
             this.list = list;
             this.resource = resource;
+            this.arraylist = new ArrayList<HeatingBean>();
+            this.arraylist.addAll(list);
         }
 
         @Override
@@ -719,56 +752,26 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             return convertView;
         }
 
-        public Filter getFilter() {
-            if (mContactsFilter == null)
-                mContactsFilter = new ContactsFilter();
-
-            return mContactsFilter;
-        }
-
-        // Filter
-
-        private class ContactsFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = list;
-                    results.count = list.size();
-                }
-                else {
-
-                    ArrayList<HeatingBean> filteredContacts = new ArrayList<HeatingBean>();
-
-
-                    for (HeatingBean c : list) {
-                        if ((c.getCSTMR_CD().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEQPMNT_NO().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getEQPMNT_TYP_CD().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getPRDCT_DSCRPTN_VC().toUpperCase().contains(constraint.toString().toUpperCase()))
-                                || (c.getGTN_DT().toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            list.clear();
+            if (charText.length() == 0) {
+                list.addAll(arraylist);
+            } else {
+                for (HeatingBean wp : arraylist) {
+                    if (wp.getCSTMR_CD().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEQPMNT_NO().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getPRDCT_DSCRPTN_VC().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getGTN_DT().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEQPMNT_TYP_CD().toLowerCase(Locale.getDefault()).contains(charText)
+                            ) {
+                        list.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                list = (ArrayList<HeatingBean>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
+
 
 
 
@@ -913,20 +916,22 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 searchView1.addTextChangedListener(new TextWatcher() {
 
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
                     }
 
                     @Override
-                    public void afterTextChanged(Editable s) {
-                        if (s.length()== 0){
-                            new Get_Heating_filter().execute();
-                        }
-                        boxAdapter.getFilter().filter(s);
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
                     }
                 });
 
@@ -947,6 +952,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     }
 
     public class ListAdapter extends BaseAdapter {
+        private final ArrayList<Product> arraylist;
         Context ctx;
         LayoutInflater lInflater;
         ArrayList<Product> objects;
@@ -955,6 +961,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         ListAdapter(Context context, ArrayList<Product> products) {
             ctx = context;
             objects = products;
+            this.arraylist = new ArrayList<Product>();
+            this.arraylist.addAll(objects);
             lInflater = (LayoutInflater) ctx
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -1029,51 +1037,20 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         };
 
 
-        public Filter getFilter() {
-            if (mContactsFilterBox == null)
-                mContactsFilterBox = new ContactsFilterBox();
-
-            return mContactsFilterBox;
-        }
-
-        // Filter
-
-        private class ContactsFilterBox extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults results = new FilterResults();
-
-
-                if (constraint == null || constraint.length() == 0) {
-                    results.values = objects;
-                    results.count = objects.size();
-                }
-                else {
-
-                    ArrayList<Product> filteredContacts = new ArrayList<Product>();
-
-
-                    for (Product c : objects) {
-                        if ((c.name.toUpperCase().contains(constraint.toString().toUpperCase()))) {
-                            filteredContacts.add(c);
-                        }
+        public void filter(String charText) {
+            charText = charText.toLowerCase(Locale.getDefault());
+            objects.clear();
+            if (charText.length() == 0) {
+                objects.addAll(arraylist);
+            } else {
+                for (Product wp : arraylist) {
+                    if (wp.name.toLowerCase(Locale.getDefault())
+                            .contains(charText)) {
+                        objects.add(wp);
                     }
-
-
-                    results.values = filteredContacts;
-                    results.count = filteredContacts.size();
                 }
-
-
-                return results;
             }
-
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                objects = (ArrayList<Product>) results.values;
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
         }
 
 

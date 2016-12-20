@@ -104,33 +104,81 @@
             <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="35dp">
-                <Button
-                    android:id="@+id/heating"
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@mipmap/ic_heat"
-                    android:gravity="center"
-                    android:drawableTint="@color/white"
-                />
-                 <Button
-                    android:id="@+id/cleaning"
+                    android:layout_height="match_parent"
+                    android:id="@+id/RL_heating">
+                    <Button
+                        android:id="@+id/heating"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_heat"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                    <Button
+                        android:id="@+id/cleaning"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/cleaning_footer"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                    <Button
+                        android:id="@+id/inspection"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/insp_footer"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                </RelativeLayout>
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@mipmap/cleaning_footer"
-                    android:gravity="center"
-                    android:drawableTint="@color/white"
-                />
-                <Button
-                    android:id="@+id/inspection"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:background="@android:color/transparent"
-                    android:drawableTop="@mipmap/insp_footer"
-                    android:gravity="center"
-                    android:drawableTint="@color/white"
-                    />
+                    android:layout_height="match_parent"
+                    android:id="@+id/RL_Repair">
+                    <Button
+                        android:id="@+id/repair_estimate"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_repair_estimate"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                    <Button
+                        android:id="@+id/repair_approval"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_repair_approval"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                    <Button
+                        android:id="@+id/survey_completion"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_survey_completion"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                    <Button
+                        android:id="@+id/repair_completion"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_repair_completion"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
+                </RelativeLayout>
+
             </RelativeLayout>
 
         <TextView

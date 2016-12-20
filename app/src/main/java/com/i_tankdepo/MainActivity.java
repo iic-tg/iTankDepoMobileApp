@@ -46,7 +46,7 @@ public class MainActivity extends CommonActivity
     Toolbar toolbar;
     private ImageView menu,up,down,iv_back;
     private DrawerLayout drawer;
-    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest;
+    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair;
     LinearLayout LL_hole;
     private TextView tv_toolbarTitle;
     private Intent mServiceIntent;
@@ -138,6 +138,7 @@ public class MainActivity extends CommonActivity
         LL_Heating = (LinearLayout) findViewById(R.id.LL_Heating);
         Ll_Cleaning = (LinearLayout)findViewById(R.id.LL_Cleaning);
         LL_Leaktest = (LinearLayout)findViewById(R.id.LL_Leaktest);
+        LL_Repair = (LinearLayout)findViewById(R.id.LL_Repair);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Home");
@@ -148,6 +149,7 @@ public class MainActivity extends CommonActivity
         LL_Heating.setOnClickListener(this);
         Ll_Cleaning.setOnClickListener(this);
         LL_Leaktest.setOnClickListener(this);
+        LL_Repair.setOnClickListener(this);
 
          drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -248,6 +250,9 @@ public class MainActivity extends CommonActivity
                 break;
             case R.id.LL_Leaktest:
                 startActivity(new Intent(getApplicationContext(),InspectionPending.class));
+                break;
+            case R.id.LL_Repair:
+                startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
                 break;
         }
     }

@@ -23,7 +23,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
+    <style name="View_vertical_black">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:background">@color/grey</item>
+    </style>
     <style name="CheckBox">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:button">?android:attr/listChoiceIndicatorMultiple</item>

@@ -43,7 +43,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
-import com.i_tankdepo.Beanclass.InspectionBean;
+import com.i_tankdepo.Beanclass.PendingBean;
+import com.i_tankdepo.Beanclass.RepairBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.helper.ServiceHandler;
@@ -72,7 +73,7 @@ import static com.i_tankdepo.R.layout.heating;
 
 
 
-public class InspectionPending extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class SurveyCompletionPending extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -83,14 +84,14 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection;
+    Button repair_approval,repair_estimate,repair_completion,survey_completion,bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text;
     private Intent mServiceIntent;
-    private ArrayList<InspectionBean> inspection_arraylist = new ArrayList<>();
-    private InspectionBean inspection_bean;
+    private ArrayList<RepairBean> repair_arraylist = new ArrayList<>();
+    private RepairBean repair_bean;
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist = new ArrayList<>();
     private PendingAccordionBean pending_accordion_bean;
     private ViewHolder holder;
@@ -117,7 +118,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.inspection);
+        setContentView(R.layout.repair_estimate);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
@@ -132,21 +133,25 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
         no_data = (TextView)findViewById(R.id.no_data);
-        cleaning_text = (TextView)findViewById(R.id.tv_heating);
-        heating = (Button)findViewById(R.id.heating);
-        cleaning = (Button)findViewById(R.id.cleaning);
-        inspection = (Button)findViewById(R.id.inspection);
-        cleaning.setVisibility(View.GONE);
-        heating.setVisibility(View.GONE);
-        cleaning_text.setText("Inspection");
-
+        repair_estimate_text = (TextView)findViewById(R.id.tv_heating);
+        repair_estimate_text.setText("Survey Completion");
         no_data.setVisibility(View.GONE);
+
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
 
         RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
-        RL_Repair.setVisibility(View.GONE);
+        RL_heating.setVisibility(View.GONE);
+
+        repair_estimate = (Button)findViewById(R.id.repair_estimate);
+        repair_estimate.setVisibility(View.GONE);
+        repair_approval = (Button)findViewById(R.id.repair_approval);
+        repair_approval.setVisibility(View.GONE);
+        repair_completion = (Button)findViewById(R.id.repair_completion);
+        repair_completion.setVisibility(View.GONE);
+        survey_completion = (Button)findViewById(R.id.survey_completion);
+
 
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
@@ -164,7 +169,6 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
         LL_heat.setAlpha(0.5f);
         LL_heat.setClickable(false);
-
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
 
@@ -185,7 +189,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         LL_search_Value.setVisibility(View.GONE);
 
 
-        tv_toolbarTitle.setText("Inspection");
+        tv_toolbarTitle.setText("Survey Completion");
 
 
 
@@ -213,7 +217,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 //        searchView2.addTextChangedListener(mTextEditorWatcher);
 
         if (cd.isConnectingToInternet()) {
-            new Get_Cleaning_details().execute();
+            new Get_Survey_Completion_details().execute();
         } else {
             shortToast(getApplicationContext(), "Please check your Internet Connection.");
         }
@@ -226,7 +230,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Inspection_Dropdown_details().execute();
+                    new Get_Survey_Completion_Dropdown_details().execute();
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
@@ -266,33 +270,33 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
-                   if(cd.isConnectingToInternet()) {
-                       new Get_Inspection_Dropdown_details().execute();
-                       LL_hole.setVisibility(View.GONE);
-                   }else{
-                       shortToast(getApplicationContext(),"Please check your Internet Connection..!");
-                   }
+                    if(cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
+                        LL_hole.setVisibility(View.GONE);
+                    }else{
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                    }
 
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 }
             }
@@ -310,23 +314,23 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 }else{
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Get_Survey_Completion_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check Your Internet Connection");
                     }
                 }
 
@@ -378,7 +382,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             no_data.setVisibility(View.GONE);
             LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
-                new Get_Inspection_Dropdown_details().execute();
+                new Get_Survey_Completion_Dropdown_details().execute();
             }else if(getEditText.length()==0){
 
             }
@@ -396,7 +400,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
             case R.id.bt_mysubmit:
                 finish();
-                startActivity(new Intent(getApplicationContext(),InspectionMySubmit.class));
+                startActivity(new Intent(getApplicationContext(),SurveyCompletionMySubmit.class));
                 break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
@@ -431,7 +435,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
-                                new  Get_Inspection_SearchList_details().execute();
+                                new  Get_Survey_Completion_SearchList_details().execute();
                             }else{
                                 shortToast(getApplicationContext(),"Please check Your Internet Connection");
                             }
@@ -479,13 +483,13 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         return true;
     }
 
-    public class Get_Cleaning_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Survey_Completion_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
+            progressDialog = new ProgressDialog(SurveyCompletionPending.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -501,13 +505,16 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionPreadvice);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLSurveyCompletionList);
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("Mode","new");
+                jsonObject.put("PageName","Survey Completion");
+
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -521,7 +528,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("ArrayOfInspection");
+                jsonarray = getJsonObject.getJSONArray("Response");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -534,38 +541,48 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         });
                     }else {
 
-                        inspection_arraylist = new ArrayList<InspectionBean>();
+                        repair_arraylist = new ArrayList<RepairBean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            inspection_bean = new InspectionBean();
+                            repair_bean = new RepairBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
 
 
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
-                            inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
-                            inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
-                            inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
-                            inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
-                            inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
-                            inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                            repair_bean.setCustomer(jsonObject.getString("Customer"));
+                            repair_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
+                            repair_bean.setInDate(jsonObject.getString("InDate"));
+                            repair_bean.setPrevious_cargo(jsonObject.getString("PreviousCargo"));
+                            repair_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
+                            repair_bean.setLoborRate(jsonObject.getString("LaborRate"));
+                            repair_bean.setLastTestType(jsonObject.getString("LastTestType"));
+                            repair_bean.setNextTestType(jsonObject.getString("NextTestType"));
+                            repair_bean.setLastTestDate(jsonObject.getString("LastTestDate"));
+                            repair_bean.setNextTestDate(jsonObject.getString("NextTestDate"));
+                            repair_bean.setLastSurveyor(jsonObject.getString("LastSurveyor"));
+                            repair_bean.setValidityPeriodForTest(jsonObject.getString("ValidityPeriodforTest"));
+                            repair_bean.setRepairTypeId(jsonObject.getString("RepairTypeID"));
+                            repair_bean.setRepairTypeCd(jsonObject.getString("RepairTypeCD"));
+                            repair_bean.setRemarks(jsonObject.getString("Remarks"));
+                            repair_bean.setInvoicingPartyCD(jsonObject.getString("InvoicingPartyCD"));
+                            repair_bean.setInvoicingPartyID(jsonObject.getString("InvoicingPartyID"));
+                            repair_bean.setInvoicingPartyName(jsonObject.getString("InvoicingPartyName"));
+                            repair_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                            repair_bean.setRepairEstimateId(jsonObject.getString("RepairEstimateID"));
+                            repair_bean.setRevision_no(jsonObject.getString("RevisionNo"));
+                            repair_bean.setCust_appRef(jsonObject.getString("CustomerAppRef"));
+                            repair_bean.setApprovalDate(jsonObject.getString("ApprovalDate"));
+                            repair_bean.setParty_appRef(jsonObject.getString("PartyAppRef"));
+                            repair_bean.setSurveyor_name(jsonObject.getString("SurveyorName"));
+                            repair_bean.setSurvey_completionDate(jsonObject.getString("SurveyCompletionDate"));
+                            repair_bean.setLineItems(jsonObject.getString("LineItems"));
+                            repair_bean.setAttachment(jsonObject.getString("attchement"));
+                            repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
 
-                            inspection_arraylist.add(inspection_bean);
+                            repair_arraylist.add(repair_bean);
+
 
 
 
@@ -604,9 +621,9 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            if(inspection_arraylist!=null)
+            if(repair_arraylist!=null)
             {
-                adapter = new UserListAdapter(InspectionPending.this, R.layout.list_item_row, inspection_arraylist);
+                adapter = new UserListAdapter(SurveyCompletionPending.this, R.layout.list_item_row, repair_arraylist);
                 listview.setAdapter(adapter);
 
                 searchView2.addTextChangedListener(new TextWatcher() {
@@ -631,7 +648,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     }
                 });
             }
-            else if(inspection_arraylist.size()<1)
+            else if(repair_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 
@@ -642,18 +659,18 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     }
 
     public class UserListAdapter extends BaseAdapter {
-        private final ArrayList<InspectionBean> arraylist;
-        private ArrayList<InspectionBean> list;
+        private final ArrayList<RepairBean> arraylist;
+        private ArrayList<RepairBean> list;
         Context context;
 
         int resource;
-        private InspectionBean userListBean;
+        private RepairBean userListBean;
         int lastPosition = -1;
-        public UserListAdapter(Context context, int resource, ArrayList<InspectionBean> list) {
+        public UserListAdapter(Context context, int resource, ArrayList<RepairBean> list) {
             this.context = context;
             this.list = list;
             this.resource = resource;
-            this.arraylist = new ArrayList<InspectionBean>();
+            this.arraylist = new ArrayList<RepairBean>();
             this.arraylist.addAll(list);
         }
 
@@ -681,34 +698,39 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                 lastPosition = position;
 
+
                 holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
                 holder.time = (TextView) convertView.findViewById(R.id.text3);
                 holder.previous_crg = (TextView) convertView.findViewById(R.id.text4);
-                holder.equipStatusType = (TextView) convertView.findViewById(R.id.text5);
-                holder.orgCleaningDate = (TextView) convertView.findViewById(R.id.tv_type);
-                holder.customer_Id = (TextView) convertView.findViewById(R.id.text6);
-                holder.cleaningRate = (TextView) convertView.findViewById(R.id.tv_code);
-                holder.lastStatusDate = (TextView) convertView.findViewById(R.id.tv_location);
-                holder.add_cleaning_bit = (TextView) convertView.findViewById(R.id.tv_transport);
-                holder.cleaningId = (TextView) convertView.findViewById(R.id.tv_vechicle);
-                holder.cleaningRefNo = (TextView) convertView.findViewById(R.id.text7);
+                holder.loborRate = (TextView) convertView.findViewById(R.id.text5);
+                holder.lastTestType = (TextView) convertView.findViewById(R.id.tv_type);
+                holder.nextTestType = (TextView) convertView.findViewById(R.id.text6);
+                holder.lastTestDate = (TextView) convertView.findViewById(R.id.tv_code);
+                holder.nextTestDate = (TextView) convertView.findViewById(R.id.tv_location);
+                holder.lastSurveyor = (TextView) convertView.findViewById(R.id.tv_transport);
+                holder.val_PrdForTest = (TextView) convertView.findViewById(R.id.tv_vechicle);
+                holder.repairTypeId = (TextView) convertView.findViewById(R.id.text7);
                 holder.remark = (TextView) convertView.findViewById(R.id.text8);
-                holder.eir_no = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
-                holder.equipStatus = (TextView) convertView.findViewById(R.id.text10);
-                holder.slabRate = (TextView) convertView.findViewById(R.id.tv_status);
-                holder.orgInspectionDate = (TextView) convertView.findViewById(R.id.text9);
-                holder.clean_unclean = (TextView) convertView.findViewById(R.id.tv_pre_code);
+                holder.repairTypeCd = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
+                holder.invoicePartyID = (TextView) convertView.findViewById(R.id.text10);
+                holder.invoicePartyCD = (TextView) convertView.findViewById(R.id.tv_status);
+                holder.invoicePartyName = (TextView) convertView.findViewById(R.id.text9);
+                holder.repairEstimateID = (TextView) convertView.findViewById(R.id.tv_pre_code);
                 holder.gi_transNo = (TextView) convertView.findViewById(R.id.tv_pre_id);
-                holder.Seal_no = (TextView) convertView.findViewById(R.id.tv_cust_code);
-                holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
-                holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
-                holder.cleaningMethod = (TextView) convertView.findViewById(R.id.tv_cleaning_method);
-                holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
+                holder.revisionNo = (TextView) convertView.findViewById(R.id.tv_cust_code);
+                holder.cust_appRef = (TextView) convertView.findViewById(R.id.tv_type_code);
+                holder.approvalDate = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.survey_completion_date = (TextView) convertView.findViewById(R.id.tv_text11);
+                holder.lineItems = (TextView) convertView.findViewById(R.id.tv_text12);
+                holder.attachment = (TextView) convertView.findViewById(R.id.tv_text13);
+                holder.repairEstimateNo = (TextView) convertView.findViewById(R.id.tv_text14);
+                holder.lastStatusDate = (TextView) convertView.findViewById(R.id.tv_text15);
+                holder.party_appRef = (TextView) convertView.findViewById(R.id.tv_text16);
+                holder.surveyor_name = (TextView) convertView.findViewById(R.id.tv_text17);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.LL_username.setVisibility(View.GONE);
-
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -723,38 +745,40 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 userListBean = list.get(position);
 
 
-
-                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
+                holder.equip_no.setText(userListBean.getEquip_no());
+//                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
                 holder.Cust_Name.setText(userListBean.getCustomer());
                 holder.time.setText(userListBean.getInDate());
                 holder.previous_crg.setText(userListBean.getPrevious_cargo());
 
 
-
-
-               /* if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
-                {
-                    holder.vechicle.setText("");
-                }
-               else{
-                    holder.vechicle.setText(userListBean.getVechicle());
-                }*/
-
-                holder.equipStatus.setText(userListBean.getEquip_status());
-                holder.customer_Id.setText(userListBean.getCustomerId());
+                holder.loborRate.setText(userListBean.getLoborRate());
                 holder.lastStatusDate.setText(userListBean.getLastStatusDate());
-                holder.add_cleaning_bit.setText(userListBean.getAdd_cleaningBit());
-                holder.cleaningId.setText(userListBean.getCleaningId());
-                holder.cleaningRefNo.setText(userListBean.getCleaningRefNo());
-                holder.remark.setText(userListBean.getRemark());
-                holder.orgCleaningDate.setText(userListBean.getOrgCleaningDate());
-                holder.orgInspectionDate.setText(userListBean.getOrgInspectionDate());
-                holder.Seal_no.setText(userListBean.getSeal_no());
-                holder.clean_unclean.setText(userListBean.getClean_unclean());
-                holder.eir_no.setText(userListBean.getEir_no());
-                holder.cleaningRate.setText(userListBean.getCleaningRate());
-                holder.slabRate.setText(userListBean.getSlabrate());
+                holder.lastTestType.setText(userListBean.getLastTestType());
+                holder.nextTestType.setText(userListBean.getNextTestType());
+                holder.lastTestDate.setText(userListBean.getLastTestDate());
+                holder.nextTestDate.setText(userListBean.getNextTestDate());
+
+                holder.lastSurveyor.setText(userListBean.getLastSurveyor());
+                holder.val_PrdForTest.setText(userListBean.getValidityPeriodForTest());
+                holder.repairTypeId.setText(userListBean.getRepairTypeId());
+                holder.repairTypeCd.setText(userListBean.getRepairTypeCd());
+                holder.remark.setText(userListBean.getRemarks());
+                holder.invoicePartyCD.setText(userListBean.getInvoicingPartyCD());
+                holder.invoicePartyID.setText(userListBean.getInvoicingPartyID());
+                holder.invoicePartyName.setText(userListBean.getInvoicingPartyName());
                 holder.gi_transNo.setText(userListBean.getGi_trans_no());
+                holder.repairEstimateID.setText(userListBean.getRepairEstimateId());
+                holder.revisionNo.setText(userListBean.getRevision_no());
+                holder.cust_appRef.setText(userListBean.getCust_appRef());
+                holder.approvalDate.setText(userListBean.getApprovalDate());
+                holder.party_appRef.setText(userListBean.getParty_appRef());
+                holder.surveyor_name.setText(userListBean.getSurveyor_name());
+                holder.survey_completion_date.setText(userListBean.getSurvey_completionDate());
+                holder.lineItems.setText(userListBean.getLineItems());
+                holder.attachment.setText(userListBean.getAttachment());
+                holder.repairEstimateNo.setText(userListBean.getRepairEstimateNo());
+
 
 
 
@@ -765,24 +789,34 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
-                        GlobalConstants.customer_Id = list.get(position).getCustomerId();
-                        GlobalConstants.equip_status = list.get(position).getEquip_status();
-                        GlobalConstants.equip_status_type = list.get(position).getEquip_statusType();
                         GlobalConstants.indate = list.get(position).getInDate();
                         GlobalConstants.previous_cargo = list.get(position).getPrevious_cargo();
                         GlobalConstants.lastStatusDate = list.get(position).getLastStatusDate();
-                        GlobalConstants.add_cleaning_bit = list.get(position).getAdd_cleaningBit();
-                        GlobalConstants.cleaning_id = list.get(position).getCleaningId();
-                        GlobalConstants.cleaning_RefNo = list.get(position).getCleaningRefNo();
-                        GlobalConstants.remark = list.get(position).getRemark();
-                        GlobalConstants.org_cleaningDate = list.get(position).getOrgCleaningDate();
-                        GlobalConstants.org_inspectionDate = list.get(position).getOrgInspectionDate();
-                        GlobalConstants.clean_unclean = list.get(position).getClean_unclean();
-                        GlobalConstants.seal_no = list.get(position).getSeal_no();
-                        GlobalConstants.eir_no = list.get(position).getEir_no();
-                        GlobalConstants.clean_rate = list.get(position).getCleaningRate();
-                        GlobalConstants.slab_rate = list.get(position).getSlabrate();
+                        GlobalConstants.lobor_rate = list.get(position).getLoborRate();
+                        GlobalConstants.last_testType = list.get(position).getLastTestType();
+                        GlobalConstants.next_testType = list.get(position).getNextTestType();
+                        GlobalConstants.last_testDate = list.get(position).getLastTestDate();
+                        GlobalConstants.next_testDate = list.get(position).getNextTestDate();
+                        GlobalConstants.lastSurveyor = list.get(position).getLastSurveyor();
+                        GlobalConstants.ValidityPeriodforTest = list.get(position).getValidityPeriodForTest();
+                        GlobalConstants.remark = list.get(position).getRemarks();
+                        GlobalConstants.repair_TypeID = list.get(position).getRepairTypeId();
+                        GlobalConstants.repair_TypeCD = list.get(position).getRepairTypeCd();
+                        GlobalConstants.invoice_PartyCD = list.get(position).getInvoicingPartyCD();
+                        GlobalConstants.invoice_PartyID = list.get(position).getInvoicingPartyID();
+                        GlobalConstants.invoice_PartyName = list.get(position).getInvoicingPartyName();
                         GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
+                        GlobalConstants.repair_EstimateID = list.get(position).getRepairEstimateId();
+                        GlobalConstants.Cust_AppRef = list.get(position).getCust_appRef();
+                        GlobalConstants.approvalDate = list.get(position).getApprovalDate();
+                        GlobalConstants.Party_AppRef = list.get(position).getParty_appRef();
+                        GlobalConstants.revisionNo = list.get(position).getRevision_no();
+                        GlobalConstants.Surveyor_name = list.get(position).getSurveyor_name();
+                        GlobalConstants.Survey_CompletionDate= list.get(position).getSurvey_completionDate();
+                        GlobalConstants.lineItems= list.get(position).getLineItems();
+                        GlobalConstants.attchement= list.get(position).getAttachment();
+                        GlobalConstants.repairEstimateNo= list.get(position).getRepairEstimateNo();
+
 
 
 
@@ -801,12 +835,11 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             if (charText.length() == 0) {
                 list.addAll(arraylist);
             } else {
-                for (InspectionBean wp : arraylist) {
+                for (RepairBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getEquip_no().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getPrevious_cargo().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
+                            wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
                     }
@@ -818,8 +851,9 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
     }
     static class ViewHolder {
-        TextView equip_no,time, date,Cust_Name,equipStatusType,previous_crg, equipStatus,cleaningMethod,add_Cleaning,customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
-                vechicle, add_cleaning_bit, cleaningId, cleaningRefNo,rental_bt,remark, eir_no,orgInspectionDate,clean_unclean,Seal_no,slabRate,pre_adv_id, orgCleaningDate;
+        TextView equip_no,time,date,Cust_Name,previous_crg,loborRate,lastStatusDate,lastTestType,lastTestDate,nextTestType,nextTestDate,lastSurveyor,val_PrdForTest,
+                repairTypeId,repairTypeCd,remark,invoicePartyCD,invoicePartyID,invoicePartyName,gi_transNo,repairEstimateID,revisionNo,
+                cust_appRef,approvalDate,party_appRef,surveyor_name,survey_completion_date,lineItems,attachment,repairEstimateNo;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
@@ -827,14 +861,14 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
 
 
-    public class Get_Inspection_Dropdown_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Survey_Completion_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
+            progressDialog = new ProgressDialog(SurveyCompletionPending.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -850,7 +884,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionFilter);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLSurveyCompletionFilter);
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
@@ -861,6 +895,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 jsonObject.put("filterCondition", opratorItems);
                 jsonObject.put("filterValue", getEditText);
                 jsonObject.put("Mode", "new");
+                jsonObject.put("PageName", "Survey Completion");
 
 
 
@@ -941,7 +976,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
             if(pending_accordion_arraylist!=null)
             {
-                boxAdapter = new ListAdapter(InspectionPending.this, products);
+                boxAdapter = new ListAdapter(SurveyCompletionPending.this, products);
                 searchlist.setAdapter(boxAdapter);
 
 
@@ -1079,11 +1114,12 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             notifyDataSetChanged();
         }
 
+
     }
 
 
 
-    public class Get_Inspection_SearchList_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Survey_Completion_SearchList_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
         private JSONArray preadvicejsonlist;
         private JSONObject preadvicejsonObject;
@@ -1094,7 +1130,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
+            progressDialog = new ProgressDialog(SurveyCompletionPending.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -1111,7 +1147,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionSearchList);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLSurveyCompletionSearchList);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
             //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
@@ -1137,6 +1173,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("Mode", "new");
                 jsonObject.put("SearchValues", SearchValuesObject);
+                jsonObject.put("PageName", "Survey Completion");
 
 
 
@@ -1154,7 +1191,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("ArrayOfInspection");
+                jsonarray = getJsonObject.getJSONArray("Response");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -1167,38 +1204,47 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         });
                     }else {
 
-                        inspection_arraylist = new ArrayList<InspectionBean>();
+                        repair_arraylist = new ArrayList<RepairBean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            inspection_bean = new InspectionBean();
+                            repair_bean = new RepairBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
 
 
 
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
-                            inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
-                            inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
-                            inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
-                            inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
-                            inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
-                            inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
-                            inspection_arraylist.add(inspection_bean);
+                            repair_bean.setCustomer(jsonObject.getString("Customer"));
+                            repair_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
+                            repair_bean.setInDate(jsonObject.getString("InDate"));
+                            repair_bean.setPrevious_cargo(jsonObject.getString("PreviousCargo"));
+                            repair_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
+                            repair_bean.setLoborRate(jsonObject.getString("LaborRate"));
+                            repair_bean.setLastTestType(jsonObject.getString("LastTestType"));
+                            repair_bean.setNextTestType(jsonObject.getString("NextTestType"));
+                            repair_bean.setLastTestDate(jsonObject.getString("LastTestDate"));
+                            repair_bean.setNextTestDate(jsonObject.getString("NextTestDate"));
+                            repair_bean.setLastSurveyor(jsonObject.getString("LastSurveyor"));
+                            repair_bean.setValidityPeriodForTest(jsonObject.getString("ValidityPeriodforTest"));
+                            repair_bean.setRepairTypeId(jsonObject.getString("RepairTypeID"));
+                            repair_bean.setRepairTypeCd(jsonObject.getString("RepairTypeCD"));
+                            repair_bean.setRemarks(jsonObject.getString("Remarks"));
+                            repair_bean.setInvoicingPartyCD(jsonObject.getString("InvoicingPartyCD"));
+                            repair_bean.setInvoicingPartyID(jsonObject.getString("InvoicingPartyID"));
+                            repair_bean.setInvoicingPartyName(jsonObject.getString("InvoicingPartyName"));
+                            repair_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                            repair_bean.setRepairEstimateId(jsonObject.getString("RepairEstimateID"));
+                            repair_bean.setRevision_no(jsonObject.getString("RevisionNo"));
+                            repair_bean.setCust_appRef(jsonObject.getString("CustomerAppRef"));
+                            repair_bean.setApprovalDate(jsonObject.getString("ApprovalDate"));
+                            repair_bean.setParty_appRef(jsonObject.getString("PartyAppRef"));
+                            repair_bean.setSurveyor_name(jsonObject.getString("SurveyorName"));
+                            repair_bean.setSurvey_completionDate(jsonObject.getString("SurveyCompletionDate"));
+                            repair_bean.setLineItems(jsonObject.getString("LineItems"));
+                            repair_bean.setAttachment(jsonObject.getString("attchement"));
+                            repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
+                            repair_arraylist.add(repair_bean);
 
 
 
@@ -1235,13 +1281,13 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
 
 
-            if(inspection_arraylist!=null)
+            if(repair_arraylist!=null)
             {
-                adapter = new UserListAdapter(InspectionPending.this, R.layout.list_item_row, inspection_arraylist);
+                adapter = new UserListAdapter(SurveyCompletionPending.this, R.layout.list_item_row, repair_arraylist);
                 listview.setAdapter(adapter);
 
             }
-            else if(inspection_arraylist.size()<1)
+            else if(repair_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 
@@ -1263,3 +1309,4 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     }
 
 }
+
