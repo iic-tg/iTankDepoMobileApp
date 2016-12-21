@@ -47,4 +47,10 @@ public class ConstantValues {
 	public static String baseURLSurveyCompletionList=Link+"RepairEstimateMobile.asmx/RepairList";
 	public static String baseURLSurveyCompletionFilter=Link+"RepairEstimateMobile.asmx/filter";
 	public static String baseURLSurveyCompletionSearchList=Link+"RepairEstimateMobile.asmx/SearchList";
+	public static String baseURLRepairCompletionList=Link+"RepairCompletionMobile.asmx/RepairList";
+	public static String baseURLRepairCompletionFilter=Link+"RepairCompletionMobile.asmx/filter";
+	public static String baseURLRepairCompletionSearchList=Link+"RepairCompletionMobile.asmx/SearchList";
+	public static String baseURLEquipmentHistory=Link+"EquipmentHistoryMobile.asmx/EquipmentHistoryList";
+	public static String baseURLEquipmentValidation=Link+"EquipmentHistoryMobile.asmx/validateEquipmentDelete";
+	public static String baseURLEquipmentDeleteActivity=Link+"EquipmentHistoryMobile.asmx/DeleteActivity";
 }

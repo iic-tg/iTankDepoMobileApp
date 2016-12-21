@@ -27,6 +27,12 @@ public class GlobalConstants {
     public static String equip_status="";
     public static String equip_status_type="";
     public static String status="";
+    public static String estimate_no="";
+    public static String repair_type="";
+    public static String estimated_manHr="";
+    public static String actual_manHr="";
+    public static String completion_date="";
+    public static String attachment="";
     public static String code="";
     public static String location="";
     public static String date="";

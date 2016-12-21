@@ -356,7 +356,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_weight="0.5"
-                        android:id="@+id/LL_Report">
+                        android:id="@+id/LL_Stock_Report">
                         <RelativeLayout
                             style="@style/DashboardImage_AM">
                         <ImageView

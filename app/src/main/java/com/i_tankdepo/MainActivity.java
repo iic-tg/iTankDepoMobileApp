@@ -46,7 +46,7 @@ public class MainActivity extends CommonActivity
     Toolbar toolbar;
     private ImageView menu,up,down,iv_back;
     private DrawerLayout drawer;
-    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair;
+    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_Stock_Report,LL_GateOut;
     LinearLayout LL_hole;
     private TextView tv_toolbarTitle;
     private Intent mServiceIntent;
@@ -80,65 +80,14 @@ public class MainActivity extends CommonActivity
         }
 
 
-/*
-            try {
-                jsonArray = new JSONArray(getIntent().getStringExtra("jsonArray"));
-
-                if (jsonArray != null) {
-                    list = new ArrayList<String>();
-                    for (int i = 0; i < jsonArray.length(); i++) {
-
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        String view = jsonObject.getString("View");
-
-                        if (view.equalsIgnoreCase("False")) {
-                            // AtivityName
-                            activityName = jsonObject.getString("AtivityName");
-
-                            list.add(activityName);
-                        }
-
-                    }
-
-                    for (int i = 0; i < list.size(); i++) {
-                        String role = list.get(i);
-                        if (role.equalsIgnoreCase("Heating")) {
-                            im_heating.setVisibility(View.GONE);
-
-                        } else if (role.equalsIgnoreCase("Gate Out")) {
-                            im_gateout.setVisibility(View.GONE);
-                        } else if (role.equalsIgnoreCase("Equipment History")) {
-                            im_equipement.setVisibility(View.GONE);
-                        } else if (role.equalsIgnoreCase("Gate In Creation")) {
-                            im_gatein.setVisibility(View.GONE);
-
-                        }
-                        if (role.equalsIgnoreCase("Cleaning")) {
-
-                            im_cleaning.setVisibility(View.GONE);
-
-                        } else if (role.equalsIgnoreCase("Leak Test")) {
-                            im_leaktest.setVisibility(View.GONE);
-
-                        } else if (role.equalsIgnoreCase("Repair Estimate")) {
-                            im_repair.setVisibility(View.GONE);
-                        }
-
-                        Log.i("role", role);
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                shortToast(getApplicationContext(), "Data Not Found");
-            }
-*/
-
-
         LL_Gatein = (LinearLayout) findViewById(R.id.LL_GateIn);
+        LL_GateOut = (LinearLayout) findViewById(R.id.LL_GateOut);
         LL_Heating = (LinearLayout) findViewById(R.id.LL_Heating);
         Ll_Cleaning = (LinearLayout)findViewById(R.id.LL_Cleaning);
         LL_Leaktest = (LinearLayout)findViewById(R.id.LL_Leaktest);
         LL_Repair = (LinearLayout)findViewById(R.id.LL_Repair);
+        LL_History = (LinearLayout)findViewById(R.id.LL_History);
+        LL_Stock_Report = (LinearLayout)findViewById(R.id.LL_Stock_Report);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Home");
@@ -146,10 +95,13 @@ public class MainActivity extends CommonActivity
 
 
         LL_Gatein.setOnClickListener(this);
+        LL_GateOut.setOnClickListener(this);
         LL_Heating.setOnClickListener(this);
         Ll_Cleaning.setOnClickListener(this);
         LL_Leaktest.setOnClickListener(this);
         LL_Repair.setOnClickListener(this);
+        LL_History.setOnClickListener(this);
+        LL_Stock_Report.setOnClickListener(this);
 
          drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -249,10 +201,16 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(),Cleaning.class));
                 break;
             case R.id.LL_Leaktest:
-                startActivity(new Intent(getApplicationContext(),InspectionPending.class));
+//                startActivity(new Intent(getApplicationContext(),InspectionPending.class));
                 break;
             case R.id.LL_Repair:
                 startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
+                break;
+            case R.id.LL_History:
+                startActivity(new Intent(getApplicationContext(),EquipmentHistory.class));
+                break;
+            case R.id.LL_Stock_Report:
+//                startActivity(new Intent(getApplicationContext(),EquipmentHistory.class));
                 break;
         }
     }

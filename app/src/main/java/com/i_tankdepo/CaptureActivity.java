@@ -673,7 +673,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     return true;
   }
 
-  /** Finds the proper lastStatusDate on the SD card where we can save files. */
+  /** Finds the proper status on the SD card where we can save files. */
   private File getStorageDirectory() {
     //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
     
@@ -723,7 +723,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   /**
    * Requests initialization of the OCR engine with the given parameters.
    * 
-   * @param storageRoot Path to lastStatusDate of the tessdata directory to use
+   * @param storageRoot Path to status of the tessdata directory to use
    * @param languageCode Three-letter ISO 639-3 language cleaningRate for OCR
    * @param languageName Name of the language for OCR, for example, "English"
    */
