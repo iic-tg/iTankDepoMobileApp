@@ -199,7 +199,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="135dp"
+        android:layout_height="140dp"
         android:orientation="horizontal"
         android:background="@color/white"
         >
@@ -233,7 +233,7 @@
             <View style="@style/View_vertical_black"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginLeft="17dp"
+                android:layout_marginLeft="16dp"
                 ></View>
             <RadioButton
                 android:layout_width="wrap_content"
@@ -253,6 +253,7 @@
             android:orientation="vertical"
             android:layout_marginTop="5dp"
             android:layout_marginRight="10dp"
+            android:paddingBottom="8dp"
             android:weightSum="5">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -324,7 +325,7 @@
                     android:layout_weight="1.2"
                     android:text="Ref No"
                     android:id="@+id/tv_RefNo"
-                    android:drawableLeft="@mipmap/ic_RefNo"
+                    android:drawableLeft="@mipmap/ic_ref_no"
                     android:gravity="center|left"/>
                 <TextView
                     android:layout_width="0dp"
@@ -368,7 +369,7 @@
                     android:id="@+id/tv_modifiedDate"
                     android:layout_marginRight="10dp"
                     android:text="Modified Date "
-                    android:drawableLeft="@mipmap/ic_modifiedDate"
+                    android:drawableLeft="@mipmap/ic_modi_date"
                     android:layout_weight="1.8"/>
                 <TextView
                     android:layout_width="0dp"
@@ -386,6 +387,7 @@
                 android:layout_weight="1"
                 android:weightSum="3"
                 android:layout_marginTop="10dp"
+
                 android:orientation="horizontal">
 
                 <TextView
@@ -404,16 +406,29 @@
                     android:text="InVoicing Party "
                     android:visibility="invisible"
                     android:drawableLeft="@mipmap/ic_user"
-                    android:layout_weight="1.70"/>
-                <ImageView
+                    android:layout_weight="1.65"/>
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:gravity="center|right"
-                    android:id="@+id/im_delete"
                     android:layout_marginRight="10dp"
                     android:text="Billing Status"
-                    android:src="@mipmap/ic_delete"
-                    android:layout_weight="0.30"/>
+                    android:layout_weight="0.35"
+                    >
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/im_delete_grey"
+                        android:src="@mipmap/ic_deletegrey"
+                        />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/im_delete_red"
+                        android:src="@mipmap/ic_deletered"
+                        android:visibility="gone"
+                        />
+                    </RelativeLayout>
 
             </LinearLayout>
   </LinearLayout>

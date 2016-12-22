@@ -136,6 +136,15 @@
                         android:gravity="center"
                         android:drawableTint="@color/white"
                         />
+                    <Button
+                        android:id="@+id/leakTest"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:background="@android:color/transparent"
+                        android:drawableTop="@mipmap/ic_add"
+                        android:gravity="center"
+                        android:drawableTint="@color/white"
+                        />
                 </RelativeLayout>
                 <RelativeLayout
                     android:layout_width="match_parent"

@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,8 +34,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
-import android.widget.Filter;
-
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -46,9 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.i_tankdepo.Beanclass.HeatingAccordionBean;
-import com.i_tankdepo.Beanclass.HeatingBean;
-import com.i_tankdepo.Beanclass.PendingAccordionBean;
-import com.i_tankdepo.Beanclass.PendingBean;
+import com.i_tankdepo.Beanclass.LeakTestBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.helper.ServiceHandler;
@@ -71,14 +66,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static com.i_tankdepo.Constants.GlobalConstants.equipment_no;
-import static com.i_tankdepo.R.layout.heating;
-
 /**
  * Created by Metaplore on 10/18/2016.
  */
 
-public class Heating extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class LeakTest extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
@@ -95,14 +87,14 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Spinner sp_fields, sp_operator;
     private String fieldItems, opratorItems;
     private ProgressDialog progressDialog;
-    private ArrayList<HeatingBean> heating_arraylist = new ArrayList<>();
-    private HeatingBean heating_bean;
+    private ArrayList<LeakTestBean> leakTest_arraylist = new ArrayList<>();
+    private LeakTestBean leakTest_bean;
     private ViewHolder holder;
     private ArrayList<HeatingAccordionBean> heating_accordion_arraylist = new ArrayList<>();
     private HeatingAccordionBean heating_accordion_bean;
     ArrayList<Product> products = new ArrayList<Product>();
     private ArrayList<Product> box;
-    private Heating.ListAdapter boxAdapter;
+    private ListAdapter boxAdapter;
     private UserListAdapter adapter;
     private ListView listview, search_heat_list;
     List<String> selected_name = new ArrayList<String>();
@@ -110,15 +102,16 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Intent mServiceIntent;
 
     private EditText ed_text1, searchView1, searchView2;
-    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,leakTest;
+    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,Leaktest;
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
+    private TextView leakTest_text;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.heating);
+        setContentView(R.layout.leak_test);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu = (ImageView) findViewById(R.id.iv_menu);
@@ -135,8 +128,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
-        LL_heat.setAlpha(0.5f);
-        LL_heat.setClickable(false);
+        /*LL_heat.setAlpha(0.5f);
+        LL_heat.setClickable(false);*/
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
         ed_text1 = (EditText) findViewById(R.id.ed_text1);
 
@@ -153,11 +146,13 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         no_data.setVisibility(View.GONE);
 
         heating = (Button)findViewById(R.id.heating);
+        heating.setVisibility(View.GONE);
+        Leaktest = (Button)findViewById(R.id.leakTest);
+        leakTest_text = (TextView)findViewById(R.id.tv_heating);
+        leakTest_text.setText("Add New");
         cleaning = (Button)findViewById(R.id.cleaning);
         inspection = (Button)findViewById(R.id.inspection);
-        leakTest = (Button)findViewById(R.id.leakTest);
         inspection.setVisibility(View.GONE);
-        leakTest.setVisibility(View.GONE);
         cleaning.setVisibility(View.GONE);
 
 
@@ -172,7 +167,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_search_Value.setVisibility(View.GONE);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
-        tv_toolbarTitle.setText("Heating");
+        tv_toolbarTitle.setText("Leak Test");
         sp_fields = (Spinner) findViewById(R.id.sp_heat_customer);
         sp_operator = (Spinner) findViewById(R.id.sp_heat_operator);
 
@@ -204,7 +199,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                 if(cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Heating_filter().execute();
+                    new Get_LeakTest_filter().execute();
                 }else
                 {
                     shortToast(getApplicationContext(),"Please check Your Internet Connection");
@@ -222,7 +217,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         });
 
         if (cd.isConnectingToInternet()) {
-            new Get_Heating_details().execute();
+            new Get_Leaktest_details().execute();
         } else {
             shortToast(getApplicationContext(), "Please Check your Internet Connection.");
         }
@@ -246,7 +241,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
@@ -254,21 +249,21 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
@@ -292,20 +287,20 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
                 }else{
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Get_LeakTest_filter().execute();
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
@@ -358,7 +353,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             no_data.setVisibility(View.GONE);
             LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
-                new Get_Heating_filter().execute();
+                new Get_LeakTest_filter().execute();
             } else {
                 shortToast(getApplicationContext(), "Please check Your Internet Connection");
             }
@@ -404,7 +399,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
-                                new Get_Heating_SearchList_details().execute();
+                                new Get_Leaktest_SearchList_details().execute();
                             }else {
                                 shortToast(getApplicationContext(),"Please check Your Internet Connection");
                             }
@@ -457,13 +452,13 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
     }
 
-    public class Get_Heating_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Leaktest_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(Heating.this);
+            progressDialog = new ProgressDialog(LeakTest.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -480,7 +475,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLHeatingList);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLLeakTestList);
 
             httpPost.setHeader("Content-Type", "application/json");
 
@@ -505,7 +500,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("HeatingArray");
+                jsonarray = getJsonObject.getJSONArray("arrayOfLTM");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list" + jsonarray);
@@ -518,35 +513,53 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                         });
                     } else {
 
-                        heating_arraylist = new ArrayList<HeatingBean>();
+                        leakTest_arraylist = new ArrayList<LeakTestBean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            heating_bean = new HeatingBean();
+                            leakTest_bean = new LeakTestBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
+                            leakTest_bean.setLK_TST_ID(jsonObject.getString("LK_TST_ID"));
+                            leakTest_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
+                            leakTest_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+                            leakTest_bean.setESTMT_NO(jsonObject.getString("ESTMT_NO"));
+                            leakTest_bean.setTST_DT(jsonObject.getString("TST_DT"));
+                            leakTest_bean.setRLF_VLV_SRL_1(jsonObject.getString("RLF_VLV_SRL_1"));
+                            leakTest_bean.setRLF_VLV_SRL_2(jsonObject.getString("RLF_VLV_SRL_2"));
+                            leakTest_bean.setPG_1(jsonObject.getString("PG_1"));
+                            leakTest_bean.setPG_2(jsonObject.getString("PG_2"));
+                            leakTest_bean.setRVSN_NO(jsonObject.getString("RVSN_NO"));
+                            leakTest_bean.setLST_GNRTD_BY(jsonObject.getString("LST_GNRTD_BY"));
+                            leakTest_bean.setLST_GNRTD_DT(jsonObject.getString("LST_GNRTD_DT"));
+                            leakTest_bean.setLTST_RPRT_NO(jsonObject.getString("LTST_RPRT_NO"));
+                            leakTest_bean.setNO_OF_TMS_GNRTD(jsonObject.getString("NO_OF_TMS_GNRTD"));
+                            leakTest_bean.setSHLL_TST_BT(jsonObject.getString("SHLL_TST_BT"));
+                            leakTest_bean.setSTM_TB_TST_BT(jsonObject.getString("STM_TB_TST_BT"));
+                            leakTest_bean.setRMRKS_VC(jsonObject.getString("RMRKS_VC"));
+                            leakTest_bean.setACTV_BT(jsonObject.getString("ACTV_BT"));
+                            leakTest_bean.setCRTD_BY(jsonObject.getString("CRTD_BY"));
+                            leakTest_bean.setCRTD_DT(jsonObject.getString("CRTD_DT"));
+                            leakTest_bean.setMDFD_BY(jsonObject.getString("MDFD_BY"));
+                            leakTest_bean.setMDFD_DT(jsonObject.getString("MDFD_DT"));
+                            leakTest_bean.setEQPMNT_TYP_ID(jsonObject.getString("EQPMNT_TYP_ID"));
+                            leakTest_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
+                            leakTest_bean.setEQPMNT_CD_ID(jsonObject.getString("EQPMNT_CD_ID"));
+                            leakTest_bean.setEQPMNT_CD_CD(jsonObject.getString("EQPMNT_CD_CD"));
+                            leakTest_bean.setEQPMNT_STTS_ID(jsonObject.getString("EQPMNT_STTS_ID"));
+                            leakTest_bean.setEQPMNT_STTS_CD(jsonObject.getString("EQPMNT_STTS_CD"));
+                            leakTest_bean.setCHECKED(jsonObject.getString("CHECKED"));
+                            leakTest_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
+                            leakTest_bean.setCSTMR_ID(jsonObject.getString("CSTMR_ID"));
+                            leakTest_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
+                            leakTest_bean.setDPT_ID(jsonObject.getString("DPT_ID"));
+                            leakTest_bean.setSHL_TST(jsonObject.getString("SHL_TST"));
+                            leakTest_bean.setSTM_TB_TST(jsonObject.getString("STM_TB_TST"));
+                            leakTest_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
 
-                            heating_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
-                            heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
-                            heating_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
-                            heating_bean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
-                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
-                            heating_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
-                            heating_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-                            heating_bean.setHTNG_STRT_DT(jsonObject.getString("HTNG_STRT_DT"));
-                            heating_bean.setHTNG_STRT_TM(jsonObject.getString("HTNG_STRT_TM"));
-                            heating_bean.setHTNG_END_DT(jsonObject.getString("HTNG_END_DT"));
-                            heating_bean.setHTNG_END_TM(jsonObject.getString("HTNG_END_TM"));
-                            heating_bean.setHTNG_TMPRTR(jsonObject.getString("HTNG_TMPRTR"));
-                            heating_bean.setTTL_HTN_PRD(jsonObject.getString("TTL_HTN_PRD"));
-                            heating_bean.setMIN_HTNG_RT_NC(jsonObject.getString("MIN_HTNG_RT_NC"));
-                            heating_bean.setHRLY_CHRG_NC(jsonObject.getString("HRLY_CHRG_NC"));
-                            heating_bean.setCSTMR_CRRNCY_CD(jsonObject.getString("CSTMR_CRRNCY_CD"));
-                            heating_bean.setMIN_HTNG_PRD_NC(jsonObject.getString("MIN_HTNG_PRD_NC"));
-                            heating_bean.setTTL_RT_NC(jsonObject.getString("TTL_RT_NC"));
 
-                            heating_arraylist.add(heating_bean);
+                            leakTest_arraylist.add(leakTest_bean);
 
 
                         }
@@ -583,10 +596,10 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
 
 //            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            progressDialog.dismiss();
 //            }
-            if (heating_arraylist != null) {
-                adapter = new UserListAdapter(Heating.this, R.layout.list_item_row, heating_arraylist);
+            if (leakTest_arraylist != null) {
+                adapter = new UserListAdapter(LeakTest.this, R.layout.list_item_row, leakTest_arraylist);
                 listview.setAdapter(adapter);
 
 
@@ -613,7 +626,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 });
 
 
-            } else if (heating_arraylist.size() < 1) {
+            } else if (leakTest_arraylist.size() < 1) {
                 shortToast(getApplicationContext(), "Data Not Found");
             }
 
@@ -622,18 +635,18 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     }
 
     public class UserListAdapter extends BaseAdapter {
-        private final ArrayList<HeatingBean> arraylist;
+        private final ArrayList<LeakTestBean> arraylist;
         Context context;
-        ArrayList<HeatingBean> list = new ArrayList<>();
+        ArrayList<LeakTestBean> list = new ArrayList<>();
         int resource;
-        private HeatingBean userListBean;
+        private LeakTestBean userListBean;
         int lastPosition = -1;
 
-        public UserListAdapter(Context context, int resource, ArrayList<HeatingBean> list) {
+        public UserListAdapter(Context context, int resource, ArrayList<LeakTestBean> list) {
             this.context = context;
             this.list = list;
             this.resource = resource;
-            this.arraylist = new ArrayList<HeatingBean>();
+            this.arraylist = new ArrayList<LeakTestBean>();
             this.arraylist.addAll(list);
         }
 
@@ -657,7 +670,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 convertView = inflater.inflate(resource, null);
-                holder = new Heating.ViewHolder();
+                holder = new LeakTest.ViewHolder();
 
 
 
@@ -665,27 +678,48 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
                 holder.date = (TextView) convertView.findViewById(R.id.text3);
-                holder.previous_crg = (TextView) convertView.findViewById(R.id.text4);
+                holder.previous_cargo = (TextView) convertView.findViewById(R.id.text4);
+                holder.previous_cargo.setVisibility(View.GONE);
+                holder.leaktestID = (TextView) convertView.findViewById(R.id.tv_text30);
                 holder.transactionNO = (TextView) convertView.findViewById(R.id.text5);
                 holder.type = (TextView) convertView.findViewById(R.id.tv_type);
-                holder.location = (TextView) convertView.findViewById(R.id.text6);
-                holder.startDate = (TextView) convertView.findViewById(R.id.tv_code);
-                holder.startTime = (TextView) convertView.findViewById(R.id.tv_location);
-                holder.endDate = (TextView) convertView.findViewById(R.id.tv_transport);
-                holder.endTime = (TextView) convertView.findViewById(R.id.tv_vechicle);
-                holder.temp = (TextView) convertView.findViewById(R.id.text7);
-                holder.ttl_htngPrd = (TextView) convertView.findViewById(R.id.text8);
-                holder.min_htngRate_NC = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
-                holder.hourly_charge = (TextView) convertView.findViewById(R.id.text10);
-                holder.cust_currency = (TextView) convertView.findViewById(R.id.tv_status);
-                holder.min_htngPRD_NC = (TextView) convertView.findViewById(R.id.text9);
-                holder.TTL_RT_NC = (TextView) convertView.findViewById(R.id.tv_pre_code);
+                holder.testDate = (TextView) convertView.findViewById(R.id.text6);
+                holder.RLFVLV1 = (TextView) convertView.findViewById(R.id.tv_code);
+                holder.RLFVLV2 = (TextView) convertView.findViewById(R.id.tv_location);
+                holder.PG1 = (TextView) convertView.findViewById(R.id.tv_transport);
+                holder.PG2 = (TextView) convertView.findViewById(R.id.tv_vechicle);
+                holder.estimateNo = (TextView) convertView.findViewById(R.id.text7);
+                holder.revisionNO = (TextView) convertView.findViewById(R.id.text8);
+                holder.listGrantedBy = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
+                holder.listGrantedDate = (TextView) convertView.findViewById(R.id.text10);
+                holder.listReportNo = (TextView) convertView.findViewById(R.id.tv_status);
+                holder.noofTimesGranted = (TextView) convertView.findViewById(R.id.text9);
+                holder.testBit = (TextView) convertView.findViewById(R.id.tv_text11);
+                holder.STM_TB_TST_BT = (TextView) convertView.findViewById(R.id.text12);
+                holder.RMRKS_VC = (TextView) convertView.findViewById(R.id.tv_text13);
+                holder.ACTV_BT = (TextView) convertView.findViewById(R.id.tv_text14);
+                holder.CRTD_BY = (TextView) convertView.findViewById(R.id.tv_text15);
+                holder.CRTD_DT = (TextView) convertView.findViewById(R.id.tv_text16);
+                holder.MDFD_BY = (TextView) convertView.findViewById(R.id.tv_text17);
+                holder.MDFD_DT = (TextView) convertView.findViewById(R.id.tv_text18);
+                holder.EQPMNT_TYP_ID = (TextView) convertView.findViewById(R.id.tv_text19);
+                holder.EQPMNT_CD_ID = (TextView) convertView.findViewById(R.id.tv_text20);
+                holder.EQPMNT_CD_CD = (TextView) convertView.findViewById(R.id.tv_text29);
+                holder.EQPMNT_STTS_ID = (TextView) convertView.findViewById(R.id.tv_text21);
+                holder.EQPMNT_STTS_CD = (TextView) convertView.findViewById(R.id.tv_text22);
+                holder.CHECKED = (TextView) convertView.findViewById(R.id.tv_text23);
+                holder.CSTMR_ID = (TextView) convertView.findViewById(R.id.tv_text24);
+                holder.DPT_ID = (TextView) convertView.findViewById(R.id.tv_text25);
+                holder.SHL_TST = (TextView) convertView.findViewById(R.id.tv_text26);
+                holder.STM_TB_TST = (TextView) convertView.findViewById(R.id.tv_text27);
+                holder.YRD_LCTN = (TextView) convertView.findViewById(R.id.tv_text28);
+
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.LL_username.setVisibility(View.GONE);
 
                 convertView.setTag(holder);
             } else {
-                holder = (Heating.ViewHolder) convertView.getTag();
+                holder = (LeakTest.ViewHolder) convertView.getTag();
             }
             if (list.size() < 1) {
                 Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
@@ -698,20 +732,40 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 holder.equip_no.setText(userListBean.getEQPMNT_NO() + "," + userListBean.getEQPMNT_TYP_CD());
                 holder.Cust_Name.setText(userListBean.getCSTMR_CD());
                 holder.date.setText(userListBean.getGTN_DT());
-                holder.previous_crg.setText(userListBean.getPRDCT_DSCRPTN_VC());
+
+
+                holder.leaktestID.setText(userListBean.getLK_TST_ID());
                 holder.transactionNO.setText(userListBean.getGI_TRNSCTN_NO());
-                holder.temp.setText(userListBean.getHTNG_TMPRTR());
-                holder.location.setText(userListBean.getYRD_LCTN());
-                holder.startDate.setText(userListBean.getHTNG_STRT_DT());
-                holder.startTime.setText(userListBean.getHTNG_STRT_TM());
-                holder.endDate.setText(userListBean.getHTNG_END_DT());
-                holder.endTime.setText(userListBean.getHTNG_END_TM());
-                holder.ttl_htngPrd.setText(userListBean.getTTL_HTN_PRD());
-                holder.min_htngRate_NC.setText(userListBean.getMIN_HTNG_RT_NC());
-                holder.hourly_charge.setText(userListBean.getHRLY_CHRG_NC());
-                holder.cust_currency.setText(userListBean.getCSTMR_CRRNCY_CD());
-                holder.min_htngPRD_NC.setText(userListBean.getMIN_HTNG_PRD_NC());
-                holder.TTL_RT_NC.setText(userListBean.getTTL_RT_NC());
+                holder.estimateNo.setText(userListBean.getESTMT_NO());
+                holder.testDate.setText(userListBean.getTST_DT());
+                holder.RLFVLV1.setText(userListBean.getRLF_VLV_SRL_1());
+                holder.RLFVLV2.setText(userListBean.getRLF_VLV_SRL_2());
+                holder.PG1.setText(userListBean.getPG_1());
+                holder.PG2.setText(userListBean.getPG_2());
+                holder.revisionNO.setText(userListBean.getRVSN_NO());
+                holder.listGrantedBy.setText(userListBean.getLST_GNRTD_BY());
+                holder.listGrantedDate.setText(userListBean.getLST_GNRTD_DT());
+                holder.listReportNo.setText(userListBean.getLTST_RPRT_NO());
+                holder.noofTimesGranted.setText(userListBean.getNO_OF_TMS_GNRTD());
+                holder.testBit.setText(userListBean.getSHLL_TST_BT());
+                holder.STM_TB_TST_BT.setText(userListBean.getSTM_TB_TST_BT());
+                holder.RMRKS_VC.setText(userListBean.getRMRKS_VC());
+                holder.ACTV_BT.setText(userListBean.getACTV_BT());
+                holder.CRTD_BY.setText(userListBean.getCRTD_BY());
+                holder.CRTD_DT.setText(userListBean.getCRTD_DT());
+                holder.MDFD_BY.setText(userListBean.getMDFD_BY());
+                holder.MDFD_DT.setText(userListBean.getMDFD_DT());
+                holder.EQPMNT_TYP_ID.setText(userListBean.getEQPMNT_TYP_ID());
+                holder.EQPMNT_CD_ID.setText(userListBean.getEQPMNT_CD_ID());
+                holder.EQPMNT_CD_CD.setText(userListBean.getEQPMNT_CD_CD());
+                holder.EQPMNT_STTS_ID.setText(userListBean.getEQPMNT_STTS_ID());
+                holder.EQPMNT_STTS_CD.setText(userListBean.getEQPMNT_STTS_CD());
+                holder.CHECKED.setText(userListBean.getCHECKED());
+                holder.CSTMR_ID.setText(userListBean.getCSTMR_ID());
+                holder.DPT_ID.setText(userListBean.getDPT_ID());
+                holder.SHL_TST.setText(userListBean.getSHL_TST());
+                holder.STM_TB_TST.setText(userListBean.getSTM_TB_TST());
+                holder.YRD_LCTN.setText(userListBean.getYRD_LCTN());
 /*
                 if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
                 {
@@ -725,30 +779,50 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(getApplicationContext(), HeatingPeriod.class);
+                       Intent i = new Intent(getApplicationContext(), LeakTestUpdate.class);
 
+                        GlobalConstants.leskTestID = list.get(position).getLK_TST_ID();
                         GlobalConstants.equipment_no = list.get(position).getEQPMNT_NO();
-                        GlobalConstants.customer_name = list.get(position).getCSTMR_CD();
-                        GlobalConstants.date = list.get(position).getGTN_DT();
-                        GlobalConstants.type = list.get(position).getEQPMNT_TYP_CD();
-                        GlobalConstants.previous_cargo = list.get(position).getPRDCT_DSCRPTN_VC();
-                        GlobalConstants.location = list.get(position).getYRD_LCTN();
                         GlobalConstants.gt_transaction_no = list.get(position).getGI_TRNSCTN_NO();
-                        GlobalConstants.htng_startDate = list.get(position).getHTNG_STRT_DT();
-                        GlobalConstants.htng_startTime = list.get(position).getHTNG_STRT_TM();
-                        GlobalConstants.htng_EndDate = list.get(position).getHTNG_END_DT();
-                        GlobalConstants.htng_EndTime = list.get(position).getHTNG_END_TM();
-                        GlobalConstants.htng_temp = list.get(position).getHTNG_TMPRTR();
-                        GlobalConstants.ttl_htngPrd = list.get(position).getTTL_HTN_PRD();
-                        GlobalConstants.min_htng_rate = list.get(position).getMIN_HTNG_RT_NC();
-                        GlobalConstants.hourly_charge = list.get(position).getHRLY_CHRG_NC();
-                        GlobalConstants.cust_currency = list.get(position).getCSTMR_CRRNCY_CD();
-                        GlobalConstants.min_htngPrd = list.get(position).getMIN_HTNG_PRD_NC();
-                        GlobalConstants.ttl_RT_NC = list.get(position).getMIN_HTNG_RT_NC();
+                        GlobalConstants.estimate_no = list.get(position).getESTMT_NO();
+                        GlobalConstants.TestDate = list.get(position).getTST_DT();
+                        GlobalConstants.RLFVLV1 = list.get(position).getRLF_VLV_SRL_1();
+                        GlobalConstants.RLFVLV2 = list.get(position).getRLF_VLV_SRL_2();
+                        GlobalConstants.PG1 = list.get(position).getPG_1();
+                        GlobalConstants.PG2 = list.get(position).getPG_2();
+                        GlobalConstants.revisionNo = list.get(position).getRVSN_NO();
+                        GlobalConstants.LastGrantedBy = list.get(position).getLST_GNRTD_BY();
+                        GlobalConstants.LastGrantedDate = list.get(position).getLST_GNRTD_DT();
+                        GlobalConstants.ListRptNo = list.get(position).getLTST_RPRT_NO();
+                        GlobalConstants.no_of_tms_granted = list.get(position).getNO_OF_TMS_GNRTD();
+                        GlobalConstants.SHLL_TST_BT = list.get(position).getSHLL_TST_BT();
+                        GlobalConstants.STM_TB_TST_BT = list.get(position).getSTM_TB_TST_BT();
+                        GlobalConstants.remark = list.get(position).getRMRKS_VC();
+                        GlobalConstants.ACTV_BT = list.get(position).getACTV_BT();
+                        GlobalConstants.CRTD_BY = list.get(position).getCRTD_BY();
+                        GlobalConstants.CRTD_DT = list.get(position).getCRTD_DT();
+                        GlobalConstants.MDFD_BY = list.get(position).getMDFD_BY();
+                        GlobalConstants.MDFD_DT = list.get(position).getMDFD_DT();
+                        GlobalConstants.EQPMNT_TYP_ID = list.get(position).getEQPMNT_TYP_ID();
+                        GlobalConstants.EQPMNT_TYP_CD = list.get(position).getEQPMNT_TYP_CD();
+                        GlobalConstants.EQPMNT_CD_ID = list.get(position).getEQPMNT_CD_ID();
+                        GlobalConstants.EQPMNT_CD_CD = list.get(position).getEQPMNT_CD_CD();
+                        GlobalConstants.EQPMNT_STTS_ID = list.get(position).getEQPMNT_STTS_ID();
+                        GlobalConstants.type = list.get(position).getEQPMNT_STTS_CD();
+                        GlobalConstants.CHECKED = list.get(position).getCHECKED();
+                        GlobalConstants.date = list.get(position).getGTN_DT();
+                        GlobalConstants.customer_Id = list.get(position).getCSTMR_ID();
+                        GlobalConstants.customer_name = list.get(position).getCSTMR_CD();
+                        GlobalConstants.DPT_ID = list.get(position).getDPT_ID();
+                        GlobalConstants.SHL_TST = list.get(position).getSHL_TST();
+                        GlobalConstants.STM_TB_TST = list.get(position).getSTM_TB_TST();
+                        GlobalConstants.location = list.get(position).getYRD_LCTN();
 
-                        startActivity(i);
+
+                       startActivity(i);
                     }
                 });
+
 
             }
             return convertView;
@@ -760,10 +834,9 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             if (charText.length() == 0) {
                 list.addAll(arraylist);
             } else {
-                for (HeatingBean wp : arraylist) {
+                for (LeakTestBean wp : arraylist) {
                     if (wp.getCSTMR_CD().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getEQPMNT_NO().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getPRDCT_DSCRPTN_VC().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getGTN_DT().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getEQPMNT_TYP_CD().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
@@ -780,22 +853,24 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     }
 
     static class ViewHolder {
-        TextView equip_no, date, Cust_Name, previous_crg, transactionNO, location, startDate, startTime, pre_id, TTL_RT_NC, cust_code, type_id, code_id,
-                endTime, endDate, temp, min_htngPRD_NC, hourly_charge, ttl_htngPrd, cust_currency, min_htngRate_NC, type;
+        TextView equip_no, previous_cargo,date, Cust_Name, leaktestID, transactionNO, testDate, RLFVLV1, RLFVLV2, pre_id, testBit, cust_code, type_id, code_id,
+                PG2, PG1, estimateNo, noofTimesGranted, listGrantedDate, revisionNO, listReportNo, listGrantedBy, type,CRTD_DT,
+                CRTD_BY,ACTV_BT,RMRKS_VC,STM_TB_TST_BT,MDFD_BY,MDFD_DT,EQPMNT_TYP_ID,EQPMNT_CD_CD,EQPMNT_CD_ID,EQPMNT_STTS_ID,EQPMNT_STTS_CD,CHECKED
+                ,CSTMR_ID,DPT_ID,SHL_TST,STM_TB_TST,YRD_LCTN;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
     }
 
 
-    public class Get_Heating_filter extends AsyncTask<Void, Void, Void> {
+    public class Get_LeakTest_filter extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(Heating.this);
+            progressDialog = new ProgressDialog(LeakTest.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -813,7 +888,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLHeatingFilter);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLLeakTestFilter);
             httpPost.setHeader("Content-Type", "application/json");
 
             try {
@@ -909,7 +984,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
             if (heating_accordion_arraylist != null) {
 
-                boxAdapter = new Heating.ListAdapter(Heating.this, products);
+                boxAdapter = new LeakTest.ListAdapter(LeakTest.this, products);
                 search_heat_list.setAdapter(boxAdapter);
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
                 searchlist.setAdapter(adapter);*/
@@ -1059,7 +1134,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
     }
 
-    public class Get_Heating_SearchList_details extends AsyncTask<Void, Void, Void> {
+    public class Get_Leaktest_SearchList_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
         private JSONArray heatingjsonlist;
         private JSONObject heatingjsonObject;
@@ -1070,7 +1145,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(Heating.this);
+            progressDialog = new ProgressDialog(LeakTest.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -1087,7 +1162,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLHeatingSearchList);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLLeakTestSearchList);
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
@@ -1126,7 +1201,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("HeatingArray");
+                jsonarray = getJsonObject.getJSONArray("arrayOfLTM");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -1135,7 +1210,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
 
-                              shortToast(getApplicationContext(), "No Records Found");
+                                shortToast(getApplicationContext(), "No Records Found");
 
 
 
@@ -1144,33 +1219,51 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                         });
                     }else {
 
-                        heating_arraylist = new ArrayList<>();
+                        leakTest_arraylist = new ArrayList<>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            heating_bean = new HeatingBean();
+                            leakTest_bean = new LeakTestBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
-                            heating_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
-                            heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
-                            heating_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
-                            heating_bean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
-                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
-                            heating_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
-                            heating_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-                            heating_bean.setHTNG_STRT_DT(jsonObject.getString("HTNG_STRT_DT"));
-                            heating_bean.setHTNG_STRT_TM(jsonObject.getString("HTNG_STRT_TM"));
-                            heating_bean.setHTNG_END_DT(jsonObject.getString("HTNG_END_DT"));
-                            heating_bean.setHTNG_END_TM(jsonObject.getString("HTNG_END_TM"));
-                            heating_bean.setHTNG_TMPRTR(jsonObject.getString("HTNG_TMPRTR"));
-                            heating_bean.setTTL_HTN_PRD(jsonObject.getString("TTL_HTN_PRD"));
-                            heating_bean.setMIN_HTNG_RT_NC(jsonObject.getString("MIN_HTNG_RT_NC"));
-                            heating_bean.setHRLY_CHRG_NC(jsonObject.getString("HRLY_CHRG_NC"));
-                            heating_bean.setCSTMR_CRRNCY_CD(jsonObject.getString("CSTMR_CRRNCY_CD"));
-                            heating_bean.setMIN_HTNG_PRD_NC(jsonObject.getString("MIN_HTNG_PRD_NC"));
-                            heating_bean.setTTL_RT_NC(jsonObject.getString("TTL_RT_NC"));
-                            heating_arraylist.add(heating_bean);
+                            leakTest_bean.setLK_TST_ID(jsonObject.getString("LK_TST_ID"));
+                            leakTest_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
+                            leakTest_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+                            leakTest_bean.setESTMT_NO(jsonObject.getString("ESTMT_NO"));
+                            leakTest_bean.setTST_DT(jsonObject.getString("TST_DT"));
+                            leakTest_bean.setRLF_VLV_SRL_1(jsonObject.getString("RLF_VLV_SRL_1"));
+                            leakTest_bean.setRLF_VLV_SRL_2(jsonObject.getString("RLF_VLV_SRL_2"));
+                            leakTest_bean.setPG_1(jsonObject.getString("PG_1"));
+                            leakTest_bean.setPG_2(jsonObject.getString("PG_2"));
+                            leakTest_bean.setRVSN_NO(jsonObject.getString("RVSN_NO"));
+                            leakTest_bean.setLST_GNRTD_BY(jsonObject.getString("LST_GNRTD_BY"));
+                            leakTest_bean.setLST_GNRTD_DT(jsonObject.getString("LST_GNRTD_DT"));
+                            leakTest_bean.setLTST_RPRT_NO(jsonObject.getString("LTST_RPRT_NO"));
+                            leakTest_bean.setNO_OF_TMS_GNRTD(jsonObject.getString("NO_OF_TMS_GNRTD"));
+                            leakTest_bean.setSHLL_TST_BT(jsonObject.getString("SHLL_TST_BT"));
+                            leakTest_bean.setSTM_TB_TST_BT(jsonObject.getString("STM_TB_TST_BT"));
+                            leakTest_bean.setRMRKS_VC(jsonObject.getString("RMRKS_VC"));
+                            leakTest_bean.setACTV_BT(jsonObject.getString("ACTV_BT"));
+                            leakTest_bean.setCRTD_BY(jsonObject.getString("CRTD_BY"));
+                            leakTest_bean.setCRTD_DT(jsonObject.getString("CRTD_DT"));
+                            leakTest_bean.setMDFD_BY(jsonObject.getString("MDFD_BY"));
+                            leakTest_bean.setMDFD_DT(jsonObject.getString("MDFD_DT"));
+                            leakTest_bean.setEQPMNT_TYP_ID(jsonObject.getString("EQPMNT_TYP_ID"));
+                            leakTest_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
+                            leakTest_bean.setEQPMNT_CD_ID(jsonObject.getString("EQPMNT_CD_ID"));
+                            leakTest_bean.setEQPMNT_CD_CD(jsonObject.getString("EQPMNT_CD_CD"));
+                            leakTest_bean.setEQPMNT_STTS_ID(jsonObject.getString("EQPMNT_STTS_ID"));
+                            leakTest_bean.setEQPMNT_STTS_CD(jsonObject.getString("EQPMNT_STTS_CD"));
+                            leakTest_bean.setCHECKED(jsonObject.getString("CHECKED"));
+                            leakTest_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
+                            leakTest_bean.setCSTMR_ID(jsonObject.getString("CSTMR_ID"));
+                            leakTest_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
+                            leakTest_bean.setDPT_ID(jsonObject.getString("DPT_ID"));
+                            leakTest_bean.setSHL_TST(jsonObject.getString("SHL_TST"));
+                            leakTest_bean.setSTM_TB_TST(jsonObject.getString("STM_TB_TST"));
+                            leakTest_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
+                            leakTest_arraylist.add(leakTest_bean);
 
                         }
                     }
@@ -1205,13 +1298,13 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
 
 
-            if(heating_arraylist!=null)
+            if(leakTest_arraylist!=null)
             {
-                adapter = new Heating.UserListAdapter(Heating.this, R.layout.list_item_row, heating_arraylist);
+                adapter = new LeakTest.UserListAdapter(LeakTest.this, R.layout.list_item_row, leakTest_arraylist);
                 listview.setAdapter(adapter);
 
             }
-            else if(heating_arraylist.size()<1)
+            else if(leakTest_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 

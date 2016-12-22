@@ -55,6 +55,8 @@
                     android:layout_weight="1.7"
                     android:background="@drawable/field_border_grey"
                     android:id="@+id/ed_searchview"
+                    android:maxLength="11"
+                    android:inputType="textCapCharacters|textNoSuggestions"
                     android:hint="Equipment Number"/>
 
                     <ImageView

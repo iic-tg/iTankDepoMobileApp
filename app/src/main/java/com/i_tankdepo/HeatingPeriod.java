@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -64,6 +65,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+
+
 
 
 /**
@@ -100,8 +104,9 @@ public class HeatingPeriod extends CommonActivity  {
     private int hour,minute;
     private TimePickerDialog mTimePicker;
     private String total_htng_period,total_htng_rate;
-    private Button heat_refresh,heat_home,heat_submit,bt_heating;
+    private Button heat_refresh,heat_home,heat_submit,bt_heating,cleaning,inspection,leakTest;
     private String responseStatus;
+    private RelativeLayout RL_heating,RL_Repair;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,10 +128,20 @@ public class HeatingPeriod extends CommonActivity  {
         heat_home = (Button)findViewById(R.id.heat_home);
         heat_refresh = (Button)findViewById(R.id.heat_refresh);
         bt_heating = (Button)findViewById(R.id.heating);
+        cleaning = (Button)findViewById(R.id.cleaning);
+        inspection = (Button)findViewById(R.id.inspection);
+        leakTest = (Button)findViewById(R.id.leakTest);
+        inspection.setVisibility(View.GONE);
+        leakTest.setVisibility(View.GONE);
+        cleaning.setVisibility(View.GONE);
         heat_submit = (Button)findViewById(R.id.heat_submit);
         LL_heat_submit = (LinearLayout)findViewById(R.id.LL_heat_submit);
         tv_heat_refresh = (TextView)findViewById(R.id.tv_heat_refresh);
         tv_heat_refresh.setText("Reset");
+
+        RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
+        RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_Repair.setVisibility(View.GONE);
 
         /*LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);*/
@@ -187,8 +202,6 @@ public class HeatingPeriod extends CommonActivity  {
             Min_Htng_Prd="0.00";
             Total_Peroid="0.00";
         }
-
-        ed_startDate.requestFocus();
 
         ed_startDate.setText(systemDate);
         ed_startTime.setText(curTime);

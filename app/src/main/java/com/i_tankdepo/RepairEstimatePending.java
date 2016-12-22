@@ -786,6 +786,7 @@ public class RepairEstimatePending extends CommonActivity implements NavigationV
                     @Override
                     public void onClick(View v) {
 
+                        Intent i=new Intent(getApplicationContext(),Repair_Estimation_wizard.class);
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
                         GlobalConstants.indate = list.get(position).getInDate();
@@ -816,7 +817,7 @@ public class RepairEstimatePending extends CommonActivity implements NavigationV
                         GlobalConstants.attchement= list.get(position).getAttachment();
                         GlobalConstants.repairEstimateNo= list.get(position).getRepairEstimateNo();
 
-
+                        startActivity(i);
 
 
                     }

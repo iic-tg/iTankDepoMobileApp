@@ -53,4 +53,8 @@ public class ConstantValues {
 	public static String baseURLEquipmentHistory=Link+"EquipmentHistoryMobile.asmx/EquipmentHistoryList";
 	public static String baseURLEquipmentValidation=Link+"EquipmentHistoryMobile.asmx/validateEquipmentDelete";
 	public static String baseURLEquipmentDeleteActivity=Link+"EquipmentHistoryMobile.asmx/DeleteActivity";
+	public static String baseURLLeakTestList=Link+"LeakTest.asmx/LeakTestList";
+	public static String baseURLLeakTestFilter=Link+"LeakTest.asmx/filter";
+	public static String baseURLLeakTestSearchList=Link+"LeakTest.asmx/SearchList";
+
 }

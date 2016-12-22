@@ -1,5 +1,6 @@
 package com.i_tankdepo;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -86,6 +87,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     private String CustomerName,EquipmentNo,code,Type,previousCargo,eir_no;
     private String validation,deleteActivity;
     private ImageView delete;
+    private String get_remark;
 
 
     @Override
@@ -428,7 +430,9 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 holder.Gi_trans_no = (TextView) convertView.findViewById(R.id.tv_code);
                 holder.Tracking_ID = (TextView) convertView.findViewById(R.id.tv_location);
 
-                holder.delete = (ImageView)convertView.findViewById(R.id.im_delete);
+                holder.delete_grey = (ImageView)convertView.findViewById(R.id.im_delete_grey);
+                holder.delete_red= (ImageView)convertView.findViewById(R.id.im_delete_red);
+
 
 
                 convertView.setTag(holder);
@@ -454,7 +458,12 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 holder.Gi_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
                 holder.Tracking_ID.setText(userListBean.getTracking_id());
 
-                holder.delete.setOnClickListener(new View.OnClickListener() {
+                if(position==0){
+                    holder.delete_red.setVisibility(View.VISIBLE);
+                    holder.delete_grey.setVisibility(View.GONE);
+                }
+
+                holder.delete_red.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         getEquipNo = ed_searchview.getText().toString();
@@ -482,10 +491,10 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                         type = list.get(position).getType();
                         code = list.get(position).getCode();
                         status = list.get(position).getStatus();
-                        location = list.get(position).getLocation();
+                        testDate = list.get(position).getLocation();
                         date = list.get(position).getDate();
                         time = list.get(position).getTime();
-                        previous_crg = list.get(position).getPreviousCargo();
+                        leaktestID = list.get(position).getPreviousCargo();
                         Eir_no = list.get(position).getEir_no();
                         vechicle = list.get(position).getVechicle();
                         transport = list.get(position).getTransport();
@@ -517,7 +526,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
         TextView equip_no,time, Cust_Name,previous_crg,eir_no,tv_activityName,tv_activity,tv_RefNo,tv_modifiedBy,tv_Invoice_Party,tv_modifiedDate
                 ,tv_remark,Gi_trans_no,Tracking_ID;
         CheckBox checkBox;
-        ImageView delete;
+        ImageView delete_red,delete_grey;
 
         LinearLayout whole,LL_username;
     }
@@ -590,7 +599,45 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                if(validation.equals("Success")){
 
                    if(cd.isConnectingToInternet()){
-                        new Post_Delete_Activity().execute();
+                       dialog = new Dialog(EquipmentHistory.this);
+                       dialog.setContentView(R.layout.delete_popup);
+                       dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                       Button btn_close=(Button)dialog.findViewById(R.id.cancel);
+                       final EditText tv_forgot_edit=(EditText)dialog.findViewById(R.id.tv_forgot_edit);
+                       final Button submit=(Button)dialog.findViewById(R.id.yes) ;
+                       final Button Ok=(Button)dialog.findViewById(R.id.Ok) ;
+                       Ok.setVisibility(View.GONE);
+                       btn_close.setOnClickListener(new View.OnClickListener() {
+                           @Override
+                           public void onClick(View v) {
+                               dialog.dismiss();
+                           }
+                       });
+
+                       submit.setOnClickListener(new View.OnClickListener() {
+                           @Override
+                           public void onClick(View v) {
+                               Ok.setVisibility(View.VISIBLE);
+                               submit.setVisibility(View.GONE);
+                               tv_forgot_edit.setVisibility(View.VISIBLE);
+                           }
+                       });
+                       Ok.setOnClickListener(new View.OnClickListener() {
+                           @Override
+                           public void onClick(View v) {
+                               get_remark=tv_forgot_edit.getText().toString();
+                               if(get_remark.length() > 0)
+                               {
+                                   new Post_Delete_Activity().execute();
+                                   dialog.dismiss();
+                               }else
+                               {
+                                   shortToast(getApplicationContext(),"Please enter the Remarks..!");
+                               }
+                           }
+                       });
+                       dialog.show();
+
                    }else{
                        shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
                    }
@@ -617,7 +664,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            //  progressDialog.show();
+             progressDialog.show();
         }
 
         @Override
@@ -634,7 +681,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("bv_strTrackingID", getTrackingID );
                 jsonObject.put("bv_strActivityName", getActivityName );
-                jsonObject.put("bv_strRemarks", getRemarks );
+                jsonObject.put("bv_strRemarks", get_remark );
                 jsonObject.put("equipmentNo", getEquipNo );
 
 
@@ -672,8 +719,12 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
             if(jsonobject!=null)
             {
+
+
                 if(deleteActivity.contains("deleted from Equipment History")) {
-                        shortToast(getApplicationContext(getApplicationContext(), getStatusCD +"has been deleted from Equipment History"));
+                    shortToast(getApplicationContext(), getStatusCD +"has been deleted from Equipment History");
+                    finish();
+                    startActivity(getIntent());
                 }else{
 
                 }
