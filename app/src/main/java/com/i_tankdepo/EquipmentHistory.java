@@ -479,41 +479,6 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                     }
                 });
 
-              /*  holder.whole.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        equipment_no = list.get(position).getEquipmentNo();
-
-
-                        Cust_Name = list.get(position).getCustomerName();
-                        Gate_In = list.get(position).getGateIn_Id();
-//                        equip_no = list.get(position).getEquipmentNo();
-                        type = list.get(position).getType();
-                        code = list.get(position).getCode();
-                        status = list.get(position).getStatus();
-                        testDate = list.get(position).getLocation();
-                        date = list.get(position).getDate();
-                        time = list.get(position).getTime();
-                        leaktestID = list.get(position).getPreviousCargo();
-                        Eir_no = list.get(position).getEir_no();
-                        vechicle = list.get(position).getVechicle();
-                        transport = list.get(position).getTransport();
-                        heating_bt = list.get(position).getHeating_bt();
-                        rental_bt = list.get(position).getRental_bt();
-                        remark = list.get(position).getRemark();
-                        cust_code = list.get(position).getCust_code();
-                        type_id = list.get(position).getType_code();
-                        code_id = list.get(position).getCode_Id();
-                        pre_code = list.get(position).getPrev_code();
-                        attachmentstatus = list.get(position).getAttachmentStatus();
-                        pre_id = list.get(position).getPrev_Id();
-                        pre_adv_id = list.get(position).getPR_ADVC_CD();
-
-
-
-                    }
-                });*/
-
             }
             return convertView;
         }
@@ -664,7 +629,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-             progressDialog.show();
+            progressDialog.show();
         }
 
         @Override
@@ -683,6 +648,8 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 jsonObject.put("bv_strActivityName", getActivityName );
                 jsonObject.put("bv_strRemarks", get_remark );
                 jsonObject.put("equipmentNo", getEquipNo );
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -699,7 +666,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 if (jsonobject != null) {
 
-                    deleteActivity=jsonobject.getString("status");
+                    deleteActivity=jsonResp.getString("status");
 
                 }
             } catch (ClientProtocolException e) {
@@ -719,13 +686,13 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
             if(jsonobject!=null)
             {
-
-
-                if(deleteActivity.contains("deleted from Equipment History")) {
+                if(deleteActivity.contains("deleted from Equipment History"))
+                {
                     shortToast(getApplicationContext(), getStatusCD +"has been deleted from Equipment History");
                     finish();
                     startActivity(getIntent());
-                }else{
+                }else if(deleteActivity.contains("Incorrect syntax"))
+                {
 
                 }
             }

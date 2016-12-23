@@ -56,5 +56,7 @@ public class ConstantValues {
 	public static String baseURLLeakTestList=Link+"LeakTest.asmx/LeakTestList";
 	public static String baseURLLeakTestFilter=Link+"LeakTest.asmx/filter";
 	public static String baseURLLeakTestSearchList=Link+"LeakTest.asmx/SearchList";
+	public static String baseURLLeakTestRevisionNo=Link+"LeakTest.asmx/RevisionList";
+	public static String baseURLUpdateLeakTest=Link+"LeakTestMobile.asmx/InsertLeakTest";
 
 }

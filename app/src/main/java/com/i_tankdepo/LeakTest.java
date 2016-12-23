@@ -804,11 +804,11 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                         GlobalConstants.MDFD_BY = list.get(position).getMDFD_BY();
                         GlobalConstants.MDFD_DT = list.get(position).getMDFD_DT();
                         GlobalConstants.EQPMNT_TYP_ID = list.get(position).getEQPMNT_TYP_ID();
-                        GlobalConstants.EQPMNT_TYP_CD = list.get(position).getEQPMNT_TYP_CD();
+                        GlobalConstants.type = list.get(position).getEQPMNT_TYP_CD();
                         GlobalConstants.EQPMNT_CD_ID = list.get(position).getEQPMNT_CD_ID();
                         GlobalConstants.EQPMNT_CD_CD = list.get(position).getEQPMNT_CD_CD();
                         GlobalConstants.EQPMNT_STTS_ID = list.get(position).getEQPMNT_STTS_ID();
-                        GlobalConstants.type = list.get(position).getEQPMNT_STTS_CD();
+                        GlobalConstants.EQPMNT_STTS_CD = list.get(position).getEQPMNT_STTS_CD();
                         GlobalConstants.CHECKED = list.get(position).getCHECKED();
                         GlobalConstants.date = list.get(position).getGTN_DT();
                         GlobalConstants.customer_Id = list.get(position).getCSTMR_ID();

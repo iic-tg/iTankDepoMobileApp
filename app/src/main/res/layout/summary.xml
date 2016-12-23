@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_gravity="center">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:background="@drawable/field_border_thin_line"
+            android:layout_marginTop="40dp"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Line Details Summary"
+                android:background="@color/tab_background"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:gravity="center|left"
+                android:paddingLeft="10dp"
+                android:layout_weight="1.7"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/result_minor_text"
+                android:textColor="@color/black"
+                android:text="2/3"
+                android:gravity="center"
+                android:layout_weight="0.3"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:orientation="vertical"
+            android:weightSum="4"
+            android:layout_marginTop="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Summary"
+                android:background="@color/tab_background"
+                android:paddingLeft="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/list_text"
+                android:textSize="16dp"
+                android:gravity="center|left"/>
+
+        </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="5">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Res"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Man Hr"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Man Hr Cst"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Mat Cst"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Total Cst"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Customer"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="10.0"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="320.00"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="20.00"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="200.00"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Invoicing Party"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:textStyle="bold"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="0.0"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="0.0"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="0.0"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="0.0"
+                    android:gravity="center|right"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:orientation="vertical"
+            android:weightSum="4"
+            android:layout_marginTop="50dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Estimate Cost Summary"
+                    android:background="@color/tab_background"
+                    android:paddingLeft="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/list_text"
+                    android:textSize="16dp"
+                    android:gravity="center|left"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Original"
+                    android:gravity="center|left"
+                    android:textSize="15dp"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="360.00 AED"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="( 98.64 USD )"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Customer"
+                    android:gravity="center|left"
+                    android:textSize="15dp"
+                    android:paddingLeft="5dp"
+                    android:textStyle="bold"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="360.00 AED"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="( 98.64 USD )"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Invoicing Party"
+                    android:gravity="center|left"
+                    android:textSize="15dp"
+                    android:paddingLeft="5dp"
+                    android:background="@drawable/field_border_thin_line"
+                    android:textStyle="bold"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="360.00 AED"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="( 98.64 USD )"
+                    android:gravity="center"
+                    android:background="@drawable/field_border_thin_line"
+                    android:layout_weight="1"/>
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</ScrollView>

@@ -110,6 +110,7 @@ public class GlobalConstants {
     public static String EQPMNT_CD_ID="";
     public static String EQPMNT_CD_CD="";
     public static String EQPMNT_STTS_ID="";
+    public static String EQPMNT_STTS_CD="";
     public static String attachmentStatus="";
     public static String gt_transaction_no="";
     public static String htng_startDate="";
