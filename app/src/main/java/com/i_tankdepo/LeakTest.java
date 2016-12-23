@@ -128,8 +128,8 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
-        /*LL_heat.setAlpha(0.5f);
-        LL_heat.setClickable(false);*/
+
+
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
         ed_text1 = (EditText) findViewById(R.id.ed_text1);
 
@@ -160,6 +160,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         im_heat_ok.setOnClickListener(this);
         heat_refresh.setOnClickListener(this);
         heat_home.setOnClickListener(this);
+        leakTest_text.setOnClickListener(this);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
 
         LL_search_Value = (LinearLayout) findViewById(R.id.LL_search_Value);
@@ -377,6 +378,9 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                break;
+            case R.id.tv_heating:
+                startActivity(new Intent(getApplicationContext(),LeakTestCreate.class));
                 break;
             case R.id.im_heat_ok:
                 for (Product p : boxAdapter.getBox()) {

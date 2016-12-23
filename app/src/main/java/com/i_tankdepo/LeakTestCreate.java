@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,8 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.i_tankdepo.Beanclass.CustomerDropdownBean;
+import com.i_tankdepo.Beanclass.EquipNoBean;
 import com.i_tankdepo.Beanclass.LeakTestBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.helper.ServiceHandler;
@@ -29,6 +32,8 @@ import com.i_tankdepo.helper.ServiceHandler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -51,12 +56,12 @@ import java.util.List;
  */
 
 public class LeakTestCreate extends CommonActivity {
-    private ImageView menu,iv_back,add_new_heating,im_testDate;
+    private ImageView menu,iv_back,add_new_heating,im_testDate,im_in_Date;
     private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2;
     private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,leakTest,heat_submit,bt_revisionNo;
     private LinearLayout LL_heat_submit,LL_heat;
     private RelativeLayout RL_heating,RL_Repair;
-    private EditText ed_customer;
+    private EditText ed_customer,ed_in_Date,ed_testDate,ed_remarks,ed_current_status,ed_relief_value1,ed_relief_value2,ed_press_guage1,ed_press_guage2,ref_no;
     private String curTime,systemDate,Cust_Name,Equip_NO,Type,NoofTimesGenerated,TestDate,RevisionNo,relief_value1,relief_value2,pressureGauge1,pressureGauge2,
             shellTest,steamTubeTest,remark,current_status,Gi_trans_no,Checked;
     private Switch switch_shellTest,switch_steam;
@@ -65,16 +70,22 @@ public class LeakTestCreate extends CommonActivity {
     private int year,month,day,second;
     private LeakTestUpdate.ViewHolder holder;
     private ProgressDialog progressDialog;
-    private String getTestDate,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
+    private String getEquip_number,getCust_Name,getInDate,getTestDate,getCurrentStatus,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
     private ArrayList<LeakTestBean> leakTest_arraylist = new ArrayList<>();
     private LeakTestBean leakTest_bean;
     private Spinner sp_equipment_no;
     ArrayList<String[]> dropdown_equipment_no_list = new ArrayList<>();
     private ArrayList<String> worldlist;
-    private CustomerDropdownBean customer_DropdownBean;
-    ArrayList<CustomerDropdownBean> CustomerDropdownArrayList = new ArrayList<>();
+    private EquipNoBean equipNoBean;
+    ArrayList<EquipNoBean> equipNoBeanArrayList = new ArrayList<>();
     List<String> Cust_name = new ArrayList<>();
-    List<String> Cust_code = new ArrayList<>();
+    List<String> equip_no = new ArrayList<>();
+    List<String> inDate = new ArrayList<>();
+    List<String> current_Status = new ArrayList<>();
+    List<String> Eq_type = new ArrayList<>();
+    List<String> depot = new ArrayList<>();
+    List<String> location = new ArrayList<>();
+    private String EquipmentNo,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,10 +127,30 @@ public class LeakTestCreate extends CommonActivity {
 
         sp_equipment_no = (Spinner)findViewById(R.id.sp_equipment_no);
         ed_customer = (EditText)findViewById(R.id.ed_customer);
+        ed_testDate = (EditText)findViewById(R.id.ed_testDate);
+        ref_no = (EditText)findViewById(R.id.ref_no);
+        ed_relief_value1 = (EditText)findViewById(R.id.ed_relief_value1);
+        ed_relief_value2 = (EditText)findViewById(R.id.ed_relief_value2);
+        ed_press_guage1 = (EditText)findViewById(R.id.ed_press_guage1);
+        ed_press_guage2 = (EditText)findViewById(R.id.ed_press_guage2);
+        ed_remarks = (EditText)findViewById(R.id.ed_remarks);
+        switch_shellTest = (Switch)findViewById(R.id.switch_shellTest);
+        switch_steam = (Switch)findViewById(R.id.switch_steam);
+        im_testDate = (ImageView)findViewById(R.id.im_testDate);
+        bt_revisionNo = (Button) findViewById(R.id.bt_revisionNo);
+        ed_in_Date = (EditText)findViewById(R.id.ed_in_Date);
+        im_in_Date = (ImageView)findViewById(R.id.im_in_Date);
+        ed_current_status = (EditText)findViewById(R.id.ed_current_status);
 
         heat_refresh.setOnClickListener(this);
         heat_home.setOnClickListener(this);
         iv_back.setOnClickListener(this);
+        ed_testDate.setOnClickListener(this);
+        im_testDate.setOnClickListener(this);
+        heat_submit.setOnClickListener(this);
+        bt_revisionNo.setOnClickListener(this);
+        ed_in_Date.setOnClickListener(this);
+        im_in_Date.setOnClickListener(this);
 
         c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
@@ -136,6 +167,35 @@ public class LeakTestCreate extends CommonActivity {
         systemDate = new SimpleDateFormat("yyyy-MMM-dd").format(new Date());
 
 
+        get_switch_shellTest="False";
+        switch_shellTest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    get_switch_shellTest="True";
+                }else
+                {
+                    get_switch_shellTest="False";
+
+                }
+            }
+        });
+
+        get_switch_shellTest="False";
+        switch_steam.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    get_switch_steam="True";
+                }else
+                {
+                    get_switch_steam="False";
+
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -150,6 +210,32 @@ public class LeakTestCreate extends CommonActivity {
                 break;
             case R.id.iv_back:
                 onBackPressed();
+                break;
+            case R.id.ed_in_Date:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_in_Date:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.ed_test_date:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.im_testDate:
+                showDialog(DATE_DIALOG_ID);
+                break;
+            case R.id.heat_submit:
+                getTestDate = ed_testDate.getText().toString();
+                getreliefvalue1 = ed_relief_value1.getText().toString();
+                getreliefvalue2 = ed_relief_value2.getText().toString();
+                getpress_guage1 = ed_press_guage1.getText().toString();
+                getpress_guage2 = ed_press_guage2.getText().toString();
+                getReamrk = ed_remarks.getText().toString();
+
+                    if(cd.isConnectingToInternet()){
+                        new CreateLeakTest().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 break;
         }
     }
@@ -225,31 +311,24 @@ public class LeakTestCreate extends CommonActivity {
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
-//            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-Type", "application/json");
-//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
-//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
-            try{
-                JSONObject jsonObject = new JSONObject();
+            HttpGet httpGet = new HttpGet(ConstantValues.baseURLEquipmentNO);
 
-                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+            httpGet.setHeader("Content-Type", "application/json");
 
-               /* JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("Credentials",jsonObject);*/
-
-                StringEntity stringEntity = new StringEntity(jsonObject.toString());
-                httpPost.setEntity(stringEntity);
-                response = httpClient.execute(httpPost);
+            try {
+                response = httpClient.execute(httpGet);
                 httpEntity = response.getEntity();
                 String resp = EntityUtils.toString(httpEntity);
 
                 Log.d("rep", resp);
-                JSONObject jsonrootObject = new JSONObject(resp);
-                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+                JSONObject jsonObject = new JSONObject(resp);
 
 
-                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                JSONObject getJsonObject = jsonObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfLTM");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -264,35 +343,47 @@ public class LeakTestCreate extends CommonActivity {
 
                         dropdown_equipment_no_list = new ArrayList<>();
 
-
-                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
-                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
-                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
-                        }*/
                         worldlist = new ArrayList<String>();
-                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        equipNoBeanArrayList=new ArrayList<EquipNoBean>();
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            customer_DropdownBean = new CustomerDropdownBean();
+                            equipNoBean = new EquipNoBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
 
-                            customer_DropdownBean.setName(jsonObject.getString("Name"));
-                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
-                            CustomerName = jsonObject.getString("Name");
-                            CustomerCode = jsonObject.getString("Code");
-                            String[] set1 = new String[2];
-                            set1[0] = CustomerName;
-                            set1[1] = CustomerCode;
-                            dropdown_customer_list.add(set1);
-                            Cust_name.add(set1[0]);
-                            Cust_code.add(set1[1]);
-                            CustomerDropdownArrayList.add(customer_DropdownBean);
-                            worldlist.add(CustomerName);
+                            equipNoBean.setEquip_no(jsonObject.getString("EQPMNT_NO"));
+                            equipNoBean.setInDate(jsonObject.getString("InDate"));
+                            equipNoBean.setCurrentStatus(jsonObject.getString("CurrentStatus"));
+                            equipNoBean.setType(jsonObject.getString("Type"));
+                            equipNoBean.setCustomer(jsonObject.getString("Customer"));
+                            equipNoBean.setDepot(jsonObject.getString("Depot"));
+                            equipNoBean.setYrdLocation(jsonObject.getString("YrdLocation"));
+
+                            EquipmentNo = jsonObject.getString("EQPMNT_NO");
+                            Indate = jsonObject.getString("InDate");
+                            cureentStatus = jsonObject.getString("CurrentStatus");
+                            type = jsonObject.getString("Type");
+                            Customer = jsonObject.getString("Customer");
+                            Depot = jsonObject.getString("Depot");
+                            Location = jsonObject.getString("YrdLocation");
+                            String[] set1 = new String[7];
+                            set1[0] = EquipmentNo;
+                            set1[1] = Indate;
+                            set1[2] = cureentStatus;
+                            set1[3] = type;
+                            set1[4] = Customer;
+                            set1[5] = Depot;
+                            set1[6] = Location;
+                            dropdown_equipment_no_list.add(set1);
+                            equip_no.add(set1[0]);
+                            inDate.add(set1[1]);
+                            current_Status.add(set1[2]);
+                            Eq_type.add(set1[3]);
+                            Cust_name.add(set1[4]);
+                            depot.add(set1[5]);
+                            location.add(set1[6]);
+                            equipNoBeanArrayList.add(equipNoBean);
+                            worldlist.add(EquipmentNo);
 
 
                         }
@@ -330,9 +421,40 @@ public class LeakTestCreate extends CommonActivity {
 
             if(dropdown_equipment_no_list!=null)
             {
-                ArrayAdapter<String> CustomerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
-                CustomerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_customer.setAdapter(CustomerAdapter);
+                worldlist.add(0,"Please Select");
+                ArrayAdapter<String> EquipmentNoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
+                EquipmentNoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sp_equipment_no.setAdapter(EquipmentNoAdapter);
+
+                sp_equipment_no.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        EquipmentNumber = sp_equipment_no.getSelectedItem().toString();
+
+                        if(EquipmentNumber.equalsIgnoreCase("Please Select"))
+                        {
+                           // shortToast();
+                        }else
+                        {
+                            get_type=equipNoBeanArrayList.get(position).getType();
+                            getInDate = ed_in_Date.getText().toString();
+                            getCust_Name =ed_customer.getText().toString();
+                            getCurrentStatus = ed_current_status.getText().toString();
+                            if(cd.isConnectingToInternet()){
+                                new EquipmentNoValidation().execute();
+                            }else{
+                                shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+
 
             }
             else if(dropdown_equipment_no_list.size()<1)
@@ -346,5 +468,212 @@ public class LeakTestCreate extends CommonActivity {
         }
 
     }
+
+    public class CreateLeakTest extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        String responseString;
+        private JSONArray invite_jsonlist;
+        private JSONObject invitejsonObject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LeakTestCreate.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+            //  HttpPost httppost = new HttpPost("http://49.207.183.45/HH/api/accounts/RegisterUser");
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLUpdateLeakTest);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+
+
+                jsonObject.put("LK_TST_ID", "");
+                jsonObject.put("EQPMNT_NO", EquipmentNumber);
+                jsonObject.put("TST_DT", getTestDate);
+                jsonObject.put("SHLL_TST_BT",get_switch_shellTest);
+                jsonObject.put("STM_TB_TST_BT", get_switch_steam);
+                jsonObject.put("EQPMNT_TYP_CD", get_type);
+                jsonObject.put("EQPMNT_STTS_CD", getCurrentStatus);
+                jsonObject.put("CHECKED", "");
+                jsonObject.put("GTN_DT", getInDate);
+                jsonObject.put("CSTMR_CD", getCust_Name);
+                jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
+
+
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("request", jsonObject.toString());
+                Log.d("responce", resp);
+                JSONObject jsonResp = new JSONObject(resp);
+
+
+                JSONObject returnMessage = jsonResp.getJSONObject("d");
+
+                responseString = returnMessage.getString("status");
+
+                Log.d("responseString", returnMessage.toString());
+/*
+                for(int i=0;i<returnMessage.length();i++)
+                {
+                    String message = returnMessage.getString(i);
+                    responseString=message;
+                    Log.i("....responseString...",message);
+                    // loop and add it to array or arraylist
+                }
+*/
+
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+
+            super.onPostExecute(aVoid);
+            if(responseString!=null) {
+                if (responseString.equalsIgnoreCase("Updated Successfully") ) {
+                    Toast.makeText(getApplicationContext(), "Leak Test Created Successfully.", Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(getApplication(), MainActivity.class);
+                    startActivity(i);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Leak Test Creation Failed..!", Toast.LENGTH_SHORT).show();
+
+                }
+            }else
+            {
+                Toast.makeText(getApplicationContext(), "Connection TimeOut", Toast.LENGTH_SHORT).show();
+
+            }
+            progressDialog.dismiss();
+
+        }
+    }
+
+
+    public class EquipmentNoValidation extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        String responseString;
+        private JSONArray invite_jsonlist;
+        private JSONObject invitejsonObject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LeakTestCreate.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+            //  HttpPost httppost = new HttpPost("http://49.207.183.45/HH/api/accounts/RegisterUser");
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLEquipmentNOValidation);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
+                jsonObject.put("equipmentNo",EquipmentNumber);
+
+
+
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("request", jsonObject.toString());
+                Log.d("responce", resp);
+                JSONObject jsonResp = new JSONObject(resp);
+
+
+                JSONObject returnMessage = jsonResp.getJSONObject("d");
+
+                responseString = returnMessage.getString("status");
+
+                Log.d("responseString", returnMessage.toString());
+/*
+                for(int i=0;i<returnMessage.length();i++)
+                {
+                    String message = returnMessage.getString(i);
+                    responseString=message;
+                    Log.i("....responseString...",message);
+                    // loop and add it to array or arraylist
+                }
+*/
+
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+
+            super.onPostExecute(aVoid);
+            if(responseString!=null) {
+                if (responseString.equalsIgnoreCase("Success") ) {
+                    ed_in_Date.setText(Indate);
+                    ed_customer.setText(Cust_Name);
+                    ed_current_status.setText(cureentStatus);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "This Equipment No already Exist", Toast.LENGTH_SHORT).show();
+
+                }
+            }else
+            {
+                Toast.makeText(getApplicationContext(), "Connection Time Out", Toast.LENGTH_SHORT).show();
+
+            }
+            progressDialog.dismiss();
+
+        }
+    }
+
 
 }
