@@ -3,7 +3,7 @@ package com.i_tankdepo.Constants;
 public class ConstantValues {
 	public static final String FIRST_COLUMN="First";
 	public static final String SECOND_COLUMN="Second";
-	public static final String Link="http://192.168.1.14/iTankMobileService/";
+	public static final String Link="http://192.168.1.10/iTankMobileService/";
 	public static String baseURLLogin=Link+"Login.asmx/Login";
 	public static String baseURLRoleBasedLogin=Link+"Login.asmx/RoleDetails";
 	public static String baseURLChangePwd=Link+"ChangePassword.asmx/ChangePassword";
@@ -60,5 +60,8 @@ public class ConstantValues {
 	public static String baseURLUpdateLeakTest=Link+"LeakTest.asmx/InsertLeakTest";
 	public static String baseURLEquipmentNO=Link+"LeakTest.asmx/EquipmentList";
 	public static String baseURLEquipmentNOValidation=Link+"LeakTest.asmx/EquipmentValidation";
+	public static String baseURLCurrentStatusList=Link+"ChangeOfStatusMobile.asmx/currrentStatusList";
+	public static String baseURLToStatusList=Link+"ChangeOfStatusMobile.asmx/ToStatusList";
+	public static String baseURLSearch=Link+"ChangeOfStatusMobile.asmx/Search";
 
 }

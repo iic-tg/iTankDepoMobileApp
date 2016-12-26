@@ -102,7 +102,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     private Intent mServiceIntent;
 
     private EditText ed_text1, searchView1, searchView2;
-    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,Leaktest;
+    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,Leaktest,leakTest;
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
     private TextView leakTest_text;
@@ -156,11 +156,14 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         cleaning.setVisibility(View.GONE);
 
 
+
+
         im_heat_close.setOnClickListener(this);
         im_heat_ok.setOnClickListener(this);
         heat_refresh.setOnClickListener(this);
         heat_home.setOnClickListener(this);
         leakTest_text.setOnClickListener(this);
+        Leaktest.setOnClickListener(this);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
 
         LL_search_Value = (LinearLayout) findViewById(R.id.LL_search_Value);
@@ -380,6 +383,9 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.tv_heating:
+                startActivity(new Intent(getApplicationContext(),LeakTestCreate.class));
+                break;
+            case R.id.leakTest:
                 startActivity(new Intent(getApplicationContext(),LeakTestCreate.class));
                 break;
             case R.id.im_heat_ok:

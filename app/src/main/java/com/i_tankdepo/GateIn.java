@@ -80,6 +80,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import static android.R.id.list;
+import static com.i_tankdepo.R.layout.change_of_status;
 import static com.i_tankdepo.R.layout.list_item_row_accordion;
 import static com.i_tankdepo.R.id.GateIn;
 import static com.i_tankdepo.R.id.im_add;
@@ -97,7 +98,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
     private ListView listview, searchlist;
     private RelativeLayout RL_musubmit, RL_pending;
-    private ImageView menu, im_up, im_down, im_ok, im_close;
+    private ImageView menu, im_up, im_down, im_ok, im_close,iv_changeOfStatus;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value;
@@ -158,9 +159,11 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         im_ok = (ImageView) findViewById(R.id.im_ok);
         im_close = (ImageView) findViewById(R.id.im_close);
+        iv_changeOfStatus = (ImageView) findViewById(R.id.iv_changeOfStatus);
 
         im_ok.setOnClickListener(this);
         im_close.setOnClickListener(this);
+        iv_changeOfStatus.setOnClickListener(this);
 
         LL_Submit.setAlpha(0.5f);
         LL_footer_delete.setAlpha(0.5f);
@@ -394,6 +397,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.add:
                 startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));

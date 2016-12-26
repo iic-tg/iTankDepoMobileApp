@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -43,6 +44,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -58,7 +60,7 @@ import java.util.List;
 public class LeakTestCreate extends CommonActivity {
     private ImageView menu,iv_back,add_new_heating,im_testDate,im_in_Date;
     private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2;
-    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,leakTest,heat_submit,bt_revisionNo;
+    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,heat_submit,bt_revisionNo,leakTest;
     private LinearLayout LL_heat_submit,LL_heat;
     private RelativeLayout RL_heating,RL_Repair;
     private EditText ed_customer,ed_in_Date,ed_testDate,ed_remarks,ed_current_status,ed_relief_value1,ed_relief_value2,ed_press_guage1,ed_press_guage2,ref_no;
@@ -70,7 +72,8 @@ public class LeakTestCreate extends CommonActivity {
     private int year,month,day,second;
     private LeakTestUpdate.ViewHolder holder;
     private ProgressDialog progressDialog;
-    private String getEquip_number,getCust_Name,getInDate,getTestDate,getCurrentStatus,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
+    private String getEquip_number,getCust_Name,getInDate,getTestDate,getCurrentStatus,getreliefvalue1,
+            getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
     private ArrayList<LeakTestBean> leakTest_arraylist = new ArrayList<>();
     private LeakTestBean leakTest_bean;
     private Spinner sp_equipment_no;
@@ -86,11 +89,12 @@ public class LeakTestCreate extends CommonActivity {
     List<String> depot = new ArrayList<>();
     List<String> location = new ArrayList<>();
     private String EquipmentNo,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
+    private TextView tv_equip_no,tv_name,tv_testDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.leaktest_create);
+        setContentView(R.layout.create_leaktest);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         menu = (ImageView) findViewById(R.id.iv_menu);
@@ -103,6 +107,9 @@ public class LeakTestCreate extends CommonActivity {
         heat_home = (Button) findViewById(R.id.heat_home);
         heat_refresh = (Button) findViewById(R.id.heat_refresh);
 
+        tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
+        tv_name = (TextView)findViewById(R.id.tv_name);
+        tv_testDate = (TextView)findViewById(R.id.tv_testDate);
 
         bt_heating = (Button) findViewById(R.id.heating);
         bt_heating.setVisibility(View.GONE);
@@ -117,6 +124,8 @@ public class LeakTestCreate extends CommonActivity {
         leakTest_text.setText("Add New");
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
         heat_submit = (Button) findViewById(R.id.heat_submit);
+
+
 
         tv_heat_refresh = (TextView) findViewById(R.id.tv_heat_refresh);
         tv_heat_refresh.setText("Reset");
@@ -149,8 +158,9 @@ public class LeakTestCreate extends CommonActivity {
         im_testDate.setOnClickListener(this);
         heat_submit.setOnClickListener(this);
         bt_revisionNo.setOnClickListener(this);
-        ed_in_Date.setOnClickListener(this);
-        im_in_Date.setOnClickListener(this);
+     //   ed_in_Date.setOnClickListener(this);
+     //   im_in_Date.setOnClickListener(this);
+
 
         c = Calendar.getInstance();
         year = c.get(Calendar.YEAR);
@@ -181,7 +191,7 @@ public class LeakTestCreate extends CommonActivity {
             }
         });
 
-        get_switch_shellTest="False";
+        get_switch_steam="False";
         switch_steam.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -194,8 +204,28 @@ public class LeakTestCreate extends CommonActivity {
                 }
             }
         });
+    
+        if(cd.isConnectingToInternet()){
+            new Get_Equipment_Number_details().execute();
+        }else{
+            shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+        }
+
+        String Equip_No = getColoredSpanned("Equipment Number","#bbbbbb");
+        String customer = getColoredSpanned("Customer","#bbbbbb");
+        String testDate = getColoredSpanned("Test Date","#bbbbbb");
+
+        String surName = getColoredSpanned("*","#cb0da5");
+        tv_equip_no.setText(Html.fromHtml(Equip_No+" "+surName));
+        tv_name.setText(Html.fromHtml(customer+" "+surName));
+        tv_testDate.setText(Html.fromHtml(testDate+" "+surName));
+
+    }
 
 
+    private String getColoredSpanned(String text, String color) {
+        String input = "<font color=" + color + ">" + text + "</font>";
+        return input;
     }
 
     @Override
@@ -229,13 +259,21 @@ public class LeakTestCreate extends CommonActivity {
                 getreliefvalue2 = ed_relief_value2.getText().toString();
                 getpress_guage1 = ed_press_guage1.getText().toString();
                 getpress_guage2 = ed_press_guage2.getText().toString();
+                getCust_Name=ed_customer.getText().toString();
                 getReamrk = ed_remarks.getText().toString();
+                EquipmentNumber = sp_equipment_no.getSelectedItem().toString();
 
-                    if(cd.isConnectingToInternet()){
+                if( (getTestDate.trim().equals("") || getTestDate==null) ||  EquipmentNumber.equalsIgnoreCase("please select")||
+                        (getCust_Name.trim().equals("") || getCust_Name==null))
+                {
+                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                }else {
+                    if (cd.isConnectingToInternet()) {
                         new CreateLeakTest().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
+                }
                 break;
         }
     }
@@ -507,9 +545,9 @@ public class LeakTestCreate extends CommonActivity {
                 jsonObject.put("STM_TB_TST_BT", get_switch_steam);
                 jsonObject.put("EQPMNT_TYP_CD", get_type);
                 jsonObject.put("EQPMNT_STTS_CD", getCurrentStatus);
-                jsonObject.put("CHECKED", "");
-                jsonObject.put("GTN_DT", getInDate);
-                jsonObject.put("CSTMR_CD", getCust_Name);
+                jsonObject.put("CHECKED", "True");
+                jsonObject.put("GTN_DT", Indate);
+                jsonObject.put("CSTMR_CD", Customer);
                 jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
 
 
@@ -657,8 +695,10 @@ public class LeakTestCreate extends CommonActivity {
             super.onPostExecute(aVoid);
             if(responseString!=null) {
                 if (responseString.equalsIgnoreCase("Success") ) {
-                    ed_in_Date.setText(Indate);
-                    ed_customer.setText(Cust_Name);
+                    String[] parts = Indate.split(" ");
+                    String part1_date = parts[0];
+                    ed_in_Date.setText(part1_date);
+                    ed_customer.setText(Customer);
                     ed_current_status.setText(cureentStatus);
 
                 } else {

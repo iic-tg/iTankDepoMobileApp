@@ -44,7 +44,7 @@ public class MainActivity extends CommonActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Toolbar toolbar;
-    private ImageView menu,up,down,iv_back;
+    private ImageView menu,up,down,iv_back,iv_changeOfStatus;
     private DrawerLayout drawer;
     private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_Stock_Report,LL_GateOut;
     LinearLayout LL_hole;
@@ -70,6 +70,7 @@ public class MainActivity extends CommonActivity
         im_stock=(ImageView)findViewById(R.id.im_report);
         menu=(ImageView)findViewById(R.id.iv_menu);
         iv_back = (ImageView)findViewById(R.id.iv_back);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_back.setVisibility(View.GONE);
         RoleID = GlobalConstants.roleID;
 
@@ -191,6 +192,9 @@ public class MainActivity extends CommonActivity
 
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.LL_GateIn:
                     startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;

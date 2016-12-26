@@ -119,6 +119,12 @@
         <activity android:name=".Repair_Estimation_wizard"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".LeakTestCreate"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ChangeOfStatus"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
     </application>
 

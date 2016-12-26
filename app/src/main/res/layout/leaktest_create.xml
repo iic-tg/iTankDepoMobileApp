@@ -95,7 +95,7 @@
                                 android:id="@+id/successmessage"/>
                             <Spinner
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:id="@+id/sp_equipment_no"
                                 android:textColor="@color/list_text"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
@@ -128,7 +128,7 @@
                                 android:id="@+id/ed_customer"
                                 android:maxLength="11"
                                 android:inputType="textCapCharacters|textNoSuggestions"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:textColor="@color/list_text"
                                 />
                         </RelativeLayout>
@@ -170,7 +170,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content">
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -195,7 +195,7 @@
 
                         <EditText
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:focusable="false"
                             android:id="@+id/ed_current_status"/>
@@ -209,7 +209,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:text="Test Date *"
-                            android:id="@+id/tv_startDate"
+                            android:id="@+id/tv_testDate"
                             android:layout_marginLeft="2dp"
                             android:layout_weight="1"/>
                         <TextView

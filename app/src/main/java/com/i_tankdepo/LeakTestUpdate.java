@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ import com.i_tankdepo.helper.ServiceHandler;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -59,20 +61,20 @@ import java.util.Locale;
 
 public class LeakTestUpdate extends CommonActivity{
     private ImageView menu,iv_back,add_new_heating,im_testDate;
-    private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2;
+    private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2,tv_testDate;
     private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,leakTest,heat_submit,bt_revisionNo;
     private LinearLayout LL_heat_submit,LL_heat;
     private RelativeLayout RL_heating,RL_Repair;
     private EditText ed_remarks,ed_current_status,ed_relief_value1,ed_relief_value2,ed_press_guage1,ed_press_guage2,ref_no,ed_testDate;
     private String curTime,systemDate,Cust_Name,Equip_NO,Type,NoofTimesGenerated,TestDate,RevisionNo,relief_value1,relief_value2,pressureGauge1,pressureGauge2,
-            shellTest,steamTubeTest,remark,current_status,Gi_trans_no,Checked;
+            shellTest,steamTubeTest,remark,current_status,Gi_trans_no,Checked,LeakTestID,InDate;
     private  Switch switch_shellTest,switch_steam;
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
     private ViewHolder holder;
     private ProgressDialog progressDialog;
-    private String getTestDate,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
+    private String getEquipNo,getTestDate,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
     private ArrayList<LeakTestBean> leakTest_arraylist = new ArrayList<>();
     private LeakTestBean leakTest_bean;
     @Override
@@ -128,6 +130,8 @@ public class LeakTestUpdate extends CommonActivity{
         im_testDate = (ImageView)findViewById(R.id.im_testDate);
         bt_revisionNo = (Button) findViewById(R.id.bt_revisionNo);
 
+        tv_testDate = (TextView)findViewById(R.id.tv_testDate);
+
         heat_refresh.setOnClickListener(this);
         heat_home.setOnClickListener(this);
         iv_back.setOnClickListener(this);
@@ -151,7 +155,8 @@ public class LeakTestUpdate extends CommonActivity{
         steamTubeTest = GlobalConstants.STM_TB_TST_BT;
         current_status = GlobalConstants.EQPMNT_STTS_CD;
         Gi_trans_no = GlobalConstants.gt_transaction_no;
-
+        LeakTestID = GlobalConstants.leskTestID;
+        InDate = GlobalConstants.date;
 
 
 
@@ -172,15 +177,22 @@ public class LeakTestUpdate extends CommonActivity{
 
         if(shellTest.equalsIgnoreCase("True")){
             switch_shellTest.setChecked(true);
+            get_switch_shellTest="True";
         }else{
             switch_shellTest.setChecked(false);
+            get_switch_shellTest="False";
         }
 
         if(steamTubeTest.equalsIgnoreCase("True")){
             switch_steam.setChecked(true);
+            get_switch_steam="True";
+
         }else{
             switch_steam.setChecked(false);
+            get_switch_steam="False";
+
         }
+
 
         switch_shellTest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -222,7 +234,20 @@ public class LeakTestUpdate extends CommonActivity{
         curTime = time.format(new Date());
         systemDate = new SimpleDateFormat("yyyy-MMM-dd").format(new Date());
 
+        String testDate = getColoredSpanned("Test Date","#bbbbbb");
+
+        String surName = getColoredSpanned("*","#cb0da5");
+        tv_testDate.setText(Html.fromHtml(testDate+" "+surName));
+
+
     }
+
+    private String getColoredSpanned(String text, String color) {
+        String input = "<font color=" + color + ">" + text + "</font>";
+        return input;
+    }
+
+
     @Override
     public void onClick(View view) {
         switch (view.getId())
@@ -257,7 +282,18 @@ public class LeakTestUpdate extends CommonActivity{
                     getpress_guage1 = ed_press_guage1.getText().toString();
                     getpress_guage2 = ed_press_guage2.getText().toString();
                     getReamrk = ed_remarks.getText().toString();
-                    Checked = "True";
+
+                if(getTestDate == "" && getTestDate == null){
+                    shortToast(getApplicationContext(),"Please enter the Testdate..!");
+                }else{
+                    if(cd.isConnectingToInternet()){
+                        new
+                                UpdateLeakTest().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
+                }
+
                 break;
         }
     }
@@ -590,6 +626,113 @@ public class LeakTestUpdate extends CommonActivity{
         LinearLayout whole,LL_username;
     }
 
+    public class UpdateLeakTest extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        String responseString;
+        private JSONArray invite_jsonlist;
+        private JSONObject invitejsonObject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LeakTestUpdate.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+            //  HttpPost httppost = new HttpPost("http://49.207.183.45/HH/api/accounts/RegisterUser");
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLUpdateLeakTest);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+
+
+                jsonObject.put("LK_TST_ID", LeakTestID);
+                jsonObject.put("EQPMNT_NO", Equip_NO );
+                jsonObject.put("TST_DT", getTestDate);
+                jsonObject.put("SHLL_TST_BT",get_switch_shellTest);
+                jsonObject.put("STM_TB_TST_BT", get_switch_steam);
+                jsonObject.put("EQPMNT_TYP_CD", Type);
+                jsonObject.put("EQPMNT_STTS_CD", current_status);
+                jsonObject.put("CHECKED", "True");
+                jsonObject.put("GTN_DT", InDate);
+                jsonObject.put("CSTMR_CD", Cust_Name);
+                jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
+
+
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("request", jsonObject.toString());
+                Log.d("responce", resp);
+                JSONObject jsonResp = new JSONObject(resp);
+
+
+                JSONObject returnMessage = jsonResp.getJSONObject("d");
+
+                responseString = returnMessage.getString("status");
+
+                Log.d("responseString", returnMessage.toString());
+/*
+                for(int i=0;i<returnMessage.length();i++)
+                {
+                    String message = returnMessage.getString(i);
+                    responseString=message;
+                    Log.i("....responseString...",message);
+                    // loop and add it to array or arraylist
+                }
+*/
+
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+
+            super.onPostExecute(aVoid);
+            if(responseString!=null) {
+                if (responseString.equalsIgnoreCase("Updated Successfully") ) {
+                    Toast.makeText(getApplicationContext(), "Leak Test Updated Successfully.", Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(getApplication(), MainActivity.class);
+                    startActivity(i);
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "Leak Test not Updated..!", Toast.LENGTH_SHORT).show();
+
+                }
+            }else
+            {
+                Toast.makeText(getApplicationContext(), "Connection TimeOut", Toast.LENGTH_SHORT).show();
+
+            }
+            progressDialog.dismiss();
+
+        }
+    }
 
 
 }

@@ -100,6 +100,8 @@ public class GlobalConstants {
     public static String heating_bt="";
     public static String rental_bt="";
     public static String remark="";
+    public static String currentStatus="";
+    public static String currentStatusDate="";
     public static String ACTV_BT="";
     public static String CRTD_BY="";
     public static String CRTD_DT="";

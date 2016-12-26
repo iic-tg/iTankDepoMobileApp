@@ -171,7 +171,7 @@ public class Update_GateIn extends CommonActivity {
         pendingsize= GlobalConstants.pendingcount;
         Cust_Name= GlobalConstants.customer_name;
         attachmentstatus= GlobalConstants.attachmentStatus;
-        Log.i("transactionNO",attachmentstatus);
+        Log.i("currentStatus",attachmentstatus);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);

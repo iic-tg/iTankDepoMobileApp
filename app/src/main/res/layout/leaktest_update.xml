@@ -117,7 +117,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:text="Test Date *"
-                                android:id="@+id/tv_startDate"
+                                android:id="@+id/tv_testDate"
                                 android:layout_marginLeft="2dp"
                                 android:layout_weight="1"/>
                             <TextView
