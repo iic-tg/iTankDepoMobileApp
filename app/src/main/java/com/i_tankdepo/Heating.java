@@ -113,6 +113,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,leakTest;
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
+    private ImageView iv_changeOfStatus;
 
 
     @Override
@@ -151,6 +152,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         im_heat_ok = (ImageView) findViewById(R.id.im_heat_ok);
         no_data = (TextView)findViewById(R.id.no_data);
         no_data.setVisibility(View.GONE);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         heating = (Button)findViewById(R.id.heating);
         cleaning = (Button)findViewById(R.id.cleaning);
@@ -371,6 +374,9 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 break;

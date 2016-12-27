@@ -164,6 +164,7 @@ public class Create_GateIn extends CommonActivity   {
     private Equipment_Info_TypeDropdownBean moreInfo_DropdownBean;
     private String infoId,infoCode;
     private String getStatus,getYardLocation,getEquipment_Type_code,getEquipment_Type;
+    private ImageView iv_changeOfStatus;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -252,6 +253,9 @@ public class Create_GateIn extends CommonActivity   {
         LL_Submit.setOnClickListener(this);
         im_Attachment.setOnClickListener(this);
         LL_Equipment_Info.setVisibility(View.GONE);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+
+
         equip_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -363,6 +367,7 @@ public class Create_GateIn extends CommonActivity   {
         ed_last_test_date.setOnClickListener(this);
 
         bt_home = (Button)findViewById(R.id.home);
+        iv_changeOfStatus.setOnClickListener(this);
         bt_home.setOnClickListener(this);
         bt_refresh = (Button)findViewById(R.id.refresh);
         bt_refresh.setOnClickListener(this);
@@ -627,6 +632,9 @@ public class Create_GateIn extends CommonActivity   {
 
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.LL_GateIn:
                 startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;

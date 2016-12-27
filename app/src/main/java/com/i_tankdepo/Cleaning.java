@@ -114,6 +114,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
+    private ImageView iv_changeOfStatus;
 
 
     @Override
@@ -185,6 +186,8 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         scrollbar = (ScrollView)findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
         tv_toolbarTitle.setText("Cleaning");
@@ -394,7 +397,9 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     public void onClick(View view) {
         switch (view.getId())
         {
-
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.bt_mysubmit:
                 finish();
                 startActivity(new Intent(getApplicationContext(),CleaningMySubmit.class));

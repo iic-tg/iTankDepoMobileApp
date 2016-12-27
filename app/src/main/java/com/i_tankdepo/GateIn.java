@@ -1368,7 +1368,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         }
     }
 */
-public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
+    public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
     private JSONArray jsonarray;
     private JSONArray preadvicejsonlist;
     private JSONObject preadvicejsonObject;

@@ -111,7 +111,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
-
+private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +157,8 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
         RL_Repair.setVisibility(View.GONE);
 
-
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         bt_mysubmit.setOnClickListener(this);
         bt_home = (Button) findViewById(R.id.heat_home);
@@ -398,7 +399,9 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     public void onClick(View view) {
         switch (view.getId())
         {
-
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.bt_pending:
                 finish();
                 startActivity(new Intent(getApplicationContext(),Cleaning.class));

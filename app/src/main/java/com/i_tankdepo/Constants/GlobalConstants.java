@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class GlobalConstants {
 
     public static String selectedId="";
+    public static String from="";
     public static String cust_code="";
     public static String type_id="";
     public static String code_id="";

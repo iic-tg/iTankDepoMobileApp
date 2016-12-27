@@ -125,7 +125,15 @@
         <activity android:name=".ChangeOfStatus"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-
+        <activity android:name=".GateOut"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".GateOut_Mysubmit"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".RevisionNo"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -105,6 +105,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String filename;
     private String Lock_return_Message;
     private String getEditText;
+    private ImageView iv_changeOfStatus;
 
 
 
@@ -160,12 +161,15 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_add = (TextView) findViewById(R.id.tv_add);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         LL_search_Value.setVisibility(View.GONE);
 //        tv_search_options.setVisibility(View.GONE);
 
 
         tv_add.setOnClickListener(this);
+
         tv_toolbarTitle.setText("Gate In");
         im_add = (Button)findViewById(R.id.add);
         im_print = (Button)findViewById(R.id.print);
@@ -376,6 +380,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.add:
                 startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));

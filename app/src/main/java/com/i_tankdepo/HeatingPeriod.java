@@ -107,6 +107,7 @@ public class HeatingPeriod extends CommonActivity  {
     private Button heat_refresh,heat_home,heat_submit,bt_heating,cleaning,inspection,leakTest;
     private String responseStatus;
     private RelativeLayout RL_heating,RL_Repair;
+    private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +170,8 @@ public class HeatingPeriod extends CommonActivity  {
         tv_endDate = (TextView)findViewById(R.id.tv_endDate);
         tv_endTime = (TextView)findViewById(R.id.tv_endTime);
         tv_temp = (TextView)findViewById(R.id.tv_temp);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         df_startDate = (TextView)findViewById(R.id.startDate);
         df_endDate = (TextView)findViewById(R.id.endDate);
@@ -339,6 +342,9 @@ public class HeatingPeriod extends CommonActivity  {
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;

@@ -88,7 +88,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     private String validation,deleteActivity;
     private ImageView delete;
     private String get_remark;
-
+    private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +116,8 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
         tv_eir_no = (TextView) findViewById(R.id.text4);
         equip_home = (Button)findViewById(R.id.equip_home);
         equip_refresh = (Button)findViewById(R.id.equip_refresh);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         equip_home.setOnClickListener(this);
         equip_refresh.setOnClickListener(this);
@@ -149,6 +151,9 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.equip_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;

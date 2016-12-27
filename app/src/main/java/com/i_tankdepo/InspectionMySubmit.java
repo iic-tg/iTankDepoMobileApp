@@ -112,7 +112,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
-
+    private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +141,9 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         heating.setVisibility(View.GONE);
         leakTest.setVisibility(View.GONE);
         cleaning_text.setText("Inspection");
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
+
 
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
@@ -394,7 +397,9 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     public void onClick(View view) {
         switch (view.getId())
         {
-
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.bt_pending:
                 finish();
                 startActivity(new Intent(getApplicationContext(),InspectionPending.class));

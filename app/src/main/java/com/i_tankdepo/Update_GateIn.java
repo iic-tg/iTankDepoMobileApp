@@ -161,6 +161,7 @@ public class Update_GateIn extends CommonActivity {
     private String infoId,infoCode;
     ArrayList<String> dropdown_MoreInfo_list = new ArrayList<>();
     private Spinner sp_last_test_type;
+    private ImageView iv_changeOfStatus;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -245,6 +246,8 @@ public class Update_GateIn extends CommonActivity {
         rental=(Switch)findViewById(R.id.switch_rental);
         info_active=(Switch)findViewById(R.id.swt_moreinfo_Active);
         info_rental=(Switch)findViewById(R.id.swt_moreinfo_remtal);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         ed_equipement = (EditText)findViewById(R.id.ed_equip_no);
         ed_equipement.setText(equip_no);
@@ -585,6 +588,9 @@ public class Update_GateIn extends CommonActivity {
 
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.LL_GateIn:
                 startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;

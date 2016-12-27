@@ -70,7 +70,6 @@ public class MainActivity extends CommonActivity
         im_stock=(ImageView)findViewById(R.id.im_report);
         menu=(ImageView)findViewById(R.id.iv_menu);
         iv_back = (ImageView)findViewById(R.id.iv_back);
-        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_back.setVisibility(View.GONE);
         RoleID = GlobalConstants.roleID;
 
@@ -192,11 +191,12 @@ public class MainActivity extends CommonActivity
 
         switch (view.getId())
         {
-            case R.id.iv_changeOfStatus:
-                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
-                break;
+
             case R.id.LL_GateIn:
                     startActivity(new Intent(getApplicationContext(),GateIn.class));
+                break;
+            case R.id.LL_GateOut:
+                startActivity(new Intent(getApplicationContext(),GateOut.class));
                 break;
             case R.id.LL_Heating:
                 startActivity(new Intent(getApplicationContext(),Heating.class));

@@ -70,7 +70,6 @@ public class LeakTestCreate extends CommonActivity {
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
-    private LeakTestUpdate.ViewHolder holder;
     private ProgressDialog progressDialog;
     private String getEquip_number,getCust_Name,getInDate,getTestDate,getCurrentStatus,getreliefvalue1,
             getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
