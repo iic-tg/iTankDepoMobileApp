@@ -55,7 +55,7 @@
             android:layout_gravity="right"
             android:src="@mipmap/ic_status_change"
             android:layout_centerHorizontal="true"
-            android:id="@+id/iv_remainder"
+            android:id="@+id/home_changeStatus"
             android:layout_weight="0.27" />
     </android.support.v7.widget.Toolbar>
 

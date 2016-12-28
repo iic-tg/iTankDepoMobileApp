@@ -420,12 +420,15 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_relief_value1"/>
+                                android:id="@+id/ed_relief_value1"
+                                android:textColor="@color/list_text"
+                                />
 
                             <EditText
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:textColor="@color/list_text"
                                 android:id="@+id/ed_relief_value2"/>
 
 
@@ -470,13 +473,17 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_press_guage1"/>
+                                android:id="@+id/ed_press_guage1"
+                                android:textColor="@color/list_text"
+                                />
 
                             <EditText
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_press_guage2"/>
+                                android:id="@+id/ed_press_guage2"
+                                android:textColor="@color/list_text"
+                                />
 
 
 
@@ -517,7 +524,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_remarks"/>
+                                android:id="@+id/ed_remarks"
+                                android:textColor="@color/list_text"
+                                />
                         </LinearLayout>
                         <LinearLayout
                             android:layout_width="match_parent"

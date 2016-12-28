@@ -1398,9 +1398,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

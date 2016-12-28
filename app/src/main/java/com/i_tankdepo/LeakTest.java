@@ -102,11 +102,11 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     private Intent mServiceIntent;
 
     private EditText ed_text1, searchView1, searchView2;
-    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,Leaktest,leakTest;
+    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,Leaktest,leakTest,bt_gateout;
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
     private TextView leakTest_text;
-
+    private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +154,10 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         inspection = (Button)findViewById(R.id.inspection);
         inspection.setVisibility(View.GONE);
         cleaning.setVisibility(View.GONE);
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
 
@@ -370,6 +374,9 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 break;
@@ -1159,9 +1166,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

@@ -81,6 +81,7 @@
                     android:layout_weight="1"
                     android:textColor="@color/white"
                     android:id="@+id/login"
+                    android:textSize="18dp"
                     android:textAllCaps="false"
                     android:text="Login"/>
 

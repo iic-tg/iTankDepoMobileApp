@@ -112,6 +112,7 @@ public class RepairEstimateMySubmit extends CommonActivity implements Navigation
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
+    private ImageView iv_changeOfStatus;
 
 
     @Override
@@ -189,6 +190,8 @@ public class RepairEstimateMySubmit extends CommonActivity implements Navigation
         scrollbar = (ScrollView)findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
         tv_toolbarTitle.setText("Repair Estimation");
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
 
@@ -395,7 +398,9 @@ public class RepairEstimateMySubmit extends CommonActivity implements Navigation
     public void onClick(View view) {
         switch (view.getId())
         {
-
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.bt_pending:
                 finish();
                 startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
@@ -1129,9 +1134,7 @@ public class RepairEstimateMySubmit extends CommonActivity implements Navigation
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

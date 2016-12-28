@@ -82,7 +82,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit,LL_search_Value,LL_heat;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,heating,cleaning,inspection,Leaktest;
+    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,heating,cleaning,inspection,Leaktest,bt_gateout;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
@@ -146,6 +146,8 @@ private ImageView iv_changeOfStatus;
         bt_pending.setOnClickListener(this);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Cleaning");
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
 
         LL_Submit.setAlpha(0.5f);
         LL_Submit.setClickable(false);
@@ -1204,9 +1206,7 @@ private ImageView iv_changeOfStatus;
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

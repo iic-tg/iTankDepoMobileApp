@@ -113,6 +113,7 @@ public class RepairApprovalPending extends CommonActivity implements NavigationV
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
+    private ImageView iv_changeOfStatus;
 
 
     @Override
@@ -159,6 +160,8 @@ public class RepairApprovalPending extends CommonActivity implements NavigationV
 
         im_ok = (ImageView) findViewById(R.id.im_ok);
         im_close = (ImageView) findViewById(R.id.im_close);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         im_ok.setOnClickListener(this);
         im_close.setOnClickListener(this);
@@ -395,6 +398,9 @@ public class RepairApprovalPending extends CommonActivity implements NavigationV
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
 
             case R.id.bt_mysubmit:
                 finish();
@@ -1133,9 +1139,7 @@ public class RepairApprovalPending extends CommonActivity implements NavigationV
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

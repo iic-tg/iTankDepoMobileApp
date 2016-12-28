@@ -62,7 +62,7 @@ import java.util.Locale;
 public class LeakTestUpdate extends CommonActivity{
     private ImageView menu,iv_back,add_new_heating,im_testDate;
     private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2,tv_testDate;
-    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,leakTest,heat_submit,bt_revisionNo;
+    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,Leaktest,heat_submit,bt_revisionNo,bt_gateout;
     private LinearLayout LL_heat_submit,LL_heat;
     private RelativeLayout RL_heating,RL_Repair;
     private EditText ed_remarks,ed_current_status,ed_relief_value1,ed_relief_value2,ed_press_guage1,ed_press_guage2,ref_no,ed_testDate;
@@ -76,6 +76,8 @@ public class LeakTestUpdate extends CommonActivity{
     private String getEquipNo,getTestDate,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk,get_switch_shellTest,get_switch_steam;
     private ArrayList<LeakTestBean> leakTest_arraylist = new ArrayList<>();
     private LeakTestBean leakTest_bean;
+    private ImageView iv_changeOfStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +100,9 @@ public class LeakTestUpdate extends CommonActivity{
         cleaning = (Button)findViewById(R.id.cleaning);
         inspection = (Button)findViewById(R.id.inspection);
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
+        Leaktest = (Button)findViewById(R.id.leakTest);
         inspection.setVisibility(View.GONE);
         cleaning.setVisibility(View.GONE);
         LL_heat.setAlpha(0.5f);
@@ -156,6 +161,8 @@ public class LeakTestUpdate extends CommonActivity{
         Gi_trans_no = GlobalConstants.gt_transaction_no;
         LeakTestID = GlobalConstants.leskTestID;
         InDate = GlobalConstants.date;
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
 
@@ -251,6 +258,9 @@ public class LeakTestUpdate extends CommonActivity{
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;

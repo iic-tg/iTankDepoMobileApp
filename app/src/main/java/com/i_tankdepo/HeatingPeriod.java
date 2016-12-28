@@ -104,7 +104,7 @@ public class HeatingPeriod extends CommonActivity  {
     private int hour,minute;
     private TimePickerDialog mTimePicker;
     private String total_htng_period,total_htng_rate;
-    private Button heat_refresh,heat_home,heat_submit,bt_heating,cleaning,inspection,leakTest;
+    private Button heat_refresh,heat_home,heat_submit,bt_heating,cleaning,inspection,leakTest,bt_gateout;
     private String responseStatus;
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
@@ -139,6 +139,8 @@ public class HeatingPeriod extends CommonActivity  {
         LL_heat_submit = (LinearLayout)findViewById(R.id.LL_heat_submit);
         tv_heat_refresh = (TextView)findViewById(R.id.tv_heat_refresh);
         tv_heat_refresh.setText("Reset");
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
 
         RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);

@@ -3,7 +3,7 @@ package com.i_tankdepo.Constants;
 public class ConstantValues {
 	public static final String FIRST_COLUMN="First";
 	public static final String SECOND_COLUMN="Second";
-	public static final String Link="http://192.168.1.9/iTankMobileService/";
+	public static final String Link="http://192.168.1.10/iTankMobileService/";
 	public static String baseURLLogin=Link+"Login.asmx/Login";
 	public static String baseURLRoleBasedLogin=Link+"Login.asmx/RoleDetails";
 	public static String baseURLChangePwd=Link+"ChangePassword.asmx/ChangePassword";
@@ -16,7 +16,6 @@ public class ConstantValues {
 	public static String baseURLGatePendingFIlter=Link+"GateinMobile.asmx/filter";
 	public static String baseURLCreate_GateIn=Link+"GateinMobile.asmx/Update";
 	public static String baseURLGateInSearchList=Link+"GateinMobile.asmx/SearchList";
-	public static String baseURLChange_Of_Status_Update=Link+"ChangeOfStatusMobile.asmx/UpdateStatus";
 	public static String baseURLGateInAttachment=Link+"GateinMobile.asmx/pvt_ValidateGateINAttachment";
 	public static String baseURLGet_Type_Code=Link+"GateinMobile.asmx/pvt_GetEquipmentCode";
 	public static String baseURLVerify_Equipment_No=Link+"GateinMobile.asmx/ValidateEquipment";
@@ -64,6 +63,7 @@ public class ConstantValues {
 	public static String baseURLCurrentStatusList=Link+"ChangeOfStatusMobile.asmx/currrentStatusList";
 	public static String baseURLToStatusList=Link+"ChangeOfStatusMobile.asmx/ToStatusList";
 	public static String baseURLSearch=Link+"ChangeOfStatusMobile.asmx/Search";
+	public static String baseURLChange_Of_Status_Update=Link+"ChangeOfStatusMobile.asmx/UpdateStatus";
 	public static String baseURLUpdate_GateOut=Link+"GateOutMobile.asmx/Update";
 	public static String baseURLGateOutPending=Link+"GateOutMobile.asmx/List";
 	public static String baseURLGateOutPendingFIlter=Link+"GateOutMobile.asmx/filter";

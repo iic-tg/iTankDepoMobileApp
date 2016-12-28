@@ -48,7 +48,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
-                        android:text="Search Equipment"
+                        android:layout_marginLeft="2dp"
+                        android:text="Search Equipments"
                         android:gravity="center|left"
                         />
                     <View style="@style/View_horizontal_heating"
@@ -77,6 +78,7 @@
                             android:layout_weight="1"
                             android:layout_height="match_parent"
                             android:text="Customer "
+                            android:textColor="@color/tv_color"
                             android:id="@+id/tv_cust_no"
                             />
 
@@ -170,6 +172,7 @@
                             android:layout_toStartOf="@+id/im_search"
                             android:id="@+id/ed_equip_no"
                             android:gravity="center|left"
+                            android:textColor="@color/list_text"
                             android:layout_toLeftOf="@+id/im_search" />
 
                         <ImageView

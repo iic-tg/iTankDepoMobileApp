@@ -110,7 +110,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private Intent mServiceIntent;
 
     private EditText ed_text1, searchView1, searchView2;
-    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,leakTest;
+    private Button heat_refresh, heat_home, heat_submit,heating,cleaning,inspection,leakTest,bt_gateout;
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
@@ -138,6 +138,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
         LL_heat.setAlpha(0.5f);
         LL_heat.setClickable(false);
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
         ed_text1 = (EditText) findViewById(R.id.ed_text1);
 
@@ -1080,9 +1082,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

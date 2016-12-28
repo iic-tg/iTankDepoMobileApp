@@ -30,20 +30,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-
 import android.widget.ScrollView;
-
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
-import com.i_tankdepo.Beanclass.InspectionBean;
+import com.i_tankdepo.Beanclass.PendingBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.helper.ServiceHandler;
@@ -63,34 +60,32 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Locale;
 
-import static com.i_tankdepo.R.layout.heating;
+/**
+ * Created by Metaplore on 10/18/2016.
+ */
 
-
-
-
-public class InspectionPending extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class GateOut extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
 
     private ListView listview, searchlist;
-    private RelativeLayout RL_musubmit, RL_pending,RL_heating,RL_Repair;
+    private RelativeLayout RL_musubmit, RL_pending;
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
-    LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection,leakTest,bt_gateout;
+    LinearLayout LL_hole, LL_Submit, LL_footer_delete,footer_add_btn,LL_search_Value;
+    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text;
     private Intent mServiceIntent;
-    private ArrayList<InspectionBean> inspection_arraylist = new ArrayList<>();
-    private InspectionBean inspection_bean;
+    private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
+    private PendingBean pending_bean;
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist = new ArrayList<>();
     private PendingAccordionBean pending_accordion_bean;
     private ViewHolder holder;
@@ -110,18 +105,21 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     private String equipment_no;
     private String Lock_return_Message;
     private ImageView iv_back;
+
     private String getEditText;
     private ScrollView scrollbar;
     private ImageView iv_changeOfStatus;
+    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,heat_submit,Leaktest,bt_gateout;
+    private LinearLayout LL_heat,LL_heat_submit;
+    private RelativeLayout RL_heating,RL_Repair;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.inspection);
+        setContentView(R.layout.gate_out);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
@@ -133,69 +131,68 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
         no_data = (TextView)findViewById(R.id.no_data);
-        cleaning_text = (TextView)findViewById(R.id.tv_heating);
-        heating = (Button)findViewById(R.id.heating);
-        cleaning = (Button)findViewById(R.id.cleaning);
-        inspection = (Button)findViewById(R.id.inspection);
-        leakTest = (Button)findViewById(R.id.leakTest);
-        cleaning.setVisibility(View.GONE);
-        heating.setVisibility(View.GONE);
-        leakTest.setVisibility(View.GONE);
-        cleaning_text.setText("Inspection");
-        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
-        iv_changeOfStatus.setOnClickListener(this);
-        bt_gateout = (Button)findViewById(R.id.bt_gateout);
-        bt_gateout.setVisibility(View.GONE);
-
-
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
+        LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
+
+        bt_mysubmit = (Button) findViewById(R.id.bt_mysubmit);
+        bt_mysubmit.setOnClickListener(this);
+
+
+        im_ok = (ImageView) findViewById(R.id.im_ok);
+        im_close = (ImageView) findViewById(R.id.im_close);
+        RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
+
+        heat_home = (Button)findViewById(R.id.heat_home);
+        heat_refresh = (Button)findViewById(R.id.heat_refresh);
+        heat_home.setOnClickListener(this);
+        heat_refresh.setOnClickListener(this);
+        bt_heating = (Button)findViewById(R.id.heating);
+        bt_heating.setVisibility(View.GONE);
+        cleaning = (Button)findViewById(R.id.cleaning);
+        inspection = (Button)findViewById(R.id.inspection);
+        LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
+        inspection.setVisibility(View.GONE);
+        cleaning.setVisibility(View.GONE);
+        LL_heat.setAlpha(0.5f);
+        LL_heat.setClickable(false);
+        Leaktest = (Button)findViewById(R.id.leakTest);
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        Leaktest.setVisibility(View.GONE);
+        leakTest_text = (TextView)findViewById(R.id.tv_heating);
+        leakTest_text.setText("Print");
+        LL_heat_submit = (LinearLayout)findViewById(R.id.LL_heat_submit);
+        heat_submit = (Button) findViewById(R.id.heat_submit);
+        LL_heat_submit.setAlpha(0.5f);
+        LL_heat_submit.setClickable(false);
+
 
         RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
         RL_Repair.setVisibility(View.GONE);
 
-        LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
-        LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
-        LL_heat = (LinearLayout) findViewById(R.id.LL_heat);
 
 
-        im_ok = (ImageView) findViewById(R.id.im_ok);
-        im_close = (ImageView) findViewById(R.id.im_close);
-
-        im_ok.setOnClickListener(this);
-        im_close.setOnClickListener(this);
-
-        LL_heat_submit.setAlpha(0.5f);
-        LL_heat_submit.setClickable(false);
-
-        LL_heat.setAlpha(0.5f);
-        LL_heat.setClickable(false);
-
-
-        RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
-
-        bt_mysubmit = (Button) findViewById(R.id.bt_mysubmit);
-
-
-        bt_mysubmit.setOnClickListener(this);
-        bt_home = (Button) findViewById(R.id.heat_home);
-        bt_home.setOnClickListener(this);
-        bt_refresh = (Button) findViewById(R.id.heat_refresh);
-        bt_refresh.setOnClickListener(this);
         fieldSpinner = (Spinner) findViewById(R.id.sp_fields);
         operatorSpinner = (Spinner) findViewById(R.id.sp_operators);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
+        tv_add = (TextView) findViewById(R.id.tv_add);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
+        footer_add_btn = (LinearLayout)findViewById(R.id.footer_add_btn);
         scrollbar = (ScrollView)findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
+        im_ok.setOnClickListener(this);
+        im_close.setOnClickListener(this);
 
 
-        tv_toolbarTitle.setText("Inspection");
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
+
+        tv_toolbarTitle.setText("Gate Out");
 
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
@@ -218,10 +215,10 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 //        im_down.setVisibility(View.GONE);
 
         ed_text.addTextChangedListener(editTextWatcher);
-//        searchView2.addTextChangedListener(mTextEditorWatcher);
+
 
         if (cd.isConnectingToInternet()) {
-            new Get_Cleaning_details().execute();
+            new Get_GateOut_details().execute();
         } else {
             shortToast(getApplicationContext(), "Please check your Internet Connection.");
         }
@@ -234,7 +231,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Inspection_Dropdown_details().execute();
+                    new Get_GateIn_Dropdown_details().execute();
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
@@ -272,35 +269,35 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 fieldItems = fieldSpinner.getSelectedItem().toString();
                 Log.i("Selected item : ", fieldItems);
+                getEditText = "";
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
-                   if(cd.isConnectingToInternet()) {
-                       new Get_Inspection_Dropdown_details().execute();
-                       LL_hole.setVisibility(View.GONE);
-                   }else{
-                       shortToast(getApplicationContext(),"Please check your Internet Connection..!");
-                   }
-
-                } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
-                    fieldItems = "EQPMNT_NO";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                        LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
+                } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
+                    fieldItems = "EQPMNT_NO";
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 }
             }
@@ -313,28 +310,28 @@ public class InspectionPending extends CommonActivity implements NavigationView.
         operatorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                getEditText = "";
                 opratorItems = operatorSpinner.getSelectedItem().toString();
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 }else{
-                    if(cd.isConnectingToInternet()){
-                        new Get_Inspection_Dropdown_details().execute();
+                    if(cd.isConnectingToInternet()) {
+                        new Get_GateIn_Dropdown_details().execute();
                     }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                        shortToast(getApplicationContext(),"Please check your Internet Connection");
                     }
                 }
 
@@ -386,7 +383,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             no_data.setVisibility(View.GONE);
             LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
-                new Get_Inspection_Dropdown_details().execute();
+                new Get_GateIn_Dropdown_details().execute();
             }else if(getEditText.length()==0){
 
             }
@@ -404,9 +401,13 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             case R.id.iv_changeOfStatus:
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
+
             case R.id.bt_mysubmit:
+
                 finish();
-                startActivity(new Intent(getApplicationContext(),InspectionMySubmit.class));
+                startActivity(new Intent(getApplicationContext(),GateOut_Mysubmit.class));
+
+
                 break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
@@ -421,6 +422,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
+
                 for (Product p : boxAdapter.getBox()) {
                     if (p.box){
                         if(p.box==true) {
@@ -432,16 +434,15 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                             im_down.setVisibility(View.VISIBLE);
                             im_up.setVisibility(View.GONE);
 
-                           /* for(int i=0;i<selected_name.size();i++) {
+                            /*for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
                             }
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
 
-
                             //shortToast(getApplicationContext(),p.name);
 
                             if(cd.isConnectingToInternet()){
-                                new  Get_Inspection_SearchList_details().execute();
+                                new  Get_GateIn_SearchList_details().execute();
                             }else{
                                 shortToast(getApplicationContext(),"Please check Your Internet Connection");
                             }
@@ -451,7 +452,10 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         }
                     }
                 }
+
+
                 break;
+
         }
 
     }
@@ -471,31 +475,31 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             // Handle the camera action
         }else if (id == R.id.nav_changePwd) {
-            startActivity(new Intent(getApplicationContext(),Change_Password.class));
+                 startActivity(new Intent(getApplicationContext(),Change_Password.class));
         } else if (id == R.id.nav_Logout) {
-            if(mServiceIntent!=null)
-                getApplicationContext().stopService(mServiceIntent);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putBoolean(SP_LOGGED_IN, false);
-            editor.commit();
-            finish();
-            Intent in = new Intent(getApplicationContext(), Login_Activity.class);
-            startActivity(in);
+                    if(mServiceIntent!=null)
+                        getApplicationContext().stopService(mServiceIntent);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean(SP_LOGGED_IN, false);
+                    editor.commit();
+                    finish();
+                    Intent in = new Intent(getApplicationContext(), Login_Activity.class);
+                    startActivity(in);
 
-        }
+            }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public class Get_Cleaning_details extends AsyncTask<Void, Void, Void> {
+    public class Get_GateOut_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
+            progressDialog = new ProgressDialog(GateOut.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -511,14 +515,14 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionPreadvice);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateOutPending);
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-
+                jsonObject.put("Mode","new");
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);
@@ -531,7 +535,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("ArrayOfInspection");
+                jsonarray = getJsonObject.getJSONArray("GOTList");
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -544,38 +548,55 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         });
                     }else {
 
-                        inspection_arraylist = new ArrayList<InspectionBean>();
+                        pending_arraylist = new ArrayList<>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
 
-                            inspection_bean = new InspectionBean();
-                            jsonObject = jsonarray.getJSONObject(i);
+                            pending_bean = new PendingBean();
+                             jsonObject = jsonarray.getJSONObject(i);
+
+                                JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
 
 
+                            for(int j=0;j<attachmentjson.length();j++)
+                            {
+                                filenamejson=attachmentjson.getJSONObject(j);
+                                filename=filenamejson.getString("fileName");
+                            }
 
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
-                            inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
-                            inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
-                            inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
-                            inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
-                            inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
-                            inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                                pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
+                                pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
+                                pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
+                                pending_bean.setCode(jsonObject.getString("EQPMNT_CD_CD"));
+                                pending_bean.setLocation(jsonObject.getString("YRD_LCTN"));
+                                pending_bean.setVechicle(jsonObject.getString("VHCL_NO"));
+                                pending_bean.setTransport(jsonObject.getString("TRNSPRTR_CD"));
+                                pending_bean.setEir_no(jsonObject.getString("EIR_NO"));
+                                pending_bean.setHeating_bt(jsonObject.getString("HTNG_BT"));
+                                pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
+                              //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
+                              //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
+                                pending_bean.setDate(jsonObject.getString("GTOT_DT"));
+                                pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
+                                pending_bean.setTime(jsonObject.getString("GTOT_TM"));
+                                pending_bean.setCust_code(jsonObject.getString("CSTMR_ID"));
+                                pending_bean.setType_code(jsonObject.getString("EQPMNT_TYP_ID"));
+                                pending_bean.setCode_Id(jsonObject.getString("EQPMNT_CD_ID"));
+                                pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
+                                pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
+                                pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+                         //       pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
 
-                            inspection_arraylist.add(inspection_bean);
+                            if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
+                            {
+                                pending_bean.setAttachmentStatus("False");
+                            }else
+                            {
+                                pending_bean.setAttachmentStatus("True");
+                            }
+
+                                pending_arraylist.add(pending_bean);
 
 
 
@@ -614,9 +635,9 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            if(inspection_arraylist!=null)
+            if(pending_arraylist!=null)
             {
-                adapter = new UserListAdapter(InspectionPending.this, R.layout.list_item_row, inspection_arraylist);
+                 adapter = new UserListAdapter(GateOut.this, R.layout.list_item_row, pending_arraylist);
                 listview.setAdapter(adapter);
 
                 searchView2.addTextChangedListener(new TextWatcher() {
@@ -641,7 +662,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     }
                 });
             }
-            else if(inspection_arraylist.size()<1)
+            else if(pending_arraylist.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 
@@ -652,18 +673,19 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     }
 
     public class UserListAdapter extends BaseAdapter {
-        private final ArrayList<InspectionBean> arraylist;
-        private ArrayList<InspectionBean> list;
+
+        private final ArrayList<PendingBean> arraylist;
+        private ArrayList<PendingBean> list;
         Context context;
 
         int resource;
-        private InspectionBean userListBean;
+        private PendingBean userListBean;
         int lastPosition = -1;
-        public UserListAdapter(Context context, int resource, ArrayList<InspectionBean> list) {
+        public UserListAdapter(Context context, int resource, ArrayList<PendingBean> list) {
             this.context = context;
             this.list = list;
             this.resource = resource;
-            this.arraylist = new ArrayList<InspectionBean>();
+            this.arraylist = new ArrayList<PendingBean>();
             this.arraylist.addAll(list);
         }
 
@@ -689,36 +711,34 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 convertView = inflater.inflate(resource, null);
                 holder = new ViewHolder();
 
-                lastPosition = position;
-
+               /* Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+                convertView.startAnimation(animation);
+                lastPosition = position;*/
                 holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
                 holder.time = (TextView) convertView.findViewById(R.id.text3);
                 holder.previous_crg = (TextView) convertView.findViewById(R.id.text4);
-                holder.equipStatusType = (TextView) convertView.findViewById(R.id.text5);
-                holder.orgCleaningDate = (TextView) convertView.findViewById(R.id.tv_type);
-                holder.customer_Id = (TextView) convertView.findViewById(R.id.text6);
-                holder.cleaningRate = (TextView) convertView.findViewById(R.id.tv_code);
-                holder.lastStatusDate = (TextView) convertView.findViewById(R.id.tv_location);
-                holder.add_cleaning_bit = (TextView) convertView.findViewById(R.id.tv_transport);
-                holder.cleaningId = (TextView) convertView.findViewById(R.id.tv_vechicle);
-                holder.cleaningRefNo = (TextView) convertView.findViewById(R.id.text7);
+                holder.attachmentstatus = (TextView) convertView.findViewById(R.id.text5);
+                holder.type = (TextView) convertView.findViewById(R.id.tv_type);
+                holder.gateIn_Id = (TextView) convertView.findViewById(R.id.text6);
+                holder.code = (TextView) convertView.findViewById(R.id.tv_code);
+                holder.location = (TextView) convertView.findViewById(R.id.tv_location);
+                holder.transport = (TextView) convertView.findViewById(R.id.tv_transport);
+                holder.vechicle = (TextView) convertView.findViewById(R.id.tv_vechicle);
+                holder.Eir_no = (TextView) convertView.findViewById(R.id.text7);
                 holder.remark = (TextView) convertView.findViewById(R.id.text8);
-                holder.eir_no = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
-                holder.equipStatus = (TextView) convertView.findViewById(R.id.text10);
-                holder.slabRate = (TextView) convertView.findViewById(R.id.tv_status);
-                holder.orgInspectionDate = (TextView) convertView.findViewById(R.id.text9);
-                holder.clean_unclean = (TextView) convertView.findViewById(R.id.tv_pre_code);
-                holder.gi_transNo = (TextView) convertView.findViewById(R.id.tv_pre_id);
-                holder.Seal_no = (TextView) convertView.findViewById(R.id.tv_cust_code);
+                holder.pre_adv_id = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
+                holder.rental_bt = (TextView) convertView.findViewById(R.id.text10);
+                holder.status = (TextView) convertView.findViewById(R.id.tv_status);
+                holder.heating_bt = (TextView) convertView.findViewById(R.id.text9);
+                holder.pre_code = (TextView) convertView.findViewById(R.id.tv_pre_code);
+                holder.pre_id = (TextView) convertView.findViewById(R.id.tv_pre_id);
+                holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
-                holder.cleaningMethod = (TextView) convertView.findViewById(R.id.tv_cleaning_method);
-                holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.LL_username.setVisibility(View.GONE);
-
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -731,18 +751,22 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             }else {
 
                 userListBean = list.get(position);
+                String[] parts = userListBean.getDate().split(" ");
+                String part1_date = parts[0];
+                String part1_time = parts[1];
+                System.out.println("from date after split" + part1_date);
 
+                holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
+                holder.Cust_Name.setText(userListBean.getCustomerName());
+                holder.time.setText(part1_date + " & " + part1_time);
 
-
-                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
-                holder.Cust_Name.setText(userListBean.getCustomer());
-                holder.time.setText(userListBean.getInDate());
-                holder.previous_crg.setText(userListBean.getPrevious_cargo());
-
-
-
-
-               /* if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
+                holder.previous_crg.setText(userListBean.getPreviousCargo());
+                holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
+                holder.gateIn_Id.setText(userListBean.getGateIn_Id());
+                holder.location.setText(userListBean.getLocation());
+                holder.vechicle.setText("");
+/*
+                if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
                 {
                     holder.vechicle.setText("");
                 }
@@ -750,22 +774,20 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     holder.vechicle.setText(userListBean.getVechicle());
                 }*/
 
-                holder.equipStatus.setText(userListBean.getEquip_status());
-                holder.customer_Id.setText(userListBean.getCustomerId());
-                holder.lastStatusDate.setText(userListBean.getLastStatusDate());
-                holder.add_cleaning_bit.setText(userListBean.getAdd_cleaningBit());
-                holder.cleaningId.setText(userListBean.getCleaningId());
-                holder.cleaningRefNo.setText(userListBean.getCleaningRefNo());
+                holder.transport.setText(userListBean.getTransport());
+                holder.Eir_no.setText(userListBean.getEir_no());
+                holder.heating_bt.setText(userListBean.getHeating_bt());
+                holder.rental_bt.setText(userListBean.getRental_bt());
                 holder.remark.setText(userListBean.getRemark());
-                holder.orgCleaningDate.setText(userListBean.getOrgCleaningDate());
-                holder.orgInspectionDate.setText(userListBean.getOrgInspectionDate());
-                holder.Seal_no.setText(userListBean.getSeal_no());
-                holder.clean_unclean.setText(userListBean.getClean_unclean());
-                holder.eir_no.setText(userListBean.getEir_no());
-                holder.cleaningRate.setText(userListBean.getCleaningRate());
-                holder.slabRate.setText(userListBean.getSlabrate());
-                holder.gi_transNo.setText(userListBean.getGi_trans_no());
-
+                holder.type.setText(userListBean.getType());
+                holder.code.setText(userListBean.getCode());
+                holder.status.setText(userListBean.getStatus());
+                holder.pre_id.setText(userListBean.getPrev_Id());
+                holder.pre_code.setText(userListBean.getPrev_code());
+                holder.cust_code.setText(userListBean.getCust_code());
+                holder.type_id.setText(userListBean.getType_code());
+                holder.code_id.setText(userListBean.getCode_Id());
+                holder.pre_adv_id.setText(userListBean.getGI_TRNSCTN_NO());
 
 
 
@@ -773,27 +795,35 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     @Override
                     public void onClick(View v) {
 
-                        GlobalConstants.equipment_no = list.get(position).getEquip_no();
-                        GlobalConstants.customer_name = list.get(position).getCustomer();
-                        GlobalConstants.customer_Id = list.get(position).getCustomerId();
-                        GlobalConstants.equip_status = list.get(position).getEquip_status();
-                        GlobalConstants.equip_status_type = list.get(position).getEquip_statusType();
-                        GlobalConstants.indate = list.get(position).getInDate();
-                        GlobalConstants.previous_cargo = list.get(position).getPrevious_cargo();
-                        GlobalConstants.lastStatusDate = list.get(position).getLastStatusDate();
-                        GlobalConstants.add_cleaning_bit = list.get(position).getAdd_cleaningBit();
-                        GlobalConstants.cleaning_id = list.get(position).getCleaningId();
-                        GlobalConstants.cleaning_RefNo = list.get(position).getCleaningRefNo();
-                        GlobalConstants.remark = list.get(position).getRemark();
-                        GlobalConstants.org_cleaningDate = list.get(position).getOrgCleaningDate();
-                        GlobalConstants.org_inspectionDate = list.get(position).getOrgInspectionDate();
-                        GlobalConstants.clean_unclean = list.get(position).getClean_unclean();
-                        GlobalConstants.seal_no = list.get(position).getSeal_no();
-                        GlobalConstants.eir_no = list.get(position).getEir_no();
-                        GlobalConstants.clean_rate = list.get(position).getCleaningRate();
-                        GlobalConstants.slab_rate = list.get(position).getSlabrate();
-                        GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
 
+
+
+                        Intent i=new Intent(getApplicationContext(),Update_Gateout.class);
+
+                        GlobalConstants.GateInId=list.get(position).getGateIn_Id();
+                        GlobalConstants.from="new";
+                        GlobalConstants.equipment_no= list.get(position).getEquipmentNo();
+                        GlobalConstants.location=list.get(position).getLocation();
+                        GlobalConstants.customer_name=list.get(position).getCustomerName();
+                        GlobalConstants.code=list.get(position).getCode();
+                        GlobalConstants.type=list.get(position).getType();
+                        GlobalConstants.status=list.get(position).getStatus();
+                        GlobalConstants.date=list.get(position).getDate();
+                        GlobalConstants.time=list.get(position).getTime();
+                        GlobalConstants.previous_cargo=list.get(position).getPreviousCargo();
+                        GlobalConstants.eir_no=list.get(position).getEir_no();
+                        GlobalConstants.vechicle_no=list.get(position).getVechicle();
+                        GlobalConstants.Transport_No=list.get(position).getTransport();
+                        GlobalConstants.heating_bt=list.get(position).getHeating_bt();
+                        GlobalConstants.cust_code=list.get(position).getCust_code();
+                        GlobalConstants.type_id=list.get(position).getType_code();
+                        GlobalConstants.code_id=list.get(position).getCode_Id();
+                        GlobalConstants.pre_code=list.get(position).getPrev_code();
+                        GlobalConstants.pre_id=list.get(position).getPrev_Id();
+                        GlobalConstants.pre_adv_id=list.get(position).getGI_TRNSCTN_NO();
+                        GlobalConstants.attachmentStatus=list.get(position).getAttachmentStatus();
+
+                        startActivity(i);
 
 
                     }
@@ -803,20 +833,18 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             return convertView;
         }
 
-
-
         public void filter(String charText) {
             charText = charText.toLowerCase(Locale.getDefault());
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
             } else {
-                for (InspectionBean wp : arraylist) {
-                    if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getEquip_no().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getPrevious_cargo().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
+                for (PendingBean wp : arraylist) {
+                    if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getEquipmentNo().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getDate().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getType().toLowerCase(Locale.getDefault()).contains(charText)||
+                            wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
                     }
@@ -828,8 +856,8 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
     }
     static class ViewHolder {
-        TextView equip_no,time, date,Cust_Name,equipStatusType,previous_crg, equipStatus,cleaningMethod,add_Cleaning,customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
-                vechicle, add_cleaning_bit, cleaningId, cleaningRefNo,rental_bt,remark, eir_no,orgInspectionDate,clean_unclean,Seal_no,slabRate,pre_adv_id, orgCleaningDate;
+        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
+                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
@@ -837,14 +865,14 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
 
 
-    public class Get_Inspection_Dropdown_details extends AsyncTask<Void, Void, Void> {
+    public class Get_GateIn_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
+            progressDialog = new ProgressDialog(GateOut.this);
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
@@ -860,7 +888,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionFilter);
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateOutPendingFIlter);
             httpPost.setHeader("Content-Type", "application/json");
 
             try{
@@ -913,7 +941,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                             pending_accordion_bean.setValues(jsonObject.getString("Values"));
                             products.add(new Product(jsonObject.getString("Values"),false));
 
-                            pending_accordion_arraylist.add(pending_accordion_bean);
+                           pending_accordion_arraylist.add(pending_accordion_bean);
 
                         }
                     }
@@ -951,10 +979,11 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
             if(pending_accordion_arraylist!=null)
             {
-                boxAdapter = new ListAdapter(InspectionPending.this, products);
+                boxAdapter = new ListAdapter(GateOut.this, products);
                 searchlist.setAdapter(boxAdapter);
 
-
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
 
                 searchView1.addTextChangedListener(new TextWatcher() {
 
@@ -977,7 +1006,6 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         // TODO Auto-generated method stub
                     }
                 });
-
 
 
 
@@ -1047,6 +1075,16 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             cbBuy.setChecked(p.box);
 
 
+
+
+          /*  for(int i=0;i<selected_member_arraylist.size();i++)
+            {
+                if(p.memberId .equalsIgnoreCase(String.valueOf(selected_member_arraylist.get(i).getId())))
+                {
+                    cbBuy.setChecked(true);
+                }
+            }
+*/
             return view;
         }
 
@@ -1091,44 +1129,127 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
     }
 
+/*
+    public class UserListAdapterDropdown extends BaseAdapter {
 
+        Context context;
+        ArrayList<PendingAccordionBean> list = new ArrayList<>();
+        int resource;
+        private PendingAccordionBean userListBean;
+        int lastPosition=-1;
 
-    public class Get_Inspection_SearchList_details extends AsyncTask<Void, Void, Void> {
-        private JSONArray jsonarray;
-        private JSONArray preadvicejsonlist;
-        private JSONObject preadvicejsonObject;
-        private JSONObject SearchValuesObject;
-        private String preadviceObject;
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(InspectionPending.this);
-            progressDialog.setMessage("Please Wait...");
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+        public UserListAdapterDropdown(Context context, int resource, ArrayList<PendingAccordionBean> list) {
+            this.context = context;
+            this.list = list;
+            this.resource = resource;
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        public int getCount() {
+            return list.size();
+        }
 
-            ServiceHandler sh = new ServiceHandler();
-            HttpParams httpParameters = new BasicHttpParams();
-            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
-            HttpEntity httpEntity = null;
-            HttpResponse response = null;
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLInspectionSearchList);
-            // httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-Type", "application/json");
-            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+        @Override
+        public Object getItem(int position) {
+            return list.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                convertView = inflater.inflate(resource, null);
+                holder = new ViewHolder();
+
+               */
+/* Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+                convertView.startAnimation(animation);
+                lastPosition = position;*//*
+
+                holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
+                holder.Cust_Name = (TextView) convertView.findViewById(R.id.tv_cust_name);
+                holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
+
+
+                // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            if (list.size() < 1){
+                Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
+            }else {
+                userListBean = list.get(position);
+
+                holder.Cust_Name.setText(userListBean.getValues());
+
+
+
+
+                holder.whole.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                      */
+/*  Intent i=new Intent(getApplicationContext(),View_Invoice.class);
+                        i.putExtra("name", userListBean.getCustomer());
+                        i.putExtra("value",userListBean.getInvoice_amount());
+                        i.putExtra("due",userListBean.getInvoice_due());
+                        i.putExtra("date",userListBean.getInvoice_date());
+                        i.putExtra("no",userListBean.getInvoice_no());
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);*//*
+
+                    }
+                });
+
+            }
+            return convertView;
+        }
+    }
+*/
+public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
+    private JSONArray jsonarray;
+    private JSONArray preadvicejsonlist;
+    private JSONObject preadvicejsonObject;
+    private JSONObject SearchValuesObject;
+    private String preadviceObject;
+
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog = new ProgressDialog(GateOut.this);
+        progressDialog.setMessage("Please Wait...");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
+//        if ((progressDialog != null) && progressDialog.isShowing()) {
+        progressDialog.show();
+//        }
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+
+        ServiceHandler sh = new ServiceHandler();
+        HttpParams httpParameters = new BasicHttpParams();
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+        HttpEntity httpEntity = null;
+        HttpResponse response = null;
+        HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateOutSearchList);
+        // httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-Type", "application/json");
+        //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
-            try{
-                JSONObject jsonObject = new JSONObject();
+        try{
+            JSONObject jsonObject = new JSONObject();
 
-                preadvicejsonlist = new JSONArray();
-                SearchValuesObject=new JSONObject();
+            preadvicejsonlist = new JSONArray();
+            SearchValuesObject=new JSONObject();
 
                 for (int i = 0; i <selected_name.size(); i++) {
                     preadvicejsonObject=new JSONObject();
@@ -1136,131 +1257,117 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     preadvicejsonlist.put(preadvicejsonObject);
                 }
 
-                SearchValuesObject.put("SearchValues",preadvicejsonlist);
+            SearchValuesObject.put("SearchValues",preadvicejsonlist);
 
 
 
 
-                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("filterType", fieldItems);
-                jsonObject.put("Mode", "new");
-                jsonObject.put("SearchValues", SearchValuesObject);
+            jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+            jsonObject.put("filterType", fieldItems);
+            jsonObject.put("Mode", "new");
+            jsonObject.put("SearchValues", SearchValuesObject);
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+            StringEntity stringEntity = new StringEntity(jsonObject.toString());
+            httpPost.setEntity(stringEntity);
+            response = httpClient.execute(httpPost);
+            httpEntity = response.getEntity();
+            String resp = EntityUtils.toString(httpEntity);
+
+            Log.d("rep", resp);
+            Log.d("Search_request", jsonObject.toString());
+
+            JSONObject jsonrootObject = new JSONObject(resp);
+            JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
+            jsonarray = getJsonObject.getJSONArray("GOTList");
+            if (jsonarray != null) {
 
-
-                StringEntity stringEntity = new StringEntity(jsonObject.toString());
-                httpPost.setEntity(stringEntity);
-                response = httpClient.execute(httpPost);
-                httpEntity = response.getEntity();
-                String resp = EntityUtils.toString(httpEntity);
-
-                Log.d("rep", resp);
-                Log.d("Search_request", jsonObject.toString());
-
-                JSONObject jsonrootObject = new JSONObject(resp);
-                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
-
-
-                jsonarray = getJsonObject.getJSONArray("ArrayOfInspection");
-                if (jsonarray != null) {
-
-                    System.out.println("Am HashMap list"+jsonarray);
-                    if (jsonarray.length() < 1) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
+                System.out.println("Am HashMap list"+jsonarray);
+                if (jsonarray.length() < 1) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
-                            }
-                        });
-                    }else {
-
-                        inspection_arraylist = new ArrayList<InspectionBean>();
-
-
-                        for (int i = 0; i < jsonarray.length(); i++) {
-
-                            inspection_bean = new InspectionBean();
-                            jsonObject = jsonarray.getJSONObject(i);
-
-
-
-
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
-                            inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
-                            inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
-                            inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
-                            inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
-                            inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
-                            inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
-                            inspection_arraylist.add(inspection_bean);
-
-
-
-                        }
-                    }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
-
-                        @Override
-                        public void run(){
-                            //update ui here
-                            // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
-
-
+                            shortToast(getApplicationContext(), "No Records Found");
                         }
                     });
+                }else {
 
+                    pending_arraylist = new ArrayList<>();
+
+
+                    for (int i = 0; i < jsonarray.length(); i++) {
+
+                        pending_bean = new PendingBean();
+                        jsonObject = jsonarray.getJSONObject(i);
+
+
+
+
+                        pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
+                        pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
+                        pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
+                        pending_bean.setDate(jsonObject.getString("GTOT_DT"));
+                        pending_bean.setTime(jsonObject.getString("GTOT_TM"));
+                      //  pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+                        pending_arraylist.add(pending_bean);
+
+
+
+                    }
                 }
+            }else if(jsonarray.length()<1){
+                runOnUiThread(new Runnable(){
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute (Void aVoid){
+                    @Override
+                    public void run(){
+                        //update ui here
+                        // display toast here
+                        shortToast(getApplicationContext(),"No Records Found");
 
 
-
-            if(inspection_arraylist!=null)
-            {
-                adapter = new UserListAdapter(InspectionPending.this, R.layout.list_item_row, inspection_arraylist);
-                listview.setAdapter(adapter);
-
-            }
-            else if(inspection_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
+                    }
+                });
 
             }
 
-            progressDialog.dismiss();
-
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+
+        return null;
     }
+    @Override
+    protected void onPostExecute (Void aVoid){
+
+
+
+        if(pending_arraylist!=null)
+        {
+            adapter = new UserListAdapter(GateOut.this, R.layout.list_item_row, pending_arraylist);
+            listview.setAdapter(adapter);
+
+        }
+        else if(pending_arraylist.size()<1)
+        {
+            shortToast(getApplicationContext(),"Data Not Found");
+
+
+        }
+        if ((progressDialog != null) && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+}
     @Override
     public void onPause() {
         super.onPause();

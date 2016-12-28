@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -46,14 +47,15 @@ public class MainActivity extends CommonActivity
     Toolbar toolbar;
     private ImageView menu,up,down,iv_back,iv_changeOfStatus;
     private DrawerLayout drawer;
-    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_Stock_Report,LL_GateOut;
+    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_Stock_Report,LL_GateOut,LL_Inspection;
     LinearLayout LL_hole;
     private TextView tv_toolbarTitle;
     private Intent mServiceIntent;
     private JSONArray jsonArray;
     private ArrayList<String> list;
     private String activityName,RoleID;
-    private ImageView im_gatein,im_gateout,im_heating,im_cleaning,im_repair,im_leaktest,im_equipement,im_stock;
+    private ImageView im_gatein,im_gateout,im_heating,im_cleaning,im_Inspection,im_repair,im_leaktest,im_equipement,im_stock,home_changeStatus;
+    private Button gateoutCount,gateInCount,heatingCount,cleaningCount,leaktestCount,repairCount,inspectionCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class MainActivity extends CommonActivity
         im_gateout=(ImageView)findViewById(R.id.im_gateout);
         im_heating=(ImageView)findViewById(R.id.im_heating);
         im_cleaning=(ImageView)findViewById(R.id.im_cleaning);
+        im_Inspection=(ImageView)findViewById(R.id.im_Inspection);
         im_repair=(ImageView)findViewById(R.id.im_repair);
         im_leaktest=(ImageView)findViewById(R.id.im_leaktest);
         im_equipement=(ImageView)findViewById(R.id.im_history);
@@ -72,6 +75,16 @@ public class MainActivity extends CommonActivity
         iv_back = (ImageView)findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
         RoleID = GlobalConstants.roleID;
+        home_changeStatus = (ImageView)findViewById(R.id.home_changeStatus);
+        home_changeStatus.setOnClickListener(this);
+
+        gateInCount = (Button)findViewById(R.id.bt_gateinCount);
+        gateoutCount = (Button)findViewById(R.id.bt_gateoutCount);
+        heatingCount = (Button)findViewById(R.id.bt_heatingCount);
+        cleaningCount = (Button)findViewById(R.id.bt_cleaningCount);
+        inspectionCount = (Button)findViewById(R.id.bt_inspectionCount);
+        leaktestCount = (Button)findViewById(R.id.bt_leaktestCount);
+        repairCount = (Button)findViewById(R.id.bt_repairCount);
 
         if (cd.isConnectingToInternet()){
             new Post_Role_Based().execute();
@@ -84,6 +97,7 @@ public class MainActivity extends CommonActivity
         LL_GateOut = (LinearLayout) findViewById(R.id.LL_GateOut);
         LL_Heating = (LinearLayout) findViewById(R.id.LL_Heating);
         Ll_Cleaning = (LinearLayout)findViewById(R.id.LL_Cleaning);
+        LL_Inspection = (LinearLayout)findViewById(R.id.LL_Inspection);
         LL_Leaktest = (LinearLayout)findViewById(R.id.LL_Leaktest);
         LL_Repair = (LinearLayout)findViewById(R.id.LL_Repair);
         LL_History = (LinearLayout)findViewById(R.id.LL_History);
@@ -98,6 +112,7 @@ public class MainActivity extends CommonActivity
         LL_GateOut.setOnClickListener(this);
         LL_Heating.setOnClickListener(this);
         Ll_Cleaning.setOnClickListener(this);
+        LL_Inspection.setOnClickListener(this);
         LL_Leaktest.setOnClickListener(this);
         LL_Repair.setOnClickListener(this);
         LL_History.setOnClickListener(this);
@@ -191,7 +206,9 @@ public class MainActivity extends CommonActivity
 
         switch (view.getId())
         {
-
+            case R.id.home_changeStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.LL_GateIn:
                     startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;
@@ -203,6 +220,9 @@ public class MainActivity extends CommonActivity
                 break;
             case R.id.LL_Cleaning:
                 startActivity(new Intent(getApplicationContext(),Cleaning.class));
+                break;
+            case R.id.LL_Inspection:
+                startActivity(new Intent(getApplicationContext(),InspectionPending.class));
                 break;
             case R.id.LL_Leaktest:
                 startActivity(new Intent(getApplicationContext(),LeakTest.class));
@@ -346,7 +366,7 @@ public class MainActivity extends CommonActivity
                                 });
 
                             }
-                            if (role.equalsIgnoreCase("Cleaning")) {
+                            else if (role.equalsIgnoreCase("Cleaning")) {
 
 
                                 runOnUiThread(new Runnable() {
@@ -361,7 +381,23 @@ public class MainActivity extends CommonActivity
                                     }
                                 });
 
-                            } else if (role.equalsIgnoreCase("Leak Test")) {
+                            }else if (role.equalsIgnoreCase("Inspection")) {
+
+
+                                runOnUiThread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        //update ui here
+                                        // display toast here
+                                        im_Inspection.setVisibility(View.GONE);
+
+
+                                    }
+                                });
+
+                            }
+                            else if (role.equalsIgnoreCase("Leak Test")) {
 
                                 runOnUiThread(new Runnable() {
 

@@ -60,6 +60,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.i_tankdepo.Beanclass.ChanfeOfStatusBean;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.camera.CameraManager;
 import com.i_tankdepo.camera.ShutterButton;
@@ -213,6 +214,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private static boolean isFirstLaunch; // True if this is the first time the app is being run
   LinearLayout LL_print,LL_Submit;
   private int pendingsize;
+  private ImageView iv_changeOfStatus;
 
   Handler getHandler() {
     return handler;
@@ -265,6 +267,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     im_add.setVisibility(View.GONE);
     LL_print.setAlpha(0.5f);
     LL_print.setClickable(false);
+    iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
 
     menu=(ImageView)findViewById(R.id.iv_menu) ;
     iv_back = (ImageView)findViewById(R.id.iv_back);
@@ -280,12 +283,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     statusViewTop = (TextView) findViewById(R.id.status_view_top);
     registerForContextMenu(statusViewTop);
 
+    iv_changeOfStatus.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+      }
+    });
+
     home.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         startActivity(new Intent(getApplicationContext(),MainActivity.class));
       }
     });
+
     refresh.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {

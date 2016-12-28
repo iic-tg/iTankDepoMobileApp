@@ -60,7 +60,7 @@ import java.util.List;
 public class LeakTestCreate extends CommonActivity {
     private ImageView menu,iv_back,add_new_heating,im_testDate,im_in_Date;
     private TextView tv_toolbarTitle,leakTest_text,tv_heat_refresh,text1,text2;
-    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,heat_submit,bt_revisionNo,leakTest;
+    private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,heat_submit,bt_revisionNo,leakTest,bt_gateout;
     private LinearLayout LL_heat_submit,LL_heat;
     private RelativeLayout RL_heating,RL_Repair;
     private EditText ed_customer,ed_in_Date,ed_testDate,ed_remarks,ed_current_status,ed_relief_value1,ed_relief_value2,ed_press_guage1,ed_press_guage2,ref_no;
@@ -89,6 +89,7 @@ public class LeakTestCreate extends CommonActivity {
     List<String> location = new ArrayList<>();
     private String EquipmentNo,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
     private TextView tv_equip_no,tv_name,tv_testDate;
+    private ImageView iv_changeOfStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +102,7 @@ public class LeakTestCreate extends CommonActivity {
         add_new_heating = (ImageView) findViewById(R.id.im_add);
         menu.setVisibility(View.GONE);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
-        tv_toolbarTitle.setText("Leak Test Create");
+        tv_toolbarTitle.setText("Add New Equipment");
 
         heat_home = (Button) findViewById(R.id.heat_home);
         heat_refresh = (Button) findViewById(R.id.heat_refresh);
@@ -112,6 +113,8 @@ public class LeakTestCreate extends CommonActivity {
 
         bt_heating = (Button) findViewById(R.id.heating);
         bt_heating.setVisibility(View.GONE);
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
         cleaning = (Button) findViewById(R.id.cleaning);
         inspection = (Button) findViewById(R.id.inspection);
         LL_heat = (LinearLayout) findViewById(R.id.LL_heat);
@@ -123,6 +126,8 @@ public class LeakTestCreate extends CommonActivity {
         leakTest_text.setText("Add New");
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
         heat_submit = (Button) findViewById(R.id.heat_submit);
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
 
 
@@ -230,6 +235,9 @@ public class LeakTestCreate extends CommonActivity {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 break;

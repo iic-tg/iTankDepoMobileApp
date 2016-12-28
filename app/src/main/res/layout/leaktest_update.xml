@@ -87,6 +87,7 @@
                                 android:padding="10dp"
                                 android:layout_weight="1"
                                 android:gravity="center"
+                                android:visibility="gone"
                                 android:src="@mipmap/ic_info_leaktest"
                                 android:focusable="false"
                                 android:textColor="@color/Title"
@@ -124,8 +125,9 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:textColor="@color/tv_color"
                                 android:layout_marginLeft="2dp"
-                                android:id="@+id/tv_startTime"
+                                android:id="@+id/tv_revNo"
                                 android:text="Rev No"/>
                         </LinearLayout>
 
@@ -312,13 +314,17 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_relief_value1"/>
+                                android:id="@+id/ed_relief_value1"
+                                android:textColor="@color/list_text"
+                                />
 
                             <EditText
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_relief_value2"/>
+                                android:id="@+id/ed_relief_value2"
+                                android:textColor="@color/list_text"
+                                />
 
 
                         </LinearLayout>
@@ -362,13 +368,17 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_press_guage1"/>
+                                android:id="@+id/ed_press_guage1"
+                                android:textColor="@color/list_text"
+                                />
 
                             <EditText
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:id="@+id/ed_press_guage2"/>
+                                android:id="@+id/ed_press_guage2"
+                                android:textColor="@color/list_text"
+                                />
 
 
 
@@ -412,6 +422,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:focusable="false"
+                                android:textColor="@color/list_text"
                                 android:id="@+id/ed_current_status"/>
                         </LinearLayout>
                         <LinearLayout
@@ -450,6 +461,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:textColor="@color/list_text"
                                 android:id="@+id/ed_remarks"/>
                         </LinearLayout>
 

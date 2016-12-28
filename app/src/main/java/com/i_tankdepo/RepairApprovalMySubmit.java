@@ -112,6 +112,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
+    private ImageView iv_changeOfStatus;
 
 
     @Override
@@ -135,7 +136,8 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
         repair_estimate_text = (TextView)findViewById(R.id.tv_heating);
         repair_estimate_text.setText("Repair Approval");
         no_data.setVisibility(View.GONE);
-
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setOnClickListener(this);
 
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
@@ -396,6 +398,9 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
     public void onClick(View view) {
         switch (view.getId())
         {
+            case R.id.iv_changeOfStatus:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                break;
 
             case R.id.bt_pending:
                 finish();
@@ -1130,9 +1135,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }
+            progressDialog.show();
         }
 
         @Override

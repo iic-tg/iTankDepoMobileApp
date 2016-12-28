@@ -85,7 +85,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection,Leaktest;
+    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection,Leaktest,bt_gateout;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
@@ -144,6 +144,8 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         heating.setVisibility(View.GONE);
         Leaktest.setVisibility(View.GONE);
         cleaning_text.setText("Cleaning");
+        bt_gateout = (Button)findViewById(R.id.bt_gateout);
+        bt_gateout.setVisibility(View.GONE);
 
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
@@ -1188,9 +1190,11 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            if ((progressDialog != null) && progressDialog.isShowing()) {
+           /* if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.show();
-            }
+            }*/
+            progressDialog.show();
+
         }
 
         @Override

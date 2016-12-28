@@ -80,6 +80,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import static android.R.id.list;
+import static com.i_tankdepo.R.id.login;
 import static com.i_tankdepo.R.layout.change_of_status;
 import static com.i_tankdepo.R.layout.list_item_row_accordion;
 import static com.i_tankdepo.R.id.GateIn;
@@ -102,7 +103,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value;
-    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print;
+    Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,gateInCount;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
@@ -132,6 +133,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
     private String getEditText;
     private ScrollView scrollbar;
+    private int totalCount;
 
 
     @Override
@@ -188,6 +190,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         scrollbar = (ScrollView)findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
+
+
 
         tv_add.setOnClickListener(this);
         tv_toolbarTitle.setText("Gate In");
@@ -651,8 +655,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             }
             if(pending_arraylist!=null)
             {
-                 adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
+                adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
                 listview.setAdapter(adapter);
+
+//                totalCount = listview.getAdapter().getCount();
+
+
 
                 searchView2.addTextChangedListener(new TextWatcher() {
 
@@ -1383,9 +1391,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         progressDialog.setMessage("Please Wait...");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
-        if ((progressDialog != null) && progressDialog.isShowing()) {
-            progressDialog.show();
-        }
+        progressDialog.show();
+
     }
 
     @Override
