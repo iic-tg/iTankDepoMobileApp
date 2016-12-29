@@ -773,6 +773,8 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     @Override
                     public void onClick(View v) {
 
+                        Intent i = new Intent(getApplicationContext(), InspectionUpdate.class);
+
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
                         GlobalConstants.customer_Id = list.get(position).getCustomerId();
@@ -793,6 +795,8 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         GlobalConstants.clean_rate = list.get(position).getCleaningRate();
                         GlobalConstants.slab_rate = list.get(position).getSlabrate();
                         GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
+
+                        startActivity(i);
 
 
 

@@ -36,10 +36,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="50dp"
                         android:orientation="horizontal"
                         android:background="@color/toolbar"
                         android:weightSum="1">
@@ -56,9 +55,10 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:layout_weight="1"
+                                android:layout_weight="2"
                                 android:id="@+id/text1"
                                 android:focusable="false"
+                                android:gravity="center|left"
                                 android:textColor="@color/Title"
                                 android:text="text1"/>
 
@@ -69,6 +69,7 @@
                                 android:focusable="false"
                                 android:layout_gravity="center|left"
                                 android:id="@+id/text2"
+                                android:visibility="gone"
                                 android:textColor="@color/Title"
                                 android:text="AAAAFFGG1 , type"/>
 
@@ -79,17 +80,17 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:layout_marginLeft="20dp"
-                            android:padding="17dp">
+                            android:padding="10dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:src="@mipmap/ic_cleaning"
+                                android:src="@mipmap/ic_info_leaktest"
                                 android:focusable="false"
                                 android:textColor="@color/Title"
-                                android:id="@+id/text4"
+                                android:id="@+id/im_info_cleaning"
                                 android:text="08:15 am"/>
 
 
@@ -98,15 +99,141 @@
 
                     </LinearLayout>
 
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="2"
                         android:layout_marginLeft="5dp"
                         android:layout_below="@+id/text_layout"
-                        android:layout_marginTop="10dp"
                         android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:weightSum="2">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:text="Cleaning Method "
+                                android:id="@+id/tv_CleanMethod"
+                                android:textStyle="bold"
+                                android:gravity="center|left"
+                                android:layout_marginLeft="2dp"
+                                android:layout_weight="1.9"/>
+
+                            <Button
+                                android:layout_width="50dp"
+                                android:layout_height="30dp"
+                                android:gravity="center"
+                                android:layout_gravity="center|right"
+                                android:textColor="@color/white"
+                                android:layout_marginLeft="2dp"
+                                android:background="@color/submit"
+                                android:text="ARU"
+                                android:id="@+id/bt_cleaningInst" />
+                        </LinearLayout>
+
+
+                        <View style="@style/View_horizontal_black"
+                            android:layout_marginTop="10dp"></View>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:weightSum="2">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:text="Cleaned By "
+                                android:id="@+id/tv_cleanBy"
+                                android:textColor="@color/tv_color"
+                                android:layout_marginLeft="2dp"
+                                android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="2dp"
+                                android:textColor="@color/tv_color"
+                                android:id="@+id/tv_cleanRefNo"
+                                android:text="Cleaning Ref No"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:weightSum="2"
+                            android:layout_below="@+id/text_layout"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginRight="2dp"
+                                android:layout_height="match_parent">
+                                 <EditText
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:padding="5dp"
+                                     android:lines="1"
+                                     android:singleLine="true"
+                                     android:paddingRight="10dp"
+                                     android:layout_marginRight="4dp"
+                                     android:textColor="@color/list_text"
+                                     android:focusable="false"
+                                     android:id="@+id/ed_cleanBy"
+                                     android:hint=""
+                                     />
+                                 <ImageView
+                                     android:layout_width="30dp"
+                                     android:layout_height="30dp"
+                                     android:visibility="gone"
+                                     android:layout_marginTop="2dp"
+                                     android:id="@+id/im_startDate"
+                                     android:src="@mipmap/ic_calender"
+                                     android:layout_alignParentRight="true"/>
+
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginRight="2dp"
+                                android:layout_height="match_parent">
+
+                                 <ImageView
+                                     android:layout_width="30dp"
+                                     android:layout_height="30dp"
+                                     android:layout_marginTop="2dp"
+                                     android:src="@mipmap/ic_time"
+                                     android:visibility="gone"
+                                     android:layout_alignParentRight="true"/>
+
+                                 <EditText
+                                     android:layout_width="match_parent"
+                                     android:layout_height="wrap_content"
+                                     android:padding="5dp"
+                                     android:lines="1"
+                                     android:singleLine="true"
+                                     android:paddingRight="10dp"
+                                     android:focusable="false"
+                                     android:id="@+id/ed_cleanRefNo"
+                                     android:textColor="@color/list_text"
+                                     android:hint=""
+                                     android:layout_alignParentTop="true"
+                                     android:layout_alignParentLeft="true"
+                                     android:layout_alignParentStart="true" />
+
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -115,18 +242,19 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:text="Start Date *"
-                                android:id="@+id/tv_startDate"
+                                android:text="Previous Cargo II "
+                                android:id="@+id/tv_preCargo2"
+                                android:textColor="@color/tv_color"
                                 android:layout_marginLeft="2dp"
                                 android:layout_weight="1"/>
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
+                                android:textColor="@color/tv_color"
                                 android:layout_marginLeft="2dp"
-                                android:visibility="gone"
-                                android:id="@+id/tv_startTime"
-                                android:text="Start Time *"/>
+                                android:id="@+id/tv_preCargo3"
+                                android:text="Previous Cargo III"/>
                         </LinearLayout>
 
 
@@ -146,7 +274,7 @@
                                 android:layout_weight="1"
                                 android:layout_marginRight="2dp"
                                 android:layout_height="match_parent">
-                                <EditText
+                               <!-- <EditText
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:padding="5dp"
@@ -165,7 +293,14 @@
                                     android:layout_marginTop="2dp"
                                     android:id="@+id/im_startDate"
                                     android:src="@mipmap/ic_calender"
-                                    android:layout_alignParentRight="true"/>
+                                    android:layout_alignParentRight="true"/>-->
+                                <Spinner
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/list_text"
+                                    android:id="@+id/sp_previ_cargo2"
+                                    style="@style/Widget.AppCompat.Spinner.Underlined"
+                                   ></Spinner>
                             </RelativeLayout>
 
 
@@ -173,10 +308,9 @@
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
                                 android:layout_marginRight="2dp"
-                                android:visibility="gone"
                                 android:layout_height="match_parent">
 
-                                <ImageView
+                               <!-- <ImageView
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginTop="2dp"
@@ -197,12 +331,17 @@
                                     android:hint=""
                                     android:layout_alignParentTop="true"
                                     android:layout_alignParentLeft="true"
-                                    android:layout_alignParentStart="true" />
+                                    android:layout_alignParentStart="true" />-->
+                                <Spinner
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/list_text"
+                                    android:id="@+id/sp_previ_cargo3"
+                                    style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
                             </RelativeLayout>
 
 
                         </LinearLayout>
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -211,17 +350,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:text="Streaming Start Time *"
+                                android:text="Original Cleaning Date *"
                                 android:layout_marginLeft="2dp"
-                                android:id="@+id/tv_endDate"
+                                android:id="@+id/tv_org_cleanDate"
                                 android:layout_weight="1"/>
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:layout_marginLeft="2dp"
-                                android:id="@+id/tv_endTime"
-                                android:text="Streaming End Time *"/>
+                                android:id="@+id/tv_lat_cleanDate"
+                                android:text="Latest Cleaning Date *"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -246,7 +385,7 @@
                                     android:singleLine="true"
                                     android:paddingRight="10dp"
                                     android:focusable="false"
-                                    android:id="@+id/ed_endDate"
+                                    android:id="@+id/ed_org_cleanDate"
                                     android:textColor="@color/list_text"
                                     android:layout_marginRight="4dp"
                                     android:hint=""
@@ -255,8 +394,8 @@
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
                                     android:layout_marginTop="2dp"
-                                    android:src="@mipmap/ic_time"
-                                    android:id="@+id/im_endDate"
+                                    android:src="@mipmap/ic_calender"
+                                    android:id="@+id/im_org_cleanDate"
                                     android:layout_alignParentRight="true"/>
                             </RelativeLayout>
 
@@ -266,6 +405,106 @@
                                 android:layout_weight="1"
                                 android:layout_marginRight="2dp"
                                 android:layout_height="match_parent">
+                                <EditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:padding="5dp"
+                                    android:lines="1"
+                                    android:singleLine="true"
+                                    android:paddingRight="10dp"
+                                    android:focusable="false"
+                                    android:textColor="@color/list_text"
+                                    android:id="@+id/ed_lat_cleanDate"
+                                    android:layout_marginRight="4dp"
+                                    android:hint=""
+                                    />
+                                <ImageView
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@mipmap/ic_calender"
+                                    android:id="@+id/im_lat_cleanDate"
+                                    android:layout_alignParentRight="true"/>
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:text="Streaming Start Time "
+                                android:layout_marginLeft="2dp"
+                                android:id="@+id/tv_endDate"
+                                android:textColor="@color/tv_color"
+                                android:layout_weight="1"/>
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="2dp"
+                                android:id="@+id/tv_endTime"
+                                android:text="Streaming End Time "
+                                android:textColor="@color/tv_color"
+                                />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:weightSum="2"
+                            android:layout_below="@+id/text_layout"
+                            android:layout_marginTop="10dp"
+                            android:orientation="horizontal">
+
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginRight="2dp"
+                                android:layout_height="match_parent">
+                                <EditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:padding="5dp"
+                                    android:lines="1"
+                                    android:singleLine="true"
+                                    android:paddingRight="10dp"
+                                    android:focusable="false"
+                                    android:id="@+id/ed_startTime"
+                                    android:textColor="@color/list_text"
+                                    android:layout_marginRight="4dp"
+                                    android:hint=""
+                                    />
+                                <ImageView
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@mipmap/ic_time"
+                                    android:id="@+id/im_startTime"
+                                    android:layout_alignParentRight="true"/>
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginRight="2dp"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@mipmap/ic_time"
+                                    android:id="@+id/im_endTime"
+                                    android:layout_alignParentRight="true"/>
+
                                 <EditText
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -276,16 +515,9 @@
                                     android:focusable="false"
                                     android:textColor="@color/list_text"
                                     android:id="@+id/ed_endTime"
-                                    android:layout_marginRight="4dp"
                                     android:hint=""
-                                    />
-                                <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:layout_marginTop="2dp"
-                                    android:src="@mipmap/ic_time"
-                                    android:id="@+id/im_endTime"
-                                    android:layout_alignParentRight="true"/>
+                                    android:layout_alignParentTop="true"
+                                    android:layout_centerHorizontal="true" />
                             </RelativeLayout>
 
 
@@ -298,17 +530,21 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:text="Cleaning start Time *"
+                                android:text="Cleaning start Time "
                                 android:layout_marginLeft="2dp"
                                 android:id="@+id/tv_cleaning_startDate"
-                                android:layout_weight="1"/>
+                                android:layout_weight="1"
+                                android:textColor="@color/tv_color"
+                                />
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:layout_marginLeft="2dp"
                                 android:id="@+id/tv_cleaning_endTime"
-                                android:text="Cleaning End Time *"/>
+                                android:text="Cleaning End Time "
+                                android:textColor="@color/tv_color"
+                                />
                         </LinearLayout>
 
                         <LinearLayout
@@ -325,6 +561,15 @@
                                 android:layout_weight="1"
                                 android:layout_marginRight="2dp"
                                 android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@mipmap/ic_time"
+                                    android:id="@+id/im_cleaning_startTime"
+                                    android:layout_alignParentRight="true"/>
+
                                 <EditText
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -335,16 +580,10 @@
                                     android:focusable="false"
                                     android:id="@+id/ed_cleaning_start_time"
                                     android:textColor="@color/list_text"
-                                    android:layout_marginRight="4dp"
                                     android:hint=""
-                                    />
-                                <ImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
-                                    android:layout_marginTop="2dp"
-                                    android:src="@mipmap/ic_time"
-                                    android:id="@+id/im_cleaning_endDate"
-                                    android:layout_alignParentRight="true"/>
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_alignParentStart="true" />
                             </RelativeLayout>
 
 
@@ -381,6 +620,60 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:weightSum="2">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:text="Additional Cleaning "
+                                android:id="@+id/tv_addClean"
+                                android:gravity="center|left"
+                                android:layout_marginLeft="2dp"
+                                android:layout_weight="1.9"
+                                android:textColor="@color/tv_color"
+                                />
+                            <TextView
+                                android:layout_width="50dp"
+                                android:layout_height="30dp"
+                                android:gravity="center"
+                                android:id="@+id/AddClean"
+                                android:layout_gravity="center|right"
+                                android:textColor="@color/Title"
+                                android:textStyle="bold"
+                                android:layout_marginLeft="2dp"
+                                android:text="No"/>
+                        </LinearLayout>
+
+
+                        <View style="@style/View_horizontal_black"
+                            android:layout_marginTop="10dp"></View>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:weightSum="2">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:weightSum="1">
+
+                                <EditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:id="@+id/ed_addCleaning"
+                                    android:textColor="@color/list_text"
+                                    android:layout_weight="2.00" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="10dp"
                             android:weightSum="2">
 
                             <TextView
@@ -395,10 +688,12 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:text="Temp *"
-                                android:id="@+id/tv_temp"
+                                android:text="Remarks "
+                                android:id="@+id/tv_remark"
                                 android:layout_marginLeft="2dp"
-                                android:layout_weight="1"/>
+                                android:layout_weight="1"
+                                android:textColor="@color/tv_color"
+                                />
                         </LinearLayout>
 
                         <LinearLayout
@@ -416,13 +711,14 @@
                                 <EditText
                                     android:layout_width="match_parent"
                                     android:layout_height="40dp"
-                                    android:id="@+id/ed_temp"
+                                    android:id="@+id/ed_remark"
                                     android:textColor="@color/list_text"
                                     android:layout_weight="2.00" />
 
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
+
 
 
                 </LinearLayout>

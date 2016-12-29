@@ -107,6 +107,7 @@ public class Create_GateIn extends CommonActivity   {
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
+
     private String systemDate,get_equipment,get_date,get_time,get_code,get_status,get_location,get_vechicle,get_transport,get_eir_no,get_remark;
     private String curTime,get_swt_heating,get_swt_rental,get_swt_info_active,get_swt_info_rental;
     int mHour,mMinute;

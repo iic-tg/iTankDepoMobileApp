@@ -48,7 +48,9 @@ public class Forget_Password extends CommonActivity {
         username = (EditText)findViewById(R.id.tv_username);
         email = (EditText)findViewById(R.id.tv_email);
         submit = (Button)findViewById(R.id.bt_submit);
+        submit.setOnClickListener(this);
         forgotLogin = (Button)findViewById(R.id.forgot_login);
+        forgotLogin.setOnClickListener(this);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         int idNormal[] = {R.id.login,R.id.tv_username,R.id.password,R.id.tv_forget,
                 R.id.tv_email};
@@ -58,12 +60,24 @@ public class Forget_Password extends CommonActivity {
     @Override
     public void onClick(View view) {
         switch(view.getId()){
-            case R.id.submit:
+            case R.id.bt_submit:
                 getEmail = email.getText().toString();
                 getusername = username.getText().toString();
+
                 if(getusername.equals("") && getEmail.equals("")){
-                    email.setError("Enter your Email.");
-                    username.setError("Please enter your username.");
+
+                    email.setError("Enter your Email..!");
+                    username.setError("Username Field is Required..!");
+
+                }else {
+                    if (cd.isConnectingToInternet()) {
+
+
+                        new ForgotPassword().execute();
+
+                    }else{
+                        shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
+                    }
                 }
                 break;
             case R.id.forgot_login:

@@ -256,6 +256,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
 
                 jsonarray = getJsonObject.getJSONArray("List");
+
                 if (jsonarray != null) {
 
                     System.out.println("Am HashMap list"+jsonarray);
@@ -264,6 +265,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+
                             }
                         });
                     }else {

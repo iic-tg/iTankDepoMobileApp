@@ -770,6 +770,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Intent i = new Intent(getApplicationContext(), InspectionUpdate.class);
 
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
@@ -792,7 +793,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                         GlobalConstants.slab_rate = list.get(position).getSlabrate();
                         GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
 
-
+                        startActivity(i);
 
                     }
                 });

@@ -733,8 +733,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(getApplicationContext(), HeatingPeriod.class);
 
+                        Intent i = new Intent(getApplicationContext(), HeatingPeriod.class);
                         GlobalConstants.equipment_no = list.get(position).getEQPMNT_NO();
                         GlobalConstants.customer_name = list.get(position).getCSTMR_CD();
                         GlobalConstants.date = list.get(position).getGTN_DT();
@@ -753,7 +753,6 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                         GlobalConstants.cust_currency = list.get(position).getCSTMR_CRRNCY_CD();
                         GlobalConstants.min_htngPrd = list.get(position).getMIN_HTNG_PRD_NC();
                         GlobalConstants.ttl_RT_NC = list.get(position).getMIN_HTNG_RT_NC();
-
                         startActivity(i);
                     }
                 });

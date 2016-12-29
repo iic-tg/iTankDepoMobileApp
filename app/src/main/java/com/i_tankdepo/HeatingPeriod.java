@@ -97,7 +97,7 @@ public class HeatingPeriod extends CommonActivity  {
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
-    private boolean startDate = false, endDate = false;
+    private boolean  endDate = false;
     TimePickerDialog timePickerDialog;
     int mHour,mMinute;
     private Calendar mcurrentTime;
@@ -290,7 +290,10 @@ public class HeatingPeriod extends CommonActivity  {
         curTime = time.format(new Date());
         systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
-
+        ed_startDate.setText(systemDate);
+        ed_endDate.setText(systemDate);
+        ed_startTime.setText(curTime);
+        ed_startTime.setText(curTime);
 
         String startDate = getColoredSpanned("Start Date","#bbbbbb");
         String startTime = getColoredSpanned("Start Time","#bbbbbb");
@@ -358,22 +361,22 @@ public class HeatingPeriod extends CommonActivity  {
                 onBackPressed();
                 break;
             case R.id.ed_startDate:
-                startDate = true;
+
                 endDate = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.ed_endDate:
-                startDate = false;
+
                 endDate = true;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_startDate:
-                startDate = true;
+
                 endDate = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_endDate:
-                startDate = false;
+
                 endDate = true;
                 showDialog(DATE_DIALOG_ID);
                 break;
@@ -558,13 +561,13 @@ public class HeatingPeriod extends CommonActivity  {
 
             view.setMinDate(System.currentTimeMillis() - 1000);
 
-            if(startDate==true)
+            if(endDate==true)
             {
-
-                ed_startDate.setText(formatDate(year, month, day));
-            }else {
-
                 ed_endDate.setText(formatDate(year, month, day));
+
+            }else {
+                ed_startDate.setText(formatDate(year, month, day));
+
             }
 
         }
