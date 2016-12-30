@@ -165,6 +165,7 @@ public class Forget_Password extends CommonActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
 
+            progressDialog.dismiss();
 
             super.onPostExecute(aVoid);
             if (responseString != null) {
@@ -182,7 +183,7 @@ public class Forget_Password extends CommonActivity {
                     Toast.makeText(getApplicationContext(), responseError, Toast.LENGTH_SHORT).show();
                 }
 
-                progressDialog.dismiss();
+
 
             }else {
                 Toast.makeText(getApplicationContext(), "Server Problem !, Please try again later.", Toast.LENGTH_SHORT).show();

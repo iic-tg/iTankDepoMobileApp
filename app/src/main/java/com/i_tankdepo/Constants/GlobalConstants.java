@@ -127,6 +127,12 @@ public class GlobalConstants {
     public static String cust_currency="";
     public static String min_htngPrd="";
     public static String ttl_RT_NC="";
+    public static String GateInCount="";
+    public static String GateOutCount="";
+    public static String CleaningCount="";
+    public static String InspectionCount="";
+    public static String HeatingCount="";
+    public static String LeaktestCount="";
 
     public static String roleID="";
         public static int pendingcount=0;

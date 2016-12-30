@@ -879,7 +879,7 @@ public class Update_GateIn extends CommonActivity {
             selectedImagePath = getPath(this,selectedImageUri);
             filePath = data.getData().getPath();
             filePath = getPath(this, selectedImageUri);
-             filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
+            filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
             ed_attach.setText(filename);
 
             file = new File(filePath);

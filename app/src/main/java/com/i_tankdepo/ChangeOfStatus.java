@@ -116,6 +116,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     List<String> To_Status_name = new ArrayList<>();
     List<String> To_Status_Code = new ArrayList<>();
     private String returnstatus;
+    private ImageView iv_changeOfStatus;
+    private String ToStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +146,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         sp_current_status = (Spinner)findViewById(R.id.sp_current_status);
         sp_status_customer = (Spinner)findViewById(R.id.sp_status_customer);
         sp_to_status = (Spinner)findViewById(R.id.sp_to_status);
+
+        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus.setVisibility(View.GONE);
 
         equip_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
@@ -258,8 +263,16 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                getTostatusName = sp_to_status.getSelectedItem().toString();
-                getTostatusID = CustomerDropdownArrayList.get(position).getCode();
+
+                if(ToStatus.equalsIgnoreCase("Please Select"))
+                {
+
+                    shortToast(getApplicationContext(),"Please key-in Mandate Fields");
+
+                }else{
+                    getTostatusName = sp_to_status.getSelectedItem().toString();
+                    getTostatusID = CustomerDropdownArrayList.get(position).getCode();
+                }
             }
 
             @Override
@@ -305,7 +318,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_close:
-
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_search:
                 equip_down.setVisibility(View.VISIBLE);
@@ -331,6 +345,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                   for (COS_Product p : boxAdapter.getBox()) {
                       if (p.box){
                           if(p.box==true) {
+
                               String[] set = new String[5];
                               set[0] = p.equip_no;
                               set[1] = p.remarks;
@@ -343,9 +358,12 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                               LL_hole.setVisibility(View.GONE);
 
 
-                              if(p.equip_no==null || p.equip_no.equals(""))
+                              if(ToStatus.equalsIgnoreCase("Please Select"))
                               {
-                                  shortToast(getApplicationContext(),"Please select the Item");
+
+                                  shortToast(getApplicationContext(),"Please Select the To Status");
+                                  LL_hole.setVisibility(View.VISIBLE);
+
                               }else
                               {
                                   if(cd.isConnectingToInternet()){
@@ -850,10 +868,22 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             if(jsonarray!=null)
             {
-
+                worldlist.add(0,"Please Select");
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_to_status.setAdapter(CargoAdapter);
+
+                sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        ToStatus = sp_to_status.getSelectedItem().toString();
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
 
             }
             else
@@ -1433,6 +1463,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 {
                     shortToast(getApplicationContext(),"Status Changed Successfully..!");
                     finish();
+                    startActivity(getIntent());
                 }else
                 {
                     shortToast(getApplicationContext(),"Status does not Changed..!");

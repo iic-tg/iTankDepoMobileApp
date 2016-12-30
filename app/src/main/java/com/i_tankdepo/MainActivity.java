@@ -56,6 +56,8 @@ public class MainActivity extends CommonActivity
     private String activityName,RoleID;
     private ImageView im_gatein,im_gateout,im_heating,im_cleaning,im_Inspection,im_repair,im_leaktest,im_equipement,im_stock,home_changeStatus;
     private Button gateoutCount,gateInCount,heatingCount,cleaningCount,leaktestCount,repairCount,inspectionCount;
+    private String gateIn,gateout,cleaning,heating,inspection,leaktest;
+    private String GateinCount,GateOutCount,CleaningCount,InspectionCount,HeatingCount,LeaktestCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +81,22 @@ public class MainActivity extends CommonActivity
         home_changeStatus.setOnClickListener(this);
 
         gateInCount = (Button)findViewById(R.id.bt_gateinCount);
+
         gateoutCount = (Button)findViewById(R.id.bt_gateoutCount);
+
         heatingCount = (Button)findViewById(R.id.bt_heatingCount);
+
         cleaningCount = (Button)findViewById(R.id.bt_cleaningCount);
+
         inspectionCount = (Button)findViewById(R.id.bt_inspectionCount);
+
         leaktestCount = (Button)findViewById(R.id.bt_leaktestCount);
+
         repairCount = (Button)findViewById(R.id.bt_repairCount);
+
+
+
+
 
         if (cd.isConnectingToInternet()){
             new Post_Role_Based().execute();
@@ -278,6 +290,8 @@ public class MainActivity extends CommonActivity
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("RL_ID", RoleID);
+                jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
+
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -292,6 +306,14 @@ public class MainActivity extends CommonActivity
 
 
                 jsonArray = getJsonObject.getJSONArray("RoleDetails");
+
+                GateinCount = getJsonObject.getString("GateinCount");
+                GateOutCount = getJsonObject.getString("GateoutCount");
+                CleaningCount = getJsonObject.getString("CleaningCount");
+                InspectionCount = getJsonObject.getString("InspectionCount");
+                HeatingCount = getJsonObject.getString("HeatingCount");
+                LeaktestCount = getJsonObject.getString("LeakTestCount");
+
                 try {
 
                     if (jsonArray != null) {
@@ -447,6 +469,20 @@ public class MainActivity extends CommonActivity
         }
         @Override
         protected void onPostExecute(Void aVoid) {
+
+            gateInCount.setText(GateinCount);
+            gateoutCount.setText(GateOutCount);
+            heatingCount.setText(HeatingCount);
+            inspectionCount.setText(InspectionCount);
+            cleaningCount.setText(CleaningCount);
+            leaktestCount.setText(LeaktestCount);
+
+             gateInCount.setVisibility(View.VISIBLE);
+            gateoutCount.setVisibility(View.VISIBLE);
+            heatingCount.setVisibility(View.VISIBLE);
+            cleaningCount.setVisibility(View.VISIBLE);
+            inspectionCount.setVisibility(View.VISIBLE);
+            leaktestCount.setVisibility(View.VISIBLE);
 
 
             super.onPostExecute(aVoid);

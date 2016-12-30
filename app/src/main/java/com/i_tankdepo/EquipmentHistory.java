@@ -138,7 +138,8 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                     drawer.closeDrawer(Gravity.END);
                 else
-                    drawer.openDrawer(Gravity.START);
+                    drawer.openDrawer(
+                            Gravity.START);
             }
         });
 
@@ -216,6 +217,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     public class Get_Equipment_History_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
 
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -257,14 +259,20 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 jsonarray = getJsonObject.getJSONArray("List");
 
+
                 if (jsonarray != null) {
 
-                    System.out.println("Am HashMap list"+jsonarray);
-                    if (jsonarray.length() < 1) {
+
+                    if (jsonarray.length() <= 0) {
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
+
+                                shortToast(getApplicationContext(), "Please enter the Valid Equipment Number");
+
+                               LL_Equipment_Info.setVisibility(View.GONE);
+
+
 
                             }
                         });

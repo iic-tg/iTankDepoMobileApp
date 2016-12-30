@@ -52,7 +52,8 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
     String cityName="";
     Boolean isInternetPresent = false;
     Button signup,loginbutton;
-    String lat,SecurityToken,responseString,getusername,getpassword,hsId,userId,responseStringId;
+    String lat,SecurityToken,responseString,getusername,getpassword,hsId,userId,responseStringId,GateinCount,GateOutCount,CleaningCount,InspectionCount
+            ,HeatingCount,LeaktestCount;
      EditText username,password;
      ConnectionDetector cd;
     private ProgressDialog progressDialog;
@@ -226,6 +227,12 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
 
                 responseString = returnMessage.getString("ResponseText");
                 responseStringId = returnMessage.getString("RL_ID");
+               /* GateinCount = returnMessage.getString("GateinCount");
+                GateOutCount = returnMessage.getString("GateoutCount");
+                CleaningCount = returnMessage.getString("CleaningCount");
+                InspectionCount = returnMessage.getString("InspectionCount");
+                HeatingCount = returnMessage.getString("HeatingCount");
+                LeaktestCount = returnMessage.getString("LeakTestCount");*/
                 Log.d("responseString", responseString);
 //                SecurityToken= token.get("Token").toString();
 //                hsId= token.get("UserId").toString();
@@ -270,6 +277,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
 
                     Intent i = new Intent(getApplication(), MainActivity.class);
                     GlobalConstants.roleID = responseStringId;
+
                     startActivity(i);
 
                 }else
