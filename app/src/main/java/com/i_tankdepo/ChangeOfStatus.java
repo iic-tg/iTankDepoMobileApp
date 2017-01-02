@@ -75,8 +75,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private ImageView menu, equip_up, equip_down, im_ok, im_close,im_date,iv_back,im_search;
-    private LinearLayout LL_hole;
-    private TextView tv_toolbarTitle;
+    private LinearLayout LL_hole,accordian_LL;
+    private TextView tv_toolbarTitle,list_noData;
     private Button status_home,status_refresh,status_submit;
     private Spinner sp_current_status,sp_status_customer,sp_to_status;
     private EditText ed_equip_no,ed_date, ed_time,ed_remarks,ed_to_statusDate,searchView2;
@@ -139,6 +139,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         equip_down = (ImageView) findViewById(R.id.equip_down);
         equip_up = (ImageView) findViewById(R.id.equip_up);
         LL_hole = (LinearLayout)findViewById(R.id.LL_hole);
+        accordian_LL = (LinearLayout)findViewById(R.id.accordian_LL);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Change of Status");
         status_list_view=(ListView)findViewById(R.id.status_list_view);
@@ -149,9 +150,12 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setVisibility(View.GONE);
+        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData.setVisibility(View.GONE);
 
         equip_up.setVisibility(View.GONE);
         LL_hole.setVisibility(View.GONE);
+        accordian_LL.setVisibility(View.GONE);
 
         ed_equip_no = (EditText)findViewById(R.id.ed_equip_no);
         ed_to_statusDate = (EditText)findViewById(R.id.ed_to_statusDate);
@@ -191,7 +195,6 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
             }
         });
 
-
         equip_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -200,7 +203,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 equip_up.setVisibility(View.GONE);
             }
         });
-        equip_down.setVisibility(View.GONE);
+
+
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -318,12 +322,16 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_close:
-                finish();
-                startActivity(getIntent());
+                LL_hole.setVisibility(View.GONE);
+                accordian_LL.setVisibility(View.GONE);
+                ed_equip_no.setText("");
+
                 break;
             case R.id.im_search:
-                equip_down.setVisibility(View.VISIBLE);
+                equip_up.setVisibility(View.VISIBLE);
                 LL_hole.setVisibility(View.VISIBLE);
+                accordian_LL.setVisibility(View.VISIBLE);
+                equip_down.setVisibility(View.GONE);
                 getEquipmentNo = ed_equip_no.getText().toString();
                 if (cd.isConnectingToInternet()){
                     new Get_ChangeOfStatus_details().execute();
@@ -342,40 +350,42 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
               try
               {
                   getTostatusName = sp_to_status.getSelectedItem().toString();
-                  for (COS_Product p : boxAdapter.getBox()) {
-                      if (p.box){
-                          if(p.box==true) {
+                  if(boxAdapter.getBox().size()==0) {
+                      shortToast(getApplicationContext(), "Please Select atleast one Equipment..!");
+                  }else {
+                      for (COS_Product p : boxAdapter.getBox()) {
+                          if (p.box) {
+                              if (p.box == true) {
 
-                              String[] set = new String[5];
-                              set[0] = p.equip_no;
-                              set[1] = p.remarks;
-                              set[2] = p.location;
+                                  String[] set = new String[5];
+                                  set[0] = p.equip_no;
+                                  set[1] = p.remarks;
+                                  set[2] = p.location;
 
-                              selected_list.add(set);
-
-
-                              //   selected_name.add(set[0]);
-                              LL_hole.setVisibility(View.GONE);
+                                  selected_list.add(set);
 
 
-                              if(ToStatus.equalsIgnoreCase("Please Select"))
-                              {
+                                  //   selected_name.add(set[0]);
+                                  LL_hole.setVisibility(View.GONE);
 
-                                  shortToast(getApplicationContext(),"Please Select the To Status");
-                                  LL_hole.setVisibility(View.VISIBLE);
 
-                              }else
-                              {
-                                  if(cd.isConnectingToInternet()){
-                                      new Post_COS_details().execute();
-                                  }else{
-                                      shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                  if (ToStatus.equalsIgnoreCase("Please Select")) {
+
+                                      shortToast(getApplicationContext(), "Please Select the To Status");
+                                      LL_hole.setVisibility(View.VISIBLE);
+
+
+                                  } else {
+                                      if (cd.isConnectingToInternet()) {
+                                          new Post_COS_details().execute();
+                                      } else {
+                                          shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                      }
                                   }
-                              }
 
-                          }else
-                          {
-                              shortToast(getApplicationContext(),"Please Select CustomerName");
+                              } else {
+                                  shortToast(getApplicationContext(), "Please Select CustomerName");
+                              }
                           }
                       }
                   }
@@ -1173,10 +1183,11 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                             wp.type.toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.current_status.toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.current_status_date.toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.inDate.toLowerCase(Locale.getDefault()).contains(charText)
-
-                            ) {
+                            wp.inDate.toLowerCase(Locale.getDefault()).contains(charText))
+                    {
                         objects.add(wp);
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
                     }
                 }
             }

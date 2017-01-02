@@ -88,7 +88,7 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<RepairBean> repair_arraylist = new ArrayList<>();
     private RepairBean repair_bean;
@@ -193,7 +193,8 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
 
         tv_toolbarTitle.setText("Survey Completion");
 
-
+        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData.setVisibility(View.GONE);
 
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
@@ -420,16 +421,19 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
-                for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
-                            String[] set = new String[2];
-                            set[0] = p.name;
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
+                    for (Product p : boxAdapter.getBox()) {
+                        if (p.box) {
+                            if (p.box == true) {
+                                String[] set = new String[2];
+                                set[0] = p.name;
 
-                            selected_name.add(set[0]);
-                            LL_hole.setVisibility(View.GONE);
-                            im_down.setVisibility(View.VISIBLE);
-                            im_up.setVisibility(View.GONE);
+                                selected_name.add(set[0]);
+                                LL_hole.setVisibility(View.GONE);
+                                im_down.setVisibility(View.VISIBLE);
+                                im_up.setVisibility(View.GONE);
 
                            /* for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
@@ -437,16 +441,16 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
 
 
-                            //shortToast(getApplicationContext(),p.name);
+                                //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_Survey_Completion_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                if (cd.isConnectingToInternet()) {
+                                    new Get_Survey_Completion_SearchList_details().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                }
+                            } else {
+                                shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
                         }
                     }
                 }
@@ -839,6 +843,8 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
+                listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
             } else {
                 for (RepairBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -847,6 +853,10 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
                             wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+                        listview.setVisibility(View.VISIBLE);
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
                     }
                 }
             }

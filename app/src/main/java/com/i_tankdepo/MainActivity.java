@@ -240,7 +240,7 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(),LeakTest.class));
                 break;
             case R.id.LL_Repair:
-                startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
+//                startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
                 break;
             case R.id.LL_History:
                 startActivity(new Intent(getApplicationContext(),EquipmentHistory.class));

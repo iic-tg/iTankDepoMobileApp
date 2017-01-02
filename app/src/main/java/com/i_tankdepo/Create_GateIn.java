@@ -58,6 +58,7 @@ import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.Util.Utility;
 import com.i_tankdepo.helper.ServiceHandler;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -166,6 +167,9 @@ public class Create_GateIn extends CommonActivity   {
     private String infoId,infoCode;
     private String getStatus,getYardLocation,getEquipment_Type_code,getEquipment_Type;
     private ImageView iv_changeOfStatus;
+    private String Filename;
+    private String imageName;
+    private String filePath;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -802,8 +806,6 @@ public class Create_GateIn extends CommonActivity   {
                 break;
             case R.id.LL_Submit:
 
-
-
                 try {
                     if (filename.length() < 0) {
 
@@ -1014,8 +1016,13 @@ public class Create_GateIn extends CommonActivity   {
                 // Get the path
                 String path = null;
                 path = getPath(this,uri);
-                String filename=path.substring(path.lastIndexOf("/")+1);
-                ed_attach.setText(filename);
+                filePath = data.getData().getPath();
+                file = new File(filePath);
+                Filename= file.getAbsolutePath();
+                imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+                String basename = FilenameUtils.getBaseName(Filename);
+                String fileType = FilenameUtils.getExtension(Filename);
+                ed_attach.setText(basename+fileType);
                 Log.d(TAG, "File Path: " + path);
             }
         }
@@ -1044,6 +1051,8 @@ public class Create_GateIn extends CommonActivity   {
         //  profile.setImageBitmap(thumbnail);
         byte[] byteArrayImage = bytes.toByteArray();
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+        filename=filename.substring(filename.lastIndexOf("/")+1);
+        ed_attach.setText(filename);
 
 
     }
@@ -1076,12 +1085,16 @@ public class Create_GateIn extends CommonActivity   {
             // MEDIA GALLERY
             selectedImagePath = getPath(this,selectedImageUri);
             filePath = data.getData().getPath();
-            filePath = getPath(this, selectedImageUri);
-            filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
-            ed_attach.setText(filename);
+//            filePath = getPath(this, selectedImageUri);
+//            filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
+
 
             file = new File(filePath);
-            //  Filename= file.getAbsolutePath();
+            Filename= file.getAbsolutePath();
+            imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+            String basename = FilenameUtils.getBaseName(Filename);
+            String fileType = FilenameUtils.getExtension(Filename);
+            ed_attach.setText(basename+fileType);
             // typedFile = new TypedFile("image*//*", file);
             Bitmap selectedImageBitmap = null;
             try {
@@ -1094,6 +1107,8 @@ public class Create_GateIn extends CommonActivity   {
             selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArrayImage = byteArrayOutputStream.toByteArray();
             encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            Log.d(TAG, "File Path: " + imageName);
+            Log.d(TAG, "File imageName: " + imageName);
 
         }
 

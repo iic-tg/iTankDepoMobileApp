@@ -87,7 +87,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<InspectionBean> inspection_arraylist = new ArrayList<>();
     private InspectionBean inspection_bean;
@@ -143,6 +143,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         cleaning_text.setText("Inspection");
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
+        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData.setVisibility(View.GONE);
 
 
         no_data.setVisibility(View.GONE);
@@ -419,16 +421,19 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
-                for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
-                            String[] set = new String[2];
-                            set[0] = p.name;
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
+                    for (Product p : boxAdapter.getBox()) {
+                        if (p.box) {
+                            if (p.box == true) {
+                                String[] set = new String[2];
+                                set[0] = p.name;
 
-                            selected_name.add(set[0]);
-                            LL_hole.setVisibility(View.GONE);
-                            im_down.setVisibility(View.VISIBLE);
-                            im_up.setVisibility(View.GONE);
+                                selected_name.add(set[0]);
+                                LL_hole.setVisibility(View.GONE);
+                                im_down.setVisibility(View.VISIBLE);
+                                im_up.setVisibility(View.GONE);
 
                            /* for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
@@ -436,16 +441,16 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
 
 
-                            //shortToast(getApplicationContext(),p.name);
+                                //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_Inspection_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                if (cd.isConnectingToInternet()) {
+                                    new Get_Inspection_SearchList_details().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                }
+                            } else {
+                                shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
                         }
                     }
                 }
@@ -809,6 +814,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
+                listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
             } else {
                 for (InspectionBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -818,6 +825,10 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                             wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+                        listview.setVisibility(View.VISIBLE);
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
                     }
                 }
             }

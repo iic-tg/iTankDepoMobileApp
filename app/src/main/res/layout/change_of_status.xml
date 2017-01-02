@@ -172,6 +172,7 @@
                             android:layout_toStartOf="@+id/im_search"
                             android:id="@+id/ed_equip_no"
                             android:gravity="center|left"
+                            android:maxLength="11"
                             android:textColor="@color/list_text"
                             android:layout_toLeftOf="@+id/im_search" />
 
@@ -199,202 +200,212 @@
                     </RelativeLayout>
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/field_border"
-                    android:orientation="horizontal"
-                   >
+                    android:id="@+id/accordian_LL"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:text="Change Status"
-                        android:textStyle="bold"
-                        android:layout_gravity="center"
-                        android:gravity="center|left"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1.8"
-                        android:id="@+id/textView5" />
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight=".2">
+                        android:background="@drawable/field_border"
+                        android:orientation="horizontal"
+                        >
 
-                        <ImageView
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:text="Change Status"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:gravity="center|left"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1.8"
+                            android:id="@+id/textView5" />
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".2">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:src="@mipmap/ic_down"
+                                android:id="@+id/equip_down"
+                                />
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:src="@mipmap/ic_up"
+                                android:visibility="gone"
+                                android:id="@+id/equip_up"
+                                />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/LL_hole"
+                        android:orientation="vertical">
+
+
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:src="@mipmap/ic_down"
-                            android:id="@+id/equip_down"
-                            />
-                        <ImageView
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:weightSum="2"
+                                android:layout_marginLeft="2dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="To Status *"
+                                    android:id="@+id/tv_status"
+                                    android:gravity="center|left"
+                                    />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:text="To Status Date *"
+                                    android:id="@+id/tv_date"
+                                    android:gravity="center|left"
+                                    />
+
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:weightSum="2"
+                                android:layout_below="@+id/text_layout"
+                                android:orientation="horizontal">
+
+
+                                <RelativeLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginRight="2dp"
+                                    android:layout_height="wrap_content">
+                                    <Spinner
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/sp_to_status"
+                                        android:textColor="@color/list_text"
+                                        android:layout_marginTop="6.5dp"
+                                        style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
+                                    <!-- <EditText
+                                         android:layout_width="match_parent"
+                                         android:layout_height="wrap_content"
+                                         android:padding="5dp"
+                                         android:lines="1"
+                                         android:singleLine="true"
+                                         android:paddingRight="10dp"
+                                         android:focusable="false"
+                                         android:layout_marginRight="4dp"
+                                         android:id="@+id/ed_date"
+                                         android:hint=""
+                                         android:textColor="@color/list_text"
+                                         />
+                                     <ImageView
+                                         android:layout_width="30dp"
+                                         android:layout_height="30dp"
+                                         android:layout_marginTop="2dp"
+                                         android:src="@mipmap/ic_calender"
+                                         android:id="@+id/im_date"
+                                         android:visibility="gone"
+                                         android:layout_alignParentRight="true"/>-->
+                                </RelativeLayout>
+
+
+                                <RelativeLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="1"
+                                    android:layout_marginRight="2dp"
+                                    android:layout_height="match_parent">
+                                    <EditText
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:padding="5dp"
+                                        android:lines="1"
+                                        android:layout_marginTop="7dp"
+                                        android:singleLine="true"
+                                        android:focusable="false"
+                                        android:paddingRight="10dp"
+                                        android:layout_marginRight="4dp"
+                                        android:hint=""
+                                        android:id="@+id/ed_to_statusDate"
+                                        android:textColor="@color/list_text"
+                                        />
+                                    <ImageView
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
+                                        android:layout_marginTop="2dp"
+                                        android:src="@mipmap/ic_calender"
+                                        android:id="@+id/im_date"
+                                        android:layout_alignParentRight="true"/>
+                                </RelativeLayout>
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:src="@mipmap/ic_up"
-                            android:visibility="gone"
-                            android:id="@+id/equip_up"
-                            />
-                    </RelativeLayout>
+                            android:weightSum="2"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="2dp"
+                            android:layout_below="@+id/visit_line"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="match_parent"
+                                android:text="Remarks "
+                                android:textColor="@color/tv_color"
+                                />
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_below="@+id/text_layout"
+                            android:layout_marginTop="10dp"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_weight="1"
+                                android:paddingLeft="10dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="2dp"
+                                android:id="@+id/ed_remarks"
+                                android:textColor="@color/list_text"/>
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
-              <LinearLayout
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/LL_hole"
-                  android:orientation="vertical">
 
-
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
-
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:weightSum="2"
-                          android:layout_marginLeft="2dp"
-                          android:layout_marginTop="10dp"
-                          android:orientation="horizontal">
-
-                          <TextView
-                              android:layout_width="0dp"
-                              android:layout_weight="1"
-                              android:layout_height="wrap_content"
-                              android:text="To Status *"
-                              android:id="@+id/tv_status"
-                              android:gravity="center|left"
-                              />
-
-                          <TextView
-                              android:layout_width="0dp"
-                              android:layout_weight="1"
-                              android:layout_height="wrap_content"
-                              android:text="To Status Date *"
-                              android:id="@+id/tv_date"
-                              android:gravity="center|left"
-                              />
-
-
-                      </LinearLayout>
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:weightSum="2"
-                          android:layout_below="@+id/text_layout"
-                          android:orientation="horizontal">
-
-
-                          <RelativeLayout
-                              android:layout_width="0dp"
-                              android:layout_weight="1"
-                              android:layout_marginRight="2dp"
-                              android:layout_height="wrap_content">
-                              <Spinner
-                                  android:layout_width="match_parent"
-                                  android:layout_height="wrap_content"
-                                  android:id="@+id/sp_to_status"
-                                  android:textColor="@color/list_text"
-                                  android:layout_marginTop="6.5dp"
-                                  style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                              <!-- <EditText
-                                   android:layout_width="match_parent"
-                                   android:layout_height="wrap_content"
-                                   android:padding="5dp"
-                                   android:lines="1"
-                                   android:singleLine="true"
-                                   android:paddingRight="10dp"
-                                   android:focusable="false"
-                                   android:layout_marginRight="4dp"
-                                   android:id="@+id/ed_date"
-                                   android:hint=""
-                                   android:textColor="@color/list_text"
-                                   />
-                               <ImageView
-                                   android:layout_width="30dp"
-                                   android:layout_height="30dp"
-                                   android:layout_marginTop="2dp"
-                                   android:src="@mipmap/ic_calender"
-                                   android:id="@+id/im_date"
-                                   android:visibility="gone"
-                                   android:layout_alignParentRight="true"/>-->
-                          </RelativeLayout>
-
-
-                          <RelativeLayout
-                              android:layout_width="0dp"
-                              android:layout_weight="1"
-                              android:layout_marginRight="2dp"
-                              android:layout_height="match_parent">
-                              <EditText
-                                  android:layout_width="match_parent"
-                                  android:layout_height="match_parent"
-                                  android:padding="5dp"
-                                  android:lines="1"
-                                  android:layout_marginTop="7dp"
-                                  android:singleLine="true"
-                                  android:focusable="false"
-                                  android:paddingRight="10dp"
-                                  android:layout_marginRight="4dp"
-                                  android:hint=""
-                                  android:id="@+id/ed_to_statusDate"
-                                  android:textColor="@color/list_text"
-                                  />
-                              <ImageView
-                                  android:layout_width="30dp"
-                                  android:layout_height="30dp"
-                                  android:layout_marginTop="2dp"
-                                  android:src="@mipmap/ic_calender"
-                                  android:id="@+id/im_date"
-                                  android:layout_alignParentRight="true"/>
-                          </RelativeLayout>
-
-
-                      </LinearLayout>
-                  </LinearLayout>
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:weightSum="2"
-                      android:layout_marginTop="10dp"
-                      android:layout_marginLeft="2dp"
-                      android:layout_below="@+id/visit_line"
-                      android:orientation="horizontal">
-
-                      <TextView
-                          android:layout_width="0dp"
-                          android:layout_weight="1"
-                          android:layout_height="match_parent"
-                          android:text="Remarks "
-                          android:textColor="@color/tv_color"
-                          />
-
-
-
-                  </LinearLayout>
-
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="50dp"
-                      android:layout_below="@+id/text_layout"
-                      android:layout_marginTop="10dp"
-                      android:orientation="vertical">
-
-                      <EditText
-                          android:layout_width="match_parent"
-                          android:layout_weight="1"
-                          android:paddingLeft="10dp"
-                          android:layout_marginRight="8dp"
-                          android:layout_height="wrap_content"
-                          android:layout_marginLeft="2dp"
-                          android:id="@+id/ed_remarks"
-                          android:textColor="@color/list_text"/>
-
-
-                  </LinearLayout>
-
-              </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -427,7 +438,18 @@
                     </LinearLayout>
 
 
-
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1.5"
+                        android:layout_gravity="center">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="No Records Found"
+                        android:gravity="center"
+                        android:id="@+id/list_noData"
+                        />
                     <ListView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -436,6 +458,7 @@
 
                     </ListView>
 
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -463,5 +486,4 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer" />
-
 </android.support.v4.widget.DrawerLayout>

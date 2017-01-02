@@ -279,7 +279,18 @@
                            android:visibility="gone"
                            android:src="@mipmap/ic_refresh"/>
                    </LinearLayout>
-
+                   <RelativeLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="0dp"
+                       android:layout_weight="1.5"
+                       android:layout_gravity="center">
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:text="No Records Found"
+                       android:gravity="center"
+                       android:id="@+id/list_noData"
+                       />
 
 
                    <ListView
@@ -289,6 +300,7 @@
                        android:clickable="true">
 
                    </ListView>
+                   </RelativeLayout>
 
 
                </LinearLayout>

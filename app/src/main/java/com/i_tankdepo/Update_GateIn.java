@@ -59,6 +59,7 @@ import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.Util.Utility;
 import com.i_tankdepo.helper.ServiceHandler;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -162,6 +163,8 @@ public class Update_GateIn extends CommonActivity {
     ArrayList<String> dropdown_MoreInfo_list = new ArrayList<>();
     private Spinner sp_last_test_type;
     private ImageView iv_changeOfStatus;
+    private String Filename,filePath;
+    private String imageName;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -288,6 +291,7 @@ public class Update_GateIn extends CommonActivity {
         ed_type.setText(type);
         ed_transport.setText(transport);
         ed_remark.setText(remark);
+
         if(heating_bt.equalsIgnoreCase("True"))
         {
             heating.setChecked(true);
@@ -342,7 +346,7 @@ public class Update_GateIn extends CommonActivity {
             shortToast(getApplicationContext(),"Please check your Internet Connection.");
         }
 
-        get_swt_heating="False";
+//        get_swt_heating="False";
         heating.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -355,7 +359,7 @@ public class Update_GateIn extends CommonActivity {
                 }
             }
         });
-        get_swt_rental="False";
+//        get_swt_rental="False";
         rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -369,7 +373,7 @@ public class Update_GateIn extends CommonActivity {
                 }
             }
         });
-        get_swt_info_rental="False";
+//        get_swt_info_rental="False";
         info_rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -382,7 +386,7 @@ public class Update_GateIn extends CommonActivity {
                 }
             }
         });
-        get_swt_info_active="False";
+//        get_swt_info_active="False";
         info_active.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -816,8 +820,13 @@ public class Update_GateIn extends CommonActivity {
                 // Get the path
                 String path = null;
                 path = getPath(this,uri);
-                String filename=path.substring(path.lastIndexOf("/")+1);
-                ed_attach.setText(filename);
+                filePath = data.getData().getPath();
+                file = new File(filePath);
+                Filename= file.getAbsolutePath();
+                imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+                String basename = FilenameUtils.getBaseName(Filename);
+                String fileType = FilenameUtils.getExtension(Filename);
+                ed_attach.setText(basename+fileType);
                 Log.d(TAG, "File Path: " + path);
             }
         }
@@ -846,7 +855,8 @@ public class Update_GateIn extends CommonActivity {
         //  profile.setImageBitmap(thumbnail);
         byte[] byteArrayImage = bytes.toByteArray();
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
-
+        filename=filename.substring(filename.lastIndexOf("/")+1);
+        ed_attach.setText(filename);
 
     }
     public String getPath(Context context, Uri uri) {
@@ -878,12 +888,16 @@ public class Update_GateIn extends CommonActivity {
             // MEDIA GALLERY
             selectedImagePath = getPath(this,selectedImageUri);
             filePath = data.getData().getPath();
-            filePath = getPath(this, selectedImageUri);
-            filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
-            ed_attach.setText(filename);
+            /*filePath = getPath(this, selectedImageUri);
+            filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);*/
+//            ed_attach.setText(filename);
 
             file = new File(filePath);
-          //  Filename= file.getAbsolutePath();
+            Filename= file.getAbsolutePath();
+            imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+            String basename = FilenameUtils.getBaseName(Filename);
+            String fileType = FilenameUtils.getExtension(Filename);
+            ed_attach.setText(basename+fileType);
            // typedFile = new TypedFile("image*//*", file);
             Bitmap selectedImageBitmap = null;
             try {

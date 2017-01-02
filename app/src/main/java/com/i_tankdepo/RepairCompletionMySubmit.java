@@ -417,16 +417,19 @@ private ImageView iv_changeOfStatus;
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
-                for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
-                            String[] set = new String[2];
-                            set[0] = p.name;
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
+                    for (Product p : boxAdapter.getBox()) {
+                        if (p.box) {
+                            if (p.box == true) {
+                                String[] set = new String[2];
+                                set[0] = p.name;
 
-                            selected_name.add(set[0]);
-                            LL_hole.setVisibility(View.GONE);
-                            im_down.setVisibility(View.VISIBLE);
-                            im_up.setVisibility(View.GONE);
+                                selected_name.add(set[0]);
+                                LL_hole.setVisibility(View.GONE);
+                                im_down.setVisibility(View.VISIBLE);
+                                im_up.setVisibility(View.GONE);
 
                            /* for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
@@ -434,16 +437,16 @@ private ImageView iv_changeOfStatus;
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
 
 
-                            //shortToast(getApplicationContext(),p.name);
+                                //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_Repair_Completion_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                if (cd.isConnectingToInternet()) {
+                                    new Get_Repair_Completion_SearchList_details().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                }
+                            } else {
+                                shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
                         }
                     }
                 }

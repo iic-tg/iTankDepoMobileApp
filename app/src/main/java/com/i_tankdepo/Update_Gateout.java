@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
@@ -54,6 +55,7 @@ import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.Util.Utility;
 
 import org.apache.http.HttpEntity;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -153,6 +155,9 @@ public class Update_Gateout extends CommonActivity {
     private Button heat_home,heat_refresh,bt_heating,cleaning,inspection,heat_submit,Leaktest,bt_gateout;
     private LinearLayout LL_heat,LL_heat_submit;
     private RelativeLayout RL_heating,RL_Repair;
+    private String Filename;
+    private String imageName;
+    private String filePath;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -271,10 +276,7 @@ public class Update_Gateout extends CommonActivity {
 
 
 
-        get_swt_rental="False";
-
-
-
+//        get_swt_rental="False";
 
 
 
@@ -603,8 +605,13 @@ public class Update_Gateout extends CommonActivity {
                 // Get the path
                 String path = null;
                 path = getPath(this,uri);
-                String filename=path.substring(path.lastIndexOf("/")+1);
-                ed_attach.setText(filename);
+                filePath = data.getData().getPath();
+                file = new File(filePath);
+                Filename= file.getAbsolutePath();
+                imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+                String basename = FilenameUtils.getBaseName(Filename);
+                String fileType = FilenameUtils.getExtension(Filename);
+                ed_attach.setText(basename+fileType);
                 Log.d(TAG, "File Path: " + path);
             }
         }
@@ -633,6 +640,8 @@ public class Update_Gateout extends CommonActivity {
         //  profile.setImageBitmap(thumbnail);
         byte[] byteArrayImage = bytes.toByteArray();
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+        filename=filename.substring(filename.lastIndexOf("/")+1);
+        ed_attach.setText(filename);
 
 
     }
@@ -665,12 +674,15 @@ public class Update_Gateout extends CommonActivity {
             // MEDIA GALLERY
             selectedImagePath = getPath(this,selectedImageUri);
             filePath = data.getData().getPath();
-            filePath = getPath(this, selectedImageUri);
-             filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);
-            ed_attach.setText(filename);
+           /* filePath = getPath(this, selectedImageUri);
+             filename=selectedImagePath.substring(selectedImagePath.lastIndexOf("/")+1);*/
 
             file = new File(filePath);
-          //  Filename= file.getAbsolutePath();
+            Filename= file.getAbsolutePath();
+            imageName=filePath.substring(Filename.lastIndexOf("/")+1);
+            String basename = FilenameUtils.getBaseName(Filename);
+            String fileType = FilenameUtils.getExtension(Filename);
+            ed_attach.setText(basename+fileType);
            // typedFile = new TypedFile("image*//*", file);
             Bitmap selectedImageBitmap = null;
             try {

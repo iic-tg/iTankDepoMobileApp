@@ -397,6 +397,12 @@ public class LeakTestUpdate extends CommonActivity{
                 jsonObject.put("CHECKED", "True");
                 jsonObject.put("GTN_DT", InDate);
                 jsonObject.put("CSTMR_CD", Cust_Name);
+                jsonObject.put("RLF_VLV_SRL_1", getreliefvalue1);
+                jsonObject.put("RLF_VLV_SRL_2", getreliefvalue2);
+                jsonObject.put("PG_1", getpress_guage1);
+                jsonObject.put("PG_2", getpress_guage2);
+                jsonObject.put("RMRKS_VC",getReamrk );
+
                 jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
 
 

@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -123,6 +125,8 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
         equip_refresh.setOnClickListener(this);
         im_searchview.setOnClickListener(this);
 
+
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -145,8 +149,40 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
         navigationView.setNavigationItemSelectedListener(this);
 
+        ed_searchview.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+                String text = ed_searchview.getText().toString().toLowerCase(Locale.getDefault());
+                if(text.length()!=0)
+                {
+                    im_searchview.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.black));
+
+                }else{
+                    im_searchview.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.grey));
+                }
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1,
+                                          int arg2, int arg3) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                      int arg3) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+
 
     }
+
+
 
 
     @Override
@@ -259,24 +295,22 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 jsonarray = getJsonObject.getJSONArray("List");
 
+                if(jsonarray.length()<=0)
+                {
+                    runOnUiThread(new Runnable(){
 
-                if (jsonarray != null) {
-
-
-                    if (jsonarray.length() <= 0) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-//                        longToast("This takes longer than usual time. Connection Timeout !");
-
-                                shortToast(getApplicationContext(), "Please enter the Valid Equipment Number");
-
-                               LL_Equipment_Info.setVisibility(View.GONE);
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(), "Please enter the Valid Equipment Number");
+                            LL_Equipment_Info.setVisibility(View.GONE);
 
 
+                        }
+                    });
 
-                            }
-                        });
-                    }else {
+                } else {
 
                         equip_history_arraylist = new ArrayList<>();
 
@@ -338,9 +372,11 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
 
 
-                        }
+
+
                     }
-                }else if(jsonarray.length()<1){
+                }
+                /*else {
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -348,12 +384,13 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                             //update ui here
                             // display toast here
                             shortToast(getApplicationContext(),"No Records Found");
+                            LL_Equipment_Info.setVisibility(View.VISIBLE);
 
 
                         }
                     });
 
-                }
+                }*/
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -370,27 +407,28 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
         protected void onPostExecute (Void aVoid){
 
 
-            if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            if(equip_history_arraylist!=null)
+//            if ((progressDialog != null) && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+//            }
 
+            if(jsonarray!=null) {
+                if (equip_history_arraylist.size()>0)
+                {
+                    tv_Cust_Name.setText(CustomerName);
+                    tv_eir_no.setText(eir_no);
+                    tv_equip_no.setText(EquipmentNo + "," + Type + "," + code);
+                    tv_previous_crg.setText(previousCargo);
+                    adapter = new UserListAdapter(EquipmentHistory.this, R.layout.history_list_item_row, equip_history_arraylist);
+                    equip_listview.setAdapter(adapter);
+                }else {
+                    shortToast(getApplicationContext(), "Please enter the Valid Equipment Number");
+                }
+            }else
             {
-
-                tv_Cust_Name.setText(CustomerName);
-                tv_eir_no.setText(eir_no);
-                tv_equip_no.setText(EquipmentNo+","+Type+","+code);
-                tv_previous_crg.setText(previousCargo);
-                LL_Equipment_Info.setVisibility(View.VISIBLE);
-                adapter = new UserListAdapter(EquipmentHistory.this, R.layout.history_list_item_row, equip_history_arraylist);
-                equip_listview.setAdapter(adapter);
-            }
-            else if(equip_history_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
+                shortToast(getApplicationContext(), "Please enter the Valid Equipment Number");
 
             }
+
         }
 
     }
@@ -681,7 +719,10 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 if (jsonobject != null) {
 
-                    deleteActivity=jsonResp.getString("status");
+                    deleteActivity=jsonobject.getString("status");
+
+                    Log.d("deleteActivity status", deleteActivity);
+
 
                 }
             } catch (ClientProtocolException e) {
@@ -703,9 +744,12 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             {
                 if(deleteActivity.contains("deleted from Equipment History"))
                 {
-                    shortToast(getApplicationContext(), getStatusCD +"has been deleted from Equipment History");
-                    finish();
-                    startActivity(getIntent());
+                    shortToast(getApplicationContext(),"Activity : "+ getStatusCD +" has been deleted from Equipment History");
+                   if(cd.isConnectingToInternet()){
+                       new Get_Equipment_History_details().execute();
+                   }else{
+                       shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                   }
                 }else if(deleteActivity.contains("Incorrect syntax"))
                 {
 

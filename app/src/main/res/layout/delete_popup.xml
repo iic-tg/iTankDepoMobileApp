@@ -25,9 +25,8 @@
         android:textColor="@color/circle_button"
         android:text="Are you sure you want to delete?"
         android:gravity="center"
-        android:textStyle="bold"
         android:id="@+id/forget"
-        android:textSize="23dp"
+        android:textSize="22dp"
         android:layout_height="wrap_content" />
     <EditText
         android:layout_width="match_parent"
@@ -38,7 +37,7 @@
         android:paddingLeft="5dp"
         android:textColor="@color/list_text_date"
         android:id="@+id/tv_forgot_edit"
-        android:hint="Deletion Reason"
+        android:hint="Reason for Delete"
         android:background="@drawable/field_border_grey"
         android:layout_below="@+id/forget"
 

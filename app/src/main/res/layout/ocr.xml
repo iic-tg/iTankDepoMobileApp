@@ -212,7 +212,7 @@
 
                         <RelativeLayout android:id="@+id/camera_button_view"
                             android:layout_width="fill_parent"
-                            android:layout_height="353dp">
+                            android:layout_height="match_parent">
 
                             <TextView android:id="@+id/status_view_top"
                                 android:layout_width="wrap_content"

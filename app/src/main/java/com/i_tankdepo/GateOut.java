@@ -82,7 +82,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
     private PendingBean pending_bean;
@@ -166,6 +166,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
         heat_submit = (Button) findViewById(R.id.heat_submit);
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
+        list_noData = (TextView)findViewById(R.id.list_noData);
 
 
         RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
@@ -422,37 +423,38 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
+                    for (Product p : boxAdapter.getBox()) {
+                        if (p.box) {
+                            if (p.box == true) {
+                                String[] set = new String[2];
+                                set[0] = p.name;
 
-                for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
-                            String[] set = new String[2];
-                            set[0] = p.name;
-
-                            selected_name.add(set[0]);
-                            LL_hole.setVisibility(View.GONE);
-                            im_down.setVisibility(View.VISIBLE);
-                            im_up.setVisibility(View.GONE);
+                                selected_name.add(set[0]);
+                                LL_hole.setVisibility(View.GONE);
+                                im_down.setVisibility(View.VISIBLE);
+                                im_up.setVisibility(View.GONE);
 
                             /*for(int i=0;i<selected_name.size();i++) {
                                 tv_search_options.append(selected_name.get(i)+", ");
                             }
                                 LL_search_Value.setVisibility(View.VISIBLE);*/
 
-                            //shortToast(getApplicationContext(),p.name);
+                                //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_GateIn_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                if (cd.isConnectingToInternet()) {
+                                    new Get_GateIn_SearchList_details().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                }
+                            } else {
+                                shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
                         }
                     }
                 }
-
 
                 break;
 
@@ -838,6 +840,9 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
+                listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
+
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -847,6 +852,11 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+                        listview.setVisibility(View.VISIBLE);
+
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
                     }
                 }
             }
@@ -1129,89 +1139,6 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
 
     }
 
-/*
-    public class UserListAdapterDropdown extends BaseAdapter {
-
-        Context context;
-        ArrayList<PendingAccordionBean> list = new ArrayList<>();
-        int resource;
-        private PendingAccordionBean userListBean;
-        int lastPosition=-1;
-
-        public UserListAdapterDropdown(Context context, int resource, ArrayList<PendingAccordionBean> list) {
-            this.context = context;
-            this.list = list;
-            this.resource = resource;
-        }
-
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(resource, null);
-                holder = new ViewHolder();
-
-               */
-/* Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-                convertView.startAnimation(animation);
-                lastPosition = position;*//*
-
-                holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
-                holder.Cust_Name = (TextView) convertView.findViewById(R.id.tv_cust_name);
-                holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
-
-
-                // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            if (list.size() < 1){
-                Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
-            }else {
-                userListBean = list.get(position);
-
-                holder.Cust_Name.setText(userListBean.getValues());
-
-
-
-
-                holder.whole.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                      */
-/*  Intent i=new Intent(getApplicationContext(),View_Invoice.class);
-                        i.putExtra("name", userListBean.getCustomer());
-                        i.putExtra("value",userListBean.getInvoice_amount());
-                        i.putExtra("due",userListBean.getInvoice_due());
-                        i.putExtra("date",userListBean.getInvoice_date());
-                        i.putExtra("no",userListBean.getInvoice_no());
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);*//*
-
-                    }
-                });
-
-            }
-            return convertView;
-        }
-    }
-*/
 public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
     private JSONArray jsonarray;
     private JSONArray preadvicejsonlist;
@@ -1354,7 +1281,7 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
         {
             adapter = new UserListAdapter(GateOut.this, R.layout.list_item_row, pending_arraylist);
             listview.setAdapter(adapter);
-
+            list_noData.setVisibility(View.GONE);
         }
         else if(pending_arraylist.size()<1)
         {

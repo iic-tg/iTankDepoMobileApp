@@ -82,7 +82,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,list_noData;
     private LinearLayout footer_add_btn,LL_footer_delete,LL_search_Value,LL_username;
 
     private Intent mServiceIntent;
@@ -128,6 +128,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         searchView1 = (EditText) findViewById(R.id.searchView1);
         no_data = (TextView)findViewById(R.id.no_data);
         no_data.setVisibility(View.GONE);
+        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData.setVisibility(View.GONE);
 
         bt_pending=(Button)findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
@@ -419,17 +421,19 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 break;
             case R.id.im_ok:
 
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
+                    for (Product p : boxAdapter.getBox()) {
+                        if (p.box) {
+                            if (p.box == true) {
+                                String[] set = new String[2];
+                                set[0] = p.name;
 
-                for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
-                            String[] set = new String[2];
-                            set[0] = p.name;
-
-                            selected_name.add(set[0]);
-                            LL_hole.setVisibility(View.GONE);
-                            im_down.setVisibility(View.VISIBLE);
-                            im_up.setVisibility(View.GONE);
+                                selected_name.add(set[0]);
+                                LL_hole.setVisibility(View.GONE);
+                                im_down.setVisibility(View.VISIBLE);
+                                im_up.setVisibility(View.GONE);
 
 
                            /* for(int i=0;i<selected_name.size();i++) {
@@ -438,20 +442,19 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                             LL_search_Value.setVisibility(View.VISIBLE);*/
 
-                            //shortToast(getApplicationContext(),p.name);
+                                //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_GateIn_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                                if (cd.isConnectingToInternet()) {
+                                    new Get_GateIn_SearchList_details().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                }
+                            } else {
+                                shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
                         }
                     }
                 }
-
                 break;
 
         }
@@ -840,6 +843,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
+                listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -847,9 +852,14 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             wp.getPreviousCargo().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getDate().toLowerCase(Locale.getDefault()).contains(charText)||
                             wp.getType().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
-                            ) {
+                            wp.getTime().toLowerCase(Locale.getDefault()).contains(charText))
+                    {
                         list.add(wp);
+                        listview.setVisibility(View.VISIBLE);
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
+
                     }
                 }
             }

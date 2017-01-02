@@ -87,7 +87,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,cleaning_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<InspectionBean> inspection_arraylist = new ArrayList<>();
     private InspectionBean inspection_bean;
@@ -172,6 +172,8 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
         LL_heat.setAlpha(0.5f);
         LL_heat.setClickable(false);
+        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData.setVisibility(View.GONE);
 
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
@@ -421,9 +423,12 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 im_up.setVisibility(View.GONE);
                 break;
             case R.id.im_ok:
+                if(boxAdapter.getBox().size()==0) {
+                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                }else {
                 for (Product p : boxAdapter.getBox()) {
-                    if (p.box){
-                        if(p.box==true) {
+                    if (p.box) {
+                        if (p.box == true) {
                             String[] set = new String[2];
                             set[0] = p.name;
 
@@ -440,16 +445,16 @@ public class InspectionPending extends CommonActivity implements NavigationView.
 
                             //shortToast(getApplicationContext(),p.name);
 
-                            if(cd.isConnectingToInternet()){
-                                new  Get_Inspection_SearchList_details().execute();
-                            }else{
-                                shortToast(getApplicationContext(),"Please check Your Internet Connection");
+                            if (cd.isConnectingToInternet()) {
+                                new Get_Inspection_SearchList_details().execute();
+                            } else {
+                                shortToast(getApplicationContext(), "Please check Your Internet Connection");
                             }
-                        }else
-                        {
-                            shortToast(getApplicationContext(),"Please Select CustomerName");
+                        } else {
+                            shortToast(getApplicationContext(), "Please Select CustomerName");
                         }
                     }
+                }
                 }
                 break;
         }
@@ -814,6 +819,8 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
+                listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
             } else {
                 for (InspectionBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -823,6 +830,10 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                             wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+                        listview.setVisibility(View.VISIBLE);
+                    }else{
+                        list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);
                     }
                 }
             }
