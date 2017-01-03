@@ -395,12 +395,27 @@
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
                             android:layout_height="wrap_content">
+
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/list_text"
+                                android:padding="5dp"
+                                android:lines="1"
+                                android:singleLine="true"
+                                android:paddingRight="10dp"
+                                android:layout_marginRight="4dp"
+                                android:layout_marginTop="6dp"
+                                android:hint=""
                                 android:id="@+id/ed_transport"
+                                android:textColor="@color/list_text"
                                 />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginTop="5dp"
+                                android:src="@mipmap/ic_down_dark"
+                                android:visibility="gone"
+                                android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
 

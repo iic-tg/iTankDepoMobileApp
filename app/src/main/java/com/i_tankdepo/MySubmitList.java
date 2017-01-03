@@ -988,7 +988,6 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.code=code;
                     GlobalConstants.type=type;
                     GlobalConstants.gateIn_Trans_no=gatin_transaction_no;
-
                     GlobalConstants.status=status;
                     GlobalConstants.date=date;
                     GlobalConstants.time=time;

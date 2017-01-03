@@ -110,7 +110,7 @@ public class Update_GateIn extends CommonActivity {
     private String curTime,get_swt_heating,get_swt_rental;
     int mHour,mMinute;
 
-    private boolean manuf_date=false;
+    private boolean manuf_date=false,last_test_date=false;
 
     TimePickerDialog timePickerDialog;
 
@@ -135,7 +135,7 @@ public class Update_GateIn extends CommonActivity {
     LinearLayout LL_Equipment_Info,LL_Submit,LL_footer_delete;
     private int pendingsize;
     String equip_no, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
-            trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
+            trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,info_heating_bt,info_rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
 
     Switch heating,rental,info_active,info_rental;
     private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id;
@@ -198,11 +198,15 @@ public class Update_GateIn extends CommonActivity {
         transport= GlobalConstants.Transport_No;
         heating_bt= GlobalConstants.heating_bt;
         rental_bt= GlobalConstants.rental_bt;
+
+        Log.i("heating_bt",heating_bt);
+        Log.i("rental_bt",rental_bt);
         cust_code= GlobalConstants.cust_code;
         type_id= GlobalConstants.type_id;
         code_id= GlobalConstants.code_id;
         pre_code= GlobalConstants.pre_code;
         pre_id= GlobalConstants.pre_id;
+        remark = GlobalConstants.remark;
 
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
@@ -292,6 +296,8 @@ public class Update_GateIn extends CommonActivity {
         ed_transport.setText(transport);
         ed_remark.setText(remark);
 
+        LL_Equipment_Info.setVisibility(View.GONE);
+
         if(heating_bt.equalsIgnoreCase("True"))
         {
             heating.setChecked(true);
@@ -306,6 +312,17 @@ public class Update_GateIn extends CommonActivity {
         {
             rental.setChecked(false);
         }
+
+       /* if(info_rental_bt.equalsIgnoreCase("True")){
+            info_rental.setChecked(true);
+        }else{
+            info_rental.setChecked(false);
+        }
+        if(info_heating_bt.equalsIgnoreCase("True")){
+            info_active.setChecked(true);
+        }else{
+            info_active.setChecked(false);
+        }*/
 
         tv_toolbarTitle.setText("Update GateIn");
         menu=(ImageView)findViewById(R.id.iv_menu) ;
@@ -324,13 +341,27 @@ public class Update_GateIn extends CommonActivity {
         equip_up.setVisibility(View.GONE);
         LL_Submit.setOnClickListener(this);
         im_Attachment.setOnClickListener(this);
+
         equip_down.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LL_Equipment_Info.setVisibility(View.VISIBLE);
-                equip_up.setVisibility(View.VISIBLE);
-                equip_down.setVisibility(View.GONE);
+
                 LL_Equipment_Info.requestFocus();
+                LL_Equipment_Info.setVisibility(View.VISIBLE);
+                get_equipment=ed_equipement.getText().toString();
+
+                Log.i("get_equipment",get_equipment);
+
+                if((get_equipment.length()<=0) || get_equipment==null ){
+
+                    shortToast(getApplicationContext(),"Please Enter the Equipment Number");
+                    ed_equipement.requestFocus();
+                    ed_manuf_date.setText(systemDate);
+
+                }else
+                {
+                    new Equipment_More_Info().execute();
+                }
                 //editText.requestFocus();
 
             }
@@ -373,7 +404,7 @@ public class Update_GateIn extends CommonActivity {
                 }
             }
         });
-//        get_swt_info_rental="False";
+        get_swt_info_rental="False";
         info_rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -386,7 +417,7 @@ public class Update_GateIn extends CommonActivity {
                 }
             }
         });
-//        get_swt_info_active="False";
+        get_swt_info_active="False";
         info_active.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -599,29 +630,47 @@ public class Update_GateIn extends CommonActivity {
                 startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;
             case R.id.ed_date:
+                manuf_date=false;
 
+                last_test_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_date:
+                manuf_date=false;
+
+
+                last_test_date=false;
 
                 showDialog(DATE_DIALOG_ID);
 
                 break;
-
             case R.id.ed_manfu:
+                manuf_date=true;
 
+                last_test_date = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_manuf_date:
+                last_test_date = false;
 
+                last_test_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
+
             case R.id.ed_test_date:
+
+                manuf_date=false;
+                last_test_date = true;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_last_Testdate:
+                manuf_date=false;
+                last_test_date = true;
+                last_test_date=true;
+                manuf_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
+
 
             case R.id.iv_back:
                 onBackPressed();
@@ -955,7 +1004,20 @@ public class Update_GateIn extends CommonActivity {
 
 
 
-            ed_date.setText(formatDate(year, month, day));
+            if(manuf_date==true)
+            {
+                ed_manuf_date.setText(formatDate(year, month, day));
+
+
+            }else if(last_test_date==true) {
+
+                ed_last_test_date.setText(formatDate(year, month, day));
+
+
+            }else
+            {
+                ed_date.setText(formatDate(year, month, day));
+            }
 
             //    System.out.println("am a new from date====>>" + str_From);
 
@@ -1427,15 +1489,19 @@ public class Update_GateIn extends CommonActivity {
                 LL_Equipment_Info.setVisibility(View.VISIBLE);
                 equip_up.setVisibility(View.VISIBLE);
                 equip_down.setVisibility(View.GONE);
-                ed_manuf_date.setText(EIMNFCTR_DT);
+                String[] Part1 = EIMNFCTR_DT.split(" ");
+                String Manuf_date = Part1[0];
+                ed_manuf_date.setText(Manuf_date);
                 ed_tare_weight.setText(EITR_WGHT_NC);
                 ed_Gross_weight.setText(EIGRSS_WGHT_NC);
                 ed_capacity.setText(EICPCTY_NC);
                 ed_last_survey.setText(EILST_SRVYR_NM);
 //                ed_last_test_date.setText(EILST_TST_DT);
                 //   ed_last_test_type.setText(EILST_TST_TYP_ID);
-                ed_next_type.setText(EINXT_TST_DT);
-                ed_next_date.setText(EINXT_TST_TYP_ID);
+                ed_next_date.setText(EINXT_TST_DT);
+                tv_next_text_id.setText(EINXT_TST_TYP_ID);
+                ed_info_remark.setText(EIRMRKS_VC);
+
 
                 if(EIACTV_BT.equalsIgnoreCase("true"))
                 {
@@ -1625,7 +1691,7 @@ public class Update_GateIn extends CommonActivity {
             try{
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("EquipmentNo", get_equipment);
+                jsonObject.put("EquipmentNo", equip_no);
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);
@@ -1667,7 +1733,7 @@ public class Update_GateIn extends CommonActivity {
 
                 }else if(validationStatus.contains("cannot be marked for Rental Gate In"))
                 {
-                    longToast(getApplicationContext(),"Equipment" +get_equipment+ "cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
+                    longToast(getApplicationContext(),"Equipment" +equip_no+ "cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
                     get_swt_rental="False";
                 }
             }

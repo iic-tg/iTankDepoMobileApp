@@ -511,9 +511,14 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 holder.Gi_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
                 holder.Tracking_ID.setText(userListBean.getTracking_id());
 
-                if(position==0){
-                    holder.delete_red.setVisibility(View.VISIBLE);
-                    holder.delete_grey.setVisibility(View.GONE);
+                for(int i=0;i<list.size();i++){
+                    if(position==0) {
+                        holder.delete_red.setVisibility(View.VISIBLE);
+                        holder.delete_grey.setVisibility(View.GONE);
+                    }else{
+                        holder.delete_red.setVisibility(View.GONE);
+                        holder.delete_grey.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 holder.delete_red.setOnClickListener(new View.OnClickListener() {

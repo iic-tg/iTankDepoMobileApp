@@ -96,6 +96,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private String CustomerName,CustomerCode;
     private CustomerDropdownBean customer_DropdownBean;
     ArrayList<CustomerDropdownBean> CustomerDropdownArrayList = new ArrayList<>();
+    ArrayList<CustomerDropdownBean> ToStatusDropdownArrayList = new ArrayList<>();
     private String getCurrentStatus,getCustomer,getdate,getremark;
     ProgressDialog progressDialog;
     private ArrayList<ChanfeOfStatusBean> Change_Status_arraylist = new ArrayList<>();
@@ -112,7 +113,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private ArrayList<String[]> selected_list;
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
-    private String systemDate;
+    private String systemDate,curTime,getTime;
     List<String> To_Status_name = new ArrayList<>();
     List<String> To_Status_Code = new ArrayList<>();
     private String returnstatus;
@@ -174,8 +175,11 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         tv_date = (TextView)findViewById(R.id.tv_date);
 
         systemDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+        curTime = time.format(new Date());
 
         ed_to_statusDate.setText(systemDate);
+
 
 
         status_home.setOnClickListener(this);
@@ -203,6 +207,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 equip_up.setVisibility(View.GONE);
             }
         });
+
 
 
 
@@ -256,26 +261,11 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 getCurrentStatusName = sp_current_status.getSelectedItem().toString();
 
                 getCurrentStatusID=currentStatusBeanArrayList.get(position).getID();
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if(ToStatus.equalsIgnoreCase("Please Select"))
-                {
-
-                    shortToast(getApplicationContext(),"Please key-in Mandate Fields");
-
+                if(cd.isConnectingToInternet()){
+                    new Get_To_Status().execute();
                 }else{
-                    getTostatusName = sp_to_status.getSelectedItem().toString();
-                    getTostatusID = CustomerDropdownArrayList.get(position).getCode();
+                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                 }
             }
 
@@ -284,6 +274,29 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             }
         });
+        sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ToStatus=sp_to_status.getSelectedItem().toString();
+                if(ToStatus.equalsIgnoreCase("Please Select"))
+                {
+
+//                    shortToast(getApplicationContext(),"Please key-in Mandate Fields");
+
+                }else{
+                    getTostatusName = sp_to_status.getSelectedItem().toString();
+                    Log.d("TO Status Name",getTostatusName);
+                    getTostatusID = ToStatusDropdownArrayList.get(position++).getCode();
+                    Log.d("TO STatus ID",getTostatusID);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
         String customer = getColoredSpanned("Current Status","#bbbbbb");
         String equip_no = getColoredSpanned("Equipment Number","#bbbbbb");
@@ -334,8 +347,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 equip_down.setVisibility(View.GONE);
                 getEquipmentNo = ed_equip_no.getText().toString();
                 if (cd.isConnectingToInternet()){
-                    new Get_ChangeOfStatus_details().execute();
                     new Get_To_Status().execute();
+                    new Get_ChangeOfStatus_details().execute();
                 }else{
                     shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                 }
@@ -599,7 +612,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_current_status.setAdapter(CargoAdapter);
 
-                getCurrentStatus = sp_current_status.getSelectedItem().toString();
+
 
                 /*if(cd.isConnectingToInternet()){
                     new Get_To_Status().execute();
@@ -791,7 +804,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 JSONObject jsonObject = new JSONObject();
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("CurrentStatus",getCurrentStatus);
+                jsonObject.put("CurrentStatus",getCurrentStatusName);
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);
@@ -799,7 +812,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 httpEntity = response.getEntity();
                 String resp = EntityUtils.toString(httpEntity);
 
-                Log.d("rep", resp);
+                Log.d("To rep", resp);
+                Log.d("To Status",jsonObject.toString());
                 JSONObject jsonrootObject = new JSONObject(resp);
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
@@ -822,7 +836,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
 
                         worldlist = new ArrayList<String>();
-                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        ToStatusDropdownArrayList=new ArrayList<CustomerDropdownBean>();
                         for (int i = 0; i < jsonarray.length(); i++) {
 
                             customer_DropdownBean = new CustomerDropdownBean();
@@ -839,7 +853,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                             dropdown_customer_list.add(set1);
                             To_Status_name.add(set1[0]);
                             To_Status_Code.add(set1[1]);
-                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            ToStatusDropdownArrayList.add(customer_DropdownBean);
                             worldlist.add(ToStatusName);
 
 
@@ -879,32 +893,29 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
             if(jsonarray!=null)
             {
                 worldlist.add(0,"Please Select");
+/*
+                for (int i=0; i<worldlist.size();i++){
+                    if("Please Select".equalsIgnoreCase(worldlist.get(i))){
+                        int index = worldlist.indexOf("Please Select");
+                      */
+/*  worldlist.remove(index);
+                        worldlist.add(0,"Please Select");*//*
+
+
+
+                    }
+                }
+*/
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_to_status.setAdapter(CargoAdapter);
-
-                sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        ToStatus = sp_to_status.getSelectedItem().toString();
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
 
             }
             else
             {
                 shortToast(getApplicationContext(),"Data Not Found");
-
-
             }
-
             progressDialog.dismiss();
-
         }
 
     }
@@ -1386,7 +1397,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                     preadvicejsonObject.put("YardLocation",  retailer[2]);
                     preadvicejsonObject.put("Checked", "True");
                     preadvicejsonObject.put("NEW_EQPMNT_STTS_CD", getTostatusName);
-                    preadvicejsonObject.put("NEW_ACTVTY_DT", getdate);
+                    preadvicejsonObject.put("NEW_ACTVTY_DT", getdate+" "+curTime);
                     preadvicejsonObject.put("EQPMNT_STTS_ID", getTostatusID);
                     preadvicejsonlist.put(preadvicejsonObject);
                 }

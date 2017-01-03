@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -158,11 +159,13 @@ public class Update_Gateout extends CommonActivity {
     private String Filename;
     private String imageName;
     private String filePath;
+    private Switch rentalbit;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update_gate_out);
         pendingsize= GlobalConstants.pendingcount;
@@ -178,14 +181,13 @@ public class Update_Gateout extends CommonActivity {
         equip_no= GlobalConstants.equipment_no;
         location= GlobalConstants.location;
         type= GlobalConstants.type;
-
-
         date= GlobalConstants.date;
         time= GlobalConstants.time;
         Eir_no= GlobalConstants.eir_no;
         vechicle= GlobalConstants.vechicle_no;
         transport= GlobalConstants.Transport_No;
         rental_bt= GlobalConstants.rental_bt;
+        remark = GlobalConstants.remark;
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
 
@@ -247,6 +249,7 @@ public class Update_Gateout extends CommonActivity {
         ed_time.setText(time);
         ed_location.setText(location);
         ed_eir_no.setText(Eir_no);
+        ed_remark.setText(remark);
         if(vechicle.equals("")||vechicle.equalsIgnoreCase("null")||vechicle=="null")
         {
             ed_vechicle.setText("");
@@ -267,18 +270,31 @@ public class Update_Gateout extends CommonActivity {
         equip_down=(ImageView)findViewById(R.id.equip_down) ;
 
 
+        if(rental_bt.equalsIgnoreCase("True"))
+        {
+            rental.setChecked(true);
+            get_swt_rental="True";
+        }else
+        {
+            rental.setChecked(false);
+            get_swt_rental="False";
+        }
 
 
 
-
+        rental.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    get_swt_rental="True";
+                }else
+                {
+                    get_swt_rental="False";
+                }
+            }
+        });
 
         im_Attachment.setOnClickListener(this);
-
-
-
-//        get_swt_rental="False";
-
-
 
        
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -825,6 +841,7 @@ public class Update_Gateout extends CommonActivity {
                 jsonObject.put("EIRNo", get_eir_no);
                 jsonObject.put("VehicalNo", get_vechicle);
                 jsonObject.put("TransPorter",get_transport);
+                jsonObject.put("Remarks",get_remark);
                 jsonObject.put("Rental", get_swt_rental);
                 jsonObject.put("hfc", reqObj);
                 jsonObject.put("RepairEstimateId", Gi_transaction_id);

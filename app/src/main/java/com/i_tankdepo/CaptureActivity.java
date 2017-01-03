@@ -16,6 +16,8 @@
  */
 
 package com.i_tankdepo;
+import java.io.File;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -82,19 +84,19 @@ import static com.i_tankdepo.R.id.tv_add;
  * viewfinder to help the user place the text correctly, shows feedback as the image processing
  * is happening, and then overlays the results when a scan is successful.
  * 
- * The cleaningRate for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
+ * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing/
  */
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback,
+public final class CaptureActivity extends Activity implements SurfaceHolder.Callback, 
   ShutterButton.OnShutterButtonListener {
 
   private static final String TAG = CaptureActivity.class.getSimpleName();
   
   // Note: These constants will be overridden by any default values defined in preferences.xml.
   
-  /** ISO 639-3 language cleaningRate indicating the default recognition language. */
+  /** ISO 639-3 language code indicating the default recognition language. */
   public static final String DEFAULT_SOURCE_LANGUAGE_CODE = "eng";
   
-  /** ISO 639-1 language cleaningRate indicating the default target language for translation. */
+  /** ISO 639-1 language code indicating the default target language for translation. */
   public static final String DEFAULT_TARGET_LANGUAGE_CODE = "es";
   
   /** The default online machine translation service to use. */
@@ -138,14 +140,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private static final boolean DISPLAY_SHUTTER_BUTTON = true;
   
   /** Languages for which Cube data is available. */
-  static final String[] CUBE_SUPPORTED_LANGUAGES = {
+  static final String[] CUBE_SUPPORTED_LANGUAGES = { 
     "ara", // Arabic
     "eng", // English
     "hin" // Hindi
   };
 
   /** Languages that require Cube, and cannot run using Tesseract. */
-  private static final String[] CUBE_REQUIRED_LANGUAGES = {
+  private static final String[] CUBE_REQUIRED_LANGUAGES = { 
     "ara" // Arabic
   };
   
@@ -623,7 +625,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         handler.hardwareShutterButtonClick();
       }
       return true;
-    } else if (keyCode == KeyEvent.KEYCODE_FOCUS) {
+    } else if (keyCode == KeyEvent.KEYCODE_FOCUS) {      
       // Only perform autofocus if user is not holding down the button.
       if (event.getRepeatCount() == 0) {
         cameraManager.requestAutoFocus(500L);
@@ -669,7 +671,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
   }
 
-  /** Sets the necessary language cleaningRate values for the given OCR language. */
+  /** Sets the necessary language code values for the given OCR language. */
   private boolean setSourceLanguage(String languageCode) {
     sourceLanguageCodeOcr = languageCode;
     sourceLanguageCodeTranslation = LanguageCodeHelper.mapLanguageCode(languageCode);
@@ -677,14 +679,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     return true;
   }
 
-  /** Sets the necessary language cleaningRate values for the translation target language. */
+  /** Sets the necessary language code values for the translation target language. */
   private boolean setTargetLanguage(String languageCode) {
     targetLanguageCodeTranslation = languageCode;
     targetLanguageReadable = LanguageCodeHelper.getTranslationLanguageName(this, languageCode);
     return true;
   }
 
-  /** Finds the proper status on the SD card where we can save files. */
+  /** Finds the proper location on the SD card where we can save files. */
   private File getStorageDirectory() {
     //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
     
@@ -734,11 +736,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   /**
    * Requests initialization of the OCR engine with the given parameters.
    * 
-   * @param storageRoot Path to status of the tessdata directory to use
-   * @param languageCode Three-letter ISO 639-3 language cleaningRate for OCR
+   * @param storageRoot Path to location of the tessdata directory to use
+   * @param languageCode Three-letter ISO 639-3 language code for OCR 
    * @param languageName Name of the language for OCR, for example, "English"
    */
-  private void initOcrEngine(File storageRoot, String languageCode, String languageName) {
+  private void initOcrEngine(File storageRoot, String languageCode, String languageName) {    
     isEngineReady = false;
     
     // Set up the dialog box for the thermometer-style download progress indicator
@@ -856,9 +858,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       @Override
       public void onClick(View view) {
         Bundle b = new Bundle();
-      String fullname=ocrResultTextView.getText().toString();
+      String fullname = ocrResultTextView.getText().toString();
 
-        Intent i=new Intent(getApplicationContext(),GateIn.class);
+        Intent i=new Intent(getApplicationContext(),Create_GateIn.class);
         b.putString("fullname", fullname);
         i.putExtras(b);
         startActivity(i);
@@ -886,7 +888,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       setProgressBarVisibility(true);
       
       // Get the translation asynchronously
-      new TranslateAsyncTask(this, sourceLanguageCodeTranslation, targetLanguageCodeTranslation,
+      new TranslateAsyncTask(this, sourceLanguageCodeTranslation, targetLanguageCodeTranslation, 
           ocrResult.getText()).execute();
     } else {
       translationLanguageLabelTextView.setVisibility(View.GONE);
@@ -955,7 +957,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     if (CONTINUOUS_DISPLAY_METADATA) {
       // Color text delimited by '-' as red.
       statusViewBottom.setTextSize(14);
-      CharSequence cs = setSpanBetweenTokens("OCR: " + sourceLanguageReadable + " - OCR failed - Time required: "
+      CharSequence cs = setSpanBetweenTokens("OCR: " + sourceLanguageReadable + " - OCR failed - Time required: " 
           + obj.getTimeRequired() + " ms", "-", new ForegroundColorSpan(0xFFFF0000));
       statusViewBottom.setText(cs);
     }
@@ -975,7 +977,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
    * 
    */
   private CharSequence setSpanBetweenTokens(CharSequence text, String token,
-                                            CharacterStyle... cs) {
+      CharacterStyle... cs) {
     // Start and end refer to the points where the span will apply
     int tokenLen = token.length();
     int start = text.toString().indexOf(token) + tokenLen;
@@ -993,7 +995,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v,
-                                  ContextMenuInfo menuInfo) {
+      ContextMenuInfo menuInfo) {
     super.onCreateContextMenu(menu, v, menuInfo);
     if (v.equals(ocrResultView)) {
       menu.add(Menu.NONE, OPTIONS_COPY_RECOGNIZED_TEXT_ID, Menu.NONE, "Copy recognized text");
@@ -1071,10 +1073,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   void showLanguageName() {   
     Toast toast = Toast.makeText(this, "OCR: " + sourceLanguageReadable, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.TOP, 0, 0);
-
-//    toast.show();
-
-
+    toast.show();
   }
   
   /**

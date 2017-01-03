@@ -530,6 +530,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                 String resp = EntityUtils.toString(httpEntity);
 
                 Log.d("rep", resp);
+                Log.d("GateOut List",jsonObject.toString());
                 JSONObject jsonrootObject = new JSONObject(resp);
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
@@ -572,7 +573,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                                 pending_bean.setVechicle(jsonObject.getString("VHCL_NO"));
                                 pending_bean.setTransport(jsonObject.getString("TRNSPRTR_CD"));
                                 pending_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                                pending_bean.setHeating_bt(jsonObject.getString("HTNG_BT"));
+                                pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                               //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                               //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
@@ -775,7 +776,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
 
                 holder.transport.setText(userListBean.getTransport());
                 holder.Eir_no.setText(userListBean.getEir_no());
-                holder.heating_bt.setText(userListBean.getHeating_bt());
+//                holder.heating_bt.setText(userListBean.getHeating_bt());
                 holder.rental_bt.setText(userListBean.getRental_bt());
                 holder.remark.setText(userListBean.getRemark());
                 holder.type.setText(userListBean.getType());
@@ -809,11 +810,12 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                         GlobalConstants.status=list.get(position).getStatus();
                         GlobalConstants.date=list.get(position).getDate();
                         GlobalConstants.time=list.get(position).getTime();
+                        GlobalConstants.remark=list.get(position).getRemark();
                         GlobalConstants.previous_cargo=list.get(position).getPreviousCargo();
                         GlobalConstants.eir_no=list.get(position).getEir_no();
                         GlobalConstants.vechicle_no=list.get(position).getVechicle();
                         GlobalConstants.Transport_No=list.get(position).getTransport();
-                        GlobalConstants.heating_bt=list.get(position).getHeating_bt();
+                        GlobalConstants.rental_bt=list.get(position).getRental_bt();
                         GlobalConstants.cust_code=list.get(position).getCust_code();
                         GlobalConstants.type_id=list.get(position).getType_code();
                         GlobalConstants.code_id=list.get(position).getCode_Id();
@@ -864,7 +866,6 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,username;
         CheckBox checkBox;
-
         LinearLayout whole,LL_username;
     }
 
