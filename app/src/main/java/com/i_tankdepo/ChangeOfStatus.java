@@ -75,7 +75,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private ImageView menu, equip_up, equip_down, im_ok, im_close,im_date,iv_back,im_search;
-    private LinearLayout LL_hole,accordian_LL;
+    private LinearLayout LL_hole,accordian_LL,LL_status_submit,LL_run;
     private TextView tv_toolbarTitle,list_noData;
     private Button status_home,status_refresh,status_submit;
     private Spinner sp_current_status,sp_status_customer,sp_to_status;
@@ -144,6 +144,11 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Change of Status");
         status_list_view=(ListView)findViewById(R.id.status_list_view);
+
+
+        LL_status_submit = (LinearLayout)findViewById(R.id.LL_status_submit);
+        LL_run = (LinearLayout)findViewById(R.id.LL_run);
+        LL_run.setVisibility(View.GONE);
 
         sp_current_status = (Spinner)findViewById(R.id.sp_current_status);
         sp_status_customer = (Spinner)findViewById(R.id.sp_status_customer);
@@ -277,7 +282,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ToStatus=sp_to_status.getSelectedItem().toString();
+               /* ToStatus=sp_to_status.getSelectedItem().toString();
                 if(ToStatus.equalsIgnoreCase("Please Select"))
                 {
 
@@ -288,7 +293,11 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                     Log.d("TO Status Name",getTostatusName);
                     getTostatusID = ToStatusDropdownArrayList.get(position++).getCode();
                     Log.d("TO STatus ID",getTostatusID);
-                }
+                }*/
+                getTostatusName = sp_to_status.getSelectedItem().toString();
+                Log.d("TO Status Name",getTostatusName);
+                getTostatusID = ToStatusDropdownArrayList.get(position++).getCode();
+                Log.d("TO STatus ID",getTostatusID);
             }
 
             @Override
@@ -380,9 +389,13 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
                                   //   selected_name.add(set[0]);
                                   LL_hole.setVisibility(View.GONE);
+                                  if (cd.isConnectingToInternet()) {
+                                      new Post_COS_details().execute();
+                                  } else {
+                                      shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                                  }
 
-
-                                  if (ToStatus.equalsIgnoreCase("Please Select")) {
+                                  /*if (ToStatus.equalsIgnoreCase("Please Select")) {
 
                                       shortToast(getApplicationContext(), "Please Select the To Status");
                                       LL_hole.setVisibility(View.VISIBLE);
@@ -394,7 +407,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                                       } else {
                                           shortToast(getApplicationContext(), "Please check Your Internet Connection");
                                       }
-                                  }
+                                  }*/
 
                               } else {
                                   shortToast(getApplicationContext(), "Please Select CustomerName");
@@ -892,7 +905,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             if(jsonarray!=null)
             {
-                worldlist.add(0,"Please Select");
+//                worldlist.add(0,"Please Select");
 /*
                 for (int i=0; i<worldlist.size();i++){
                     if("Please Select".equalsIgnoreCase(worldlist.get(i))){

@@ -57,6 +57,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
      EditText username,password;
      ConnectionDetector cd;
     private ProgressDialog progressDialog;
+    private String token;
 
 
     @Override
@@ -226,6 +227,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
                JSONObject returnMessage=jsonResp.getJSONObject("d");
 
                 responseString = returnMessage.getString("ResponseText");
+                token = returnMessage.getString("Token");
                 responseStringId = returnMessage.getString("RL_ID");
                /* GateinCount = returnMessage.getString("GateinCount");
                 GateOutCount = returnMessage.getString("GateoutCount");
@@ -242,6 +244,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
                  editor.putString(SP_USER_ID, getusername);
                  editor.putString(SP_AUTHR_PASSWORD, getpassword);
                  editor.putString(SP_ID, userId);
+                 editor.putString(SP_TOKEN, token);
 //                editor.putString(SP_HS_ID, hsId);
 //                editor.putString(SP_USER_REMEMBER,remember );
                editor.commit();

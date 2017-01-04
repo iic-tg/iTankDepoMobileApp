@@ -863,6 +863,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         Intent i=new Intent(getApplicationContext(),Create_GateIn.class);
         b.putString("fullname", fullname);
         i.putExtras(b);
+        Log.d("Capture Value",fullname);
         startActivity(i);
 
       }

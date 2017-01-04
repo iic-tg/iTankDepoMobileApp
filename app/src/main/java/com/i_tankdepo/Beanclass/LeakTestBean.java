@@ -1,10 +1,12 @@
 package com.i_tankdepo.Beanclass;
 
+import java.io.Serializable;
+
 /**
  * Created by Admin on 12/22/2016.
  */
 
-public class LeakTestBean {
+public class LeakTestBean  implements Serializable{
     String LK_TST_ID;
     String EQPMNT_NO;
     String GI_TRNSCTN_NO;

@@ -246,7 +246,7 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(),EquipmentHistory.class));
                 break;
             case R.id.LL_Stock_Report:
-//                startActivity(new Intent(getApplicationContext(),EquipmentHistory.class));
+               startActivity(new Intent(getApplicationContext(),StockReport.class));
                 break;
         }
     }
@@ -284,6 +284,7 @@ public class MainActivity extends CommonActivity
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLRoleBasedLogin);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("Authorization", sp.getString(SP_TOKEN, "token"));
             //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
             try {

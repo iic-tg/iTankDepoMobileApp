@@ -67,32 +67,66 @@
     <!-- <View
          style="@style/View_vertical"
          />-->
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:id="@+id/LL_heat_submit"
-        android:orientation="vertical"
-        android:background="@color/submit">
-
-        <Button
-            android:id="@+id/status_submit"
+            >
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@mipmap/ic_submit"
-            android:gravity="center"
-            android:drawableTint="@color/white"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/LL_status_submit"
+            android:background="@color/submit">
 
-        <TextView
+            <Button
+                android:id="@+id/status_submit"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@android:color/transparent"
+                android:drawableTop="@mipmap/ic_submit"
+                android:gravity="center"
+                android:drawableTint="@color/white"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/change_submit"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:text="Submit"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:background="@android:color/transparent"
-            android:text="Submit"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/LL_run"
+            android:background="@color/submit">
+
+            <Button
+                android:id="@+id/run_report"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:background="@android:color/transparent"
+                android:drawableTop="@mipmap/ic_run"
+                android:gravity="center"
+                android:drawableTint="@color/white"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/tv_runReport"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"
+                android:text="Run Report"/>
+        </LinearLayout>
+
+    </RelativeLayout>
 
 
 

@@ -68,5 +68,8 @@ public class ConstantValues {
 	public static String baseURLGateOutPending=Link+"GateOutMobile.asmx/List";
 	public static String baseURLGateOutPendingFIlter=Link+"GateOutMobile.asmx/filter";
 	public static String baseURLGateOutSearchList=Link+"GateOutMobile.asmx/SearchList";
+	public static String baseURLStock_DropDown=Link+"StockReportMobile.asmx/StockDropdown";
+	public static String baseURLStock_Run_Report=Link+"/StockReportMobile.asmx/StockReportView";
+	//http://192.168.1.19/iTankMobileService/StockReportMobile.asmx/StockDropdown
 
 }

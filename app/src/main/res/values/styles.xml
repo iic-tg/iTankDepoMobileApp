@@ -39,6 +39,8 @@
     <style name="WhiteCheck">
         <item name="colorAccent">#015bab</item>
     </style>
+
+
     <style name="MyCheckBox" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorControlNormal">@color/list_text_date</item>
         <item name="colorControlActivated">@color/Title</item>
