@@ -770,8 +770,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+                /*listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (HeatingBean wp : arraylist) {
                     if (wp.getCSTMR_CD().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -781,11 +781,11 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             wp.getEQPMNT_TYP_CD().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+                       /* listview.setVisibility(View.VISIBLE);*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

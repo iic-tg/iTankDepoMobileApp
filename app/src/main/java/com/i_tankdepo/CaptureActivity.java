@@ -214,9 +214,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private boolean isEngineReady;
   private boolean isPaused;
   private static boolean isFirstLaunch; // True if this is the first time the app is being run
-  LinearLayout LL_print,LL_Submit;
+  LinearLayout LL_print,LL_Submit,LL_footer_delete;
   private int pendingsize;
   private ImageView iv_changeOfStatus;
+  private String captureValue;
 
   Handler getHandler() {
     return handler;
@@ -257,6 +258,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     resultView = findViewById(R.id.result_view);
     LL_print = (LinearLayout)findViewById(R.id.footer_add_btn);
     LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
+    LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
     tv_add = (TextView) findViewById(R.id.tv_add);
     tv_add.setText("Print");
 
@@ -269,6 +271,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     im_add.setVisibility(View.GONE);
     LL_print.setAlpha(0.5f);
     LL_print.setClickable(false);
+    LL_footer_delete.setAlpha(0.5f);
+    LL_footer_delete.setClickable(false);
     iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
 
     menu=(ImageView)findViewById(R.id.iv_menu) ;
@@ -864,6 +868,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         b.putString("fullname", fullname);
         i.putExtras(b);
         Log.d("Capture Value",fullname);
+        GlobalConstants.fullname = fullname ;
         startActivity(i);
 
       }

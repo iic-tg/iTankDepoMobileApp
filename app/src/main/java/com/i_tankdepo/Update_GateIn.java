@@ -207,6 +207,8 @@ public class Update_GateIn extends CommonActivity {
         pre_code= GlobalConstants.pre_code;
         pre_id= GlobalConstants.pre_id;
         remark = GlobalConstants.remark;
+        filename =GlobalConstants.attach_filename;
+
 
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
@@ -283,6 +285,10 @@ public class Update_GateIn extends CommonActivity {
         ed_time.setText(time);
         ed_location.setText(location);
         ed_eir_no.setText(Eir_no);
+        ed_attach.setText(filename);
+
+//        sp_previous_cargo.setSelection(get_sp_previous);
+
         if(vechicle.equals("")||vechicle.equalsIgnoreCase("null")||vechicle=="null")
         {
             ed_vechicle.setText("");
@@ -295,6 +301,7 @@ public class Update_GateIn extends CommonActivity {
         ed_type.setText(type);
         ed_transport.setText(transport);
         ed_remark.setText(remark);
+
 
         LL_Equipment_Info.setVisibility(View.GONE);
 
@@ -1330,8 +1337,21 @@ public class Update_GateIn extends CommonActivity {
 
             if(dropdown_PreviousCargo_list!=null)
             {
-//                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
-//                listview.setAdapter(adapter);
+                for(int i=0;i<dropdown_PreviousCargo_list.size();i++)
+                {
+                    if(get_sp_previous.equals(dropdown_PreviousCargo_list.get(i)))
+                    {
+
+                        int index = dropdown_PreviousCargo_list.indexOf(get_sp_previous);
+                        dropdown_PreviousCargo_list.remove(index);
+                        System.out.println("before appartmentArray"+dropdown_PreviousCargo_list.size());
+
+                        dropdown_PreviousCargo_list.add(0, get_sp_previous);
+                        System.out.println("after appartmentArray"+dropdown_PreviousCargo_list.size());
+
+                    }
+                }
+
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_PreviousCargo_list);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_previous_cargo.setAdapter(CargoAdapter);

@@ -576,7 +576,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                                 pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                               //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
-                              //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
+                                pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                                 pending_bean.setDate(jsonObject.getString("GTOT_DT"));
                                 pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
                                 pending_bean.setTime(jsonObject.getString("GTOT_TM"));
@@ -586,7 +586,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                                 pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
                                 pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
                                 pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-                         //       pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+//                                pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
 
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -839,8 +839,8 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+               /* listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -850,11 +850,11 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+                       /* listview.setVisibility(View.VISIBLE);*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

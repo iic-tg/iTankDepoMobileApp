@@ -77,7 +77,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private ImageView menu, im_up, im_down, im_ok, im_close,iv_back;
     LinearLayout LL_hole, LL_Submit;
     Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh;
-    String equip_no, equipment_no,Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,Gate_In,cust_code,type_id,code_id,pre_code,pre_id,
+    String equip_no, equipment_no,Cust_Name,previous_crg,attachFilename,attachmentstatus,gateIn_Id,code,location,Gate_In,cust_code,type_id,code_id,pre_code,pre_id,
             vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,gatin_transaction_no;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
@@ -830,6 +830,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         attachmentstatus= list.get(position).getAttachmentStatus();
                         pre_id= list.get(position).getPrev_Id();
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
+
                         new Get_GateIn_Lock_Check().execute();
                     }
                 });
@@ -843,8 +844,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+                /*listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -855,12 +856,14 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         list.add(wp);
+/*
                         listview.setVisibility(View.VISIBLE);
-                    }else{
+*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
 
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
@@ -1005,6 +1008,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
+                    GlobalConstants.attach_filename = filename;
                     startActivity(i);
 
                 }else {

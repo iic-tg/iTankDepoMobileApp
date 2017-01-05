@@ -844,8 +844,8 @@ public class RepairEstimatePending extends CommonActivity implements NavigationV
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+               /* listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (RepairBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -854,10 +854,12 @@ public class RepairEstimatePending extends CommonActivity implements NavigationV
                             wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+/*
                         listview.setVisibility(View.VISIBLE);
+*/
                     }else{
-                        list_noData.setVisibility(View.VISIBLE);
-                        listview.setVisibility(View.GONE);
+                        /*list_noData.setVisibility(View.VISIBLE);
+                        listview.setVisibility(View.GONE);*/
                     }
                 }
             }

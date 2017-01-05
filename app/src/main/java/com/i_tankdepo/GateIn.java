@@ -860,9 +860,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
+               /* listview.setVisibility(View.VISIBLE);
                 list_noData.setVisibility(View.GONE);
-
+*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -873,11 +873,11 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+//                        listview.setVisibility(View.VISIBLE);
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

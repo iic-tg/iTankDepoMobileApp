@@ -805,8 +805,8 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+               /* listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (CleaningBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -817,11 +817,11 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+                       /* listview.setVisibility(View.VISIBLE);*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

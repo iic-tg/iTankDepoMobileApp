@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.i_tankdepo.Beanclass.CustomerReportBean;
 import com.i_tankdepo.Beanclass.GeneralReportBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.TypeReportBean;
@@ -69,23 +70,41 @@ public class SelectOptions extends CommonActivity {
     private ListView select_list_view;
     private TextView tv_toolbarTitle,tv_heat_refresh,tv_selected;
     private LinearLayout LL_status_submit,LL_run,LL_date,LL_mandate_fields;
-    String from,selected_name;
+    String from,selected_name,selected_name_optional;
     private PendingAccordionBean pending_accordion_bean;
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist;
     private ArrayList<Product_Stock> products;
     private ArrayList<Product_Stock> box;
     private ListAdapter boxAdapter;
     List<String> selected_id_list = new ArrayList<String>();
+    List<String> selected_equip_id_list = new ArrayList<String>();
+    List<String> selected_prev_id_list = new ArrayList<String>();
+    List<String> selected_curnt_id_list = new ArrayList<String>();
+    List<String> selected_next_id_list = new ArrayList<String>();
+    List<String> selected_depo_id_list = new ArrayList<String>();
     private ProgressDialog progressDialog;
     private GeneralReportBean generalReportBean;
     private ArrayList<GeneralReportBean> generalReportBeanArrayList;
     private TypeReportBean typeReportBean;
+    private CustomerReportBean customerReportBean;
+    private ArrayList<CustomerReportBean> customerReportbeanArrayList;
     private ArrayList<TypeReportBean> typeReportBeanArrayList;
     private EditText ed_date;
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
     private String systemDate;
+    String cleaning_frm_date,cleaning_to_date,Insp_frm_date,Insp_to_date,In_date_from,In_date_to,Out_date_from,
+            Out_date_to,Equip_date,EIR_date,current_frm_date,current_to_date,Nxt_frm_date,Nxt_to_date;
+    private List<String> Cust_id=new ArrayList<>();
+    private List<String> Equip_id=new ArrayList<>();
+    private List<String> prevc_id=new ArrayList<>();
+    private List<String> curnt_staus_id=new ArrayList<>();
+    private List<String> next_test_id=new ArrayList<>();
+    private List<String> dept_id=new ArrayList<>();
+    private String curTime;
+    private JSONObject CustomerSummaryjsonarray;
+    private JSONObject TypeSummaryjsonarray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +119,7 @@ public class SelectOptions extends CommonActivity {
 
         from= GlobalConstants.from;
         selected_name= GlobalConstants.selectedName;
+        selected_name_optional= GlobalConstants.selectedName_optional;
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_selected = (TextView) findViewById(R.id.tv_selected);
         tv_toolbarTitle.setText("Select Options");
@@ -150,9 +170,10 @@ public class SelectOptions extends CommonActivity {
         //24 hour format
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
-        
-        systemDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        curTime = time.format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
+        Log.i("systemDate",systemDate);
         status_home.setOnClickListener(this);
         status_refresh.setOnClickListener(this);
         run_report.setOnClickListener(this);
@@ -182,8 +203,67 @@ public class SelectOptions extends CommonActivity {
                 onBackPressed();
                 break;
             case R.id.tv_selected:
+
+                String date=ed_date.getText().toString();
+
+                if(selected_name_optional.equalsIgnoreCase("Cleaning Date From"))
+                {
+                        GlobalConstants.Cleaning_date_from=date;
+                }else  if(selected_name_optional.equalsIgnoreCase("Cleaning Date To"))
+                {
+                    GlobalConstants.Cleaning_date_to=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("In Date From"))
+                {
+                    GlobalConstants.In_date_from=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("In Date To"))
+                {
+                    GlobalConstants.In_date_to=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Inspection Date From"))
+                {
+                    GlobalConstants.Inspection_date_from=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Inspection Date To"))
+                {
+                    GlobalConstants.Inspection_date_to=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Current Status Date From"))
+                {
+                    GlobalConstants.Current_status_date_from=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Current Status Date To"))
+                {
+                    GlobalConstants.Current_status_date_to=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Next Test Date From"))
+                {
+                    GlobalConstants.Nxt_Tst_date_from=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Next Test Date To"))
+                {
+                    GlobalConstants.Nxt_Tst_date_to=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Equipment Number"))
+                {
+                    GlobalConstants.Equip_No_date=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("EIR Number"))
+                {
+                    GlobalConstants.EIR_No_date=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Out Date From"))
+                {
+                    GlobalConstants.Out_date_from=date;
+
+                }else  if(selected_name_optional.equalsIgnoreCase("Out Date To"))
+                {
+                    GlobalConstants.Out_date_to=date;
+
+                }
                 if(boxAdapter.getBox().size()==0) {
-                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                   // shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
                     for (Product_Stock p : boxAdapter.getBox()) {
                         if (p.box) {
@@ -191,8 +271,46 @@ public class SelectOptions extends CommonActivity {
                                 String[] set = new String[2];
                                 set[0] = p.Id;
 
-                                selected_id_list.add(set[0]);
 
+
+                                if(selected_name.equalsIgnoreCase("Customer"))
+                                {
+                                    selected_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Cust_Id=selected_id_list;
+                                    shortToast(getApplicationContext(),"Customer selected");
+                                }else if(selected_name.equalsIgnoreCase("Equipment Type"))
+                                {
+                                    selected_equip_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Equp_Id=selected_equip_id_list;
+                                    shortToast(getApplicationContext(),"Equipment Type");
+
+                                }else if(selected_name.equalsIgnoreCase("Previous Cargo"))
+                                {
+                                    selected_prev_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Prev_Crg_Id=selected_prev_id_list;
+                                    shortToast(getApplicationContext(),"Previous Cargo");
+
+
+                                }else if(selected_name.equalsIgnoreCase("Current Status")) {
+                                    selected_curnt_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Curnt_Status_Id=selected_curnt_id_list;
+                                    shortToast(getApplicationContext(),"Current Status");
+
+
+                                }else if(selected_name.equalsIgnoreCase("Next Test Type"))
+                                {
+                                    selected_next_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Nxt_Tst_Type_Id=selected_next_id_list;
+                                    shortToast(getApplicationContext(),"Next Test Type");
+
+
+                                }else if(selected_name.equalsIgnoreCase("Depot")) {
+                                    selected_depo_id_list.add(set[0]);
+                                    GlobalConstants.selected_Stock_Depot_Id=selected_depo_id_list;
+                                    shortToast(getApplicationContext(),"Depot selected");
+
+
+                                }
                             } else {
                                 shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
@@ -202,22 +320,30 @@ public class SelectOptions extends CommonActivity {
                 break;
 
             case R.id.run_report:
-                if(boxAdapter.getBox().size()==0) {
-                    shortToast(getApplicationContext(), "Please Select atleast One Value..!");
-                }else {
-                    for (Product_Stock p : boxAdapter.getBox()) {
-                        if (p.box) {
-                            if (p.box == true) {
-                                String[] set = new String[2];
-                                set[0] = p.Id;
 
-                                selected_id_list.add(set[0]);
 
-                            } else {
-                                shortToast(getApplicationContext(), "Please Select CustomerName");
-                            }
-                        }
-                    }
+                    Cust_id=GlobalConstants.selected_Stock_Cust_Id;
+                    Equip_id=GlobalConstants.selected_Stock_Equp_Id;
+                    prevc_id=GlobalConstants.selected_Stock_Prev_Crg_Id;
+                    curnt_staus_id=GlobalConstants.selected_Stock_Curnt_Status_Id;
+                    next_test_id=GlobalConstants.selected_Stock_Nxt_Tst_Type_Id;
+                    dept_id=GlobalConstants.selected_Stock_Depot_Id;
+
+                    cleaning_frm_date=GlobalConstants.Cleaning_date_from;
+                    cleaning_to_date=GlobalConstants.Cleaning_date_to;
+                    In_date_from=GlobalConstants.In_date_from;
+                    In_date_to=GlobalConstants.In_date_to;
+                    Insp_frm_date=GlobalConstants.Inspection_date_from;
+                    Insp_to_date=GlobalConstants.Inspection_date_to;
+                    current_frm_date=GlobalConstants.Current_status_date_from;
+                    current_to_date=GlobalConstants.Current_status_date_to;
+                    Nxt_frm_date=GlobalConstants.Nxt_Tst_date_from;
+                    Nxt_to_date=GlobalConstants.Nxt_Tst_date_to;
+                    Equip_date=GlobalConstants.Equip_No_date;
+                    EIR_date=GlobalConstants.EIR_No_date;
+                    Out_date_from=GlobalConstants.Out_date_from;
+                    Out_date_to=GlobalConstants.Out_date_to;
+
 
                     if(cd.isConnectingToInternet())
                     {
@@ -225,7 +351,8 @@ public class SelectOptions extends CommonActivity {
                     }else
                     {
                         shortToast(getApplicationContext(),"Please Check Your Intenet Connection");
-                    }                }
+                    }
+
 
                 break;
         }
@@ -252,7 +379,7 @@ public class SelectOptions extends CommonActivity {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -281,10 +408,13 @@ public class SelectOptions extends CommonActivity {
 
     public class Post_Stock_report extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
-        private JSONArray preadvicejsonlist;
         private JSONObject preadvicejsonObject;
-        private JSONObject SearchValuesObject;
-        private String preadviceObject;
+        private JSONArray Custjsonlist;
+        private JSONArray Equipjsonlist;
+        private JSONArray previousjsonlist;
+        private JSONArray currentStausjsonlist;
+        private JSONArray NextTestjsonlist;
+        private JSONArray deoptjsonlist;
 
 
         @Override
@@ -314,79 +444,93 @@ public class SelectOptions extends CommonActivity {
             try{
                 JSONObject jsonObject = new JSONObject();
                 JSONObject jsonObjectStockReportModel = new JSONObject();
-                JSONObject finalObject = new JSONObject();
 
-                preadvicejsonlist = new JSONArray();
+            //    preadvicejsonlist = new JSONArray();
+                Custjsonlist = new JSONArray();
+                Equipjsonlist = new JSONArray();
+                previousjsonlist = new JSONArray();
+                currentStausjsonlist = new JSONArray();
+                NextTestjsonlist = new JSONArray();
+                deoptjsonlist = new JSONArray();
 
-                if(selected_name.equalsIgnoreCase("Customer"))
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
-
-                }else if(selected_name.equalsIgnoreCase("Equipment Type"))
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
-                }else if(selected_name.equalsIgnoreCase("Previous Cargo"))
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
-
-                }else if(selected_name.equalsIgnoreCase("Current Status"))
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
-                }else if(selected_name.equalsIgnoreCase("Next Test Type"))
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
-                }else
-                {
-                    for (int i = 0; i <selected_id_list.size(); i++) {
-                        preadvicejsonObject=new JSONObject();
-                        preadvicejsonObject.put("Type", selected_id_list.get(i));
-                        preadvicejsonlist.put(preadvicejsonObject);
-                    }
+            try {
+                for (int i = 0; i < Cust_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", Cust_id.get(i));
+                    Custjsonlist.put(preadvicejsonObject);
                 }
-                jsonObjectStockReportModel.put("Customer",preadvicejsonlist);
-                jsonObjectStockReportModel.put("Depot",preadvicejsonlist);
-                jsonObjectStockReportModel.put("Next_Test_Type",preadvicejsonlist);
-                jsonObjectStockReportModel.put("Current_Status",preadvicejsonlist);
-                jsonObjectStockReportModel.put("Previous_Cargo",preadvicejsonlist);
-                jsonObjectStockReportModel.put("Equipment_Type",preadvicejsonlist);
 
 
+                for (int i = 0; i < Equip_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", Equip_id.get(i));
+                    Equipjsonlist.put(preadvicejsonObject);
+                }
+
+                for (int i = 0; i < prevc_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", prevc_id.get(i));
+                    previousjsonlist.put(preadvicejsonObject);
+                }
+
+
+                for (int i = 0; i < curnt_staus_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", curnt_staus_id.get(i));
+                    currentStausjsonlist.put(preadvicejsonObject);
+                }
+
+                for (int i = 0; i < next_test_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", next_test_id.get(i));
+                    NextTestjsonlist.put(preadvicejsonObject);
+                }
+                for (int i = 0; i < dept_id.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
+                    preadvicejsonObject.put("Type", dept_id.get(i));
+                    deoptjsonlist.put(preadvicejsonObject);
+                }
+            }catch (Exception e)
+            {
+
+            }
+                jsonObjectStockReportModel.put("Customer",Custjsonlist);
+                jsonObjectStockReportModel.put("Depot",deoptjsonlist);
+                jsonObjectStockReportModel.put("Next_Test_Type",NextTestjsonlist);
+                jsonObjectStockReportModel.put("Current_Status",currentStausjsonlist);
+                jsonObjectStockReportModel.put("Previous_Cargo",previousjsonlist);
+                jsonObjectStockReportModel.put("Equipment_Type",Equipjsonlist);
 
                 jsonObjectStockReportModel.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObjectStockReportModel.put("Next_Test_Date_From", "");
-                jsonObjectStockReportModel.put("Next_Test_Date_To", "");
-                jsonObjectStockReportModel.put("Equipment_No", "");
-                jsonObjectStockReportModel.put("EIR_No", "");
-                jsonObjectStockReportModel.put("Out_Date_From", "");
-                jsonObjectStockReportModel.put("Cleaning_Date_From", "");
-                jsonObjectStockReportModel.put("Cleaning_Date_To", "");
-                jsonObjectStockReportModel.put("Inspection_Date_From", "");
-                jsonObjectStockReportModel.put("Inspection_Date_To", "");
-                jsonObjectStockReportModel.put("Current_Status_Date_From", "");
-                jsonObjectStockReportModel.put("In_Date_From", "");
-                jsonObjectStockReportModel.put("In_Date_To", "");
-                jsonObjectStockReportModel.put("Current_Status_Date_To", "");
-                jsonObjectStockReportModel.put("Out_Date_To", "");
+                jsonObjectStockReportModel.put("Next_Test_Date_From",Nxt_frm_date);
+                jsonObjectStockReportModel.put("Next_Test_Date_To", Nxt_to_date);
+                jsonObjectStockReportModel.put("Equipment_No", Equip_date);
+                jsonObjectStockReportModel.put("EIR_No", EIR_date);
+                jsonObjectStockReportModel.put("Cleaning_Date_From",cleaning_frm_date);
+                jsonObjectStockReportModel.put("Cleaning_Date_To", cleaning_to_date);
+                jsonObjectStockReportModel.put("Inspection_Date_From", Insp_frm_date);
+                jsonObjectStockReportModel.put("Inspection_Date_To", Insp_to_date);
+                jsonObjectStockReportModel.put("Current_Status_Date_From", current_frm_date);
+                jsonObjectStockReportModel.put("In_Date_From", In_date_from);
+                jsonObjectStockReportModel.put("In_Date_To", In_date_to);
+                jsonObjectStockReportModel.put("Current_Status_Date_To", current_to_date);
+
+                if(Out_date_from=="null" || Out_date_from=="" )
+                {
+                    jsonObjectStockReportModel.put("Out_Date_From", systemDate);
+
+                }else
+                {
+                    jsonObjectStockReportModel.put("Out_Date_From", Out_date_from);
+
+                }
+                if(Out_date_to=="null" || Out_date_to=="") {
+                    jsonObjectStockReportModel.put("Out_Date_To", systemDate);
+                }else
+                {
+                    jsonObjectStockReportModel.put("Out_Date_To", Out_date_to);
+                }
+
                 jsonObject.put("StockReportModel",jsonObjectStockReportModel);
                /* JSONObject jsonObject1 = new JSONObject();
                 jsonObject1.put("Credentials",jsonObject);*/
@@ -404,43 +548,105 @@ public class SelectOptions extends CommonActivity {
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
 
-                jsonarray = getJsonObject.getJSONArray("ListGateInss");
-                if (jsonarray != null) {
-
-                    System.out.println("Am HashMap list"+jsonarray);
-                    if (jsonarray.length() < 1) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
+                jsonarray = getJsonObject.getJSONArray("ActivityStatus");
+                CustomerSummaryjsonarray = getJsonObject.getJSONObject("CustomerSummary");
+                TypeSummaryjsonarray = getJsonObject.getJSONObject("TypeSummary");
+                if (jsonarray == null || CustomerSummaryjsonarray==null ||TypeSummaryjsonarray==null ) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
-                                shortToast(getApplicationContext(), "No Records Found");
-                            }
-                        });
+                            shortToast(getApplicationContext(), "No Records Found");
+                        }
+                    });
+
                     }else {
+                        try {
 
-                     /*   pending_arraylist = new ArrayList<>();
+                            generalReportBeanArrayList = new ArrayList<GeneralReportBean>();
+                            typeReportBeanArrayList = new ArrayList<TypeReportBean>();
+                            customerReportbeanArrayList = new ArrayList<CustomerReportBean>();
+
+                            for (int i = 0; i < jsonarray.length(); i++) {
+                                jsonObject = jsonarray.getJSONObject(i);
+                                generalReportBean = new GeneralReportBean();
+
+                                generalReportBean.setDepot(jsonObject.getString("Depot"));
+                                generalReportBean.setCustomer(jsonObject.getString("Customer"));
+                                generalReportBean.setEquipmentNo(jsonObject.getString("EquipmentNo"));
+                                generalReportBean.setType(jsonObject.getString("Type"));
+                                generalReportBean.setIndate(jsonObject.getString("Indate"));
+                                generalReportBean.setPreviousCargo(jsonObject.getString("PreviousCargo"));
+                                generalReportBean.setEirNo(jsonObject.getString("EirNo"));
+                                generalReportBean.setCleaningCertNo(jsonObject.getString("CleaningCertNo"));
+                                generalReportBean.setCurrentStatusDate(jsonObject.getString("CurrentStatusDate"));
+                                generalReportBean.setCurrentStatus(jsonObject.getString("CurrentStatus"));
+                                generalReportBean.setCleaningDate(jsonObject.getString("CleaningDate"));
+                                generalReportBean.setInspectionDate(jsonObject.getString("InspectionDate"));
+                                generalReportBean.setRemarks(jsonObject.getString("Remarks"));
+                                generalReportBean.setNextTestDate(jsonObject.getString("NextTestDate"));
+                                generalReportBean.setNextTestType(jsonObject.getString("NextTestType"));
+
+                                generalReportBeanArrayList.add(generalReportBean);
+
+                            }
 
 
-                        for (int i = 0; i < jsonarray.length(); i++) {
+                            customerReportBean = new CustomerReportBean();
 
-                            pending_bean = new PendingBean();
-                            jsonObject = jsonarray.getJSONObject(i);
+                            customerReportBean.setCustomer(CustomerSummaryjsonarray.getString("Customer"));
+                            // customerReportBean.setType(jsonObject.getString("Type"));
+                            customerReportBean.setIND(CustomerSummaryjsonarray.getString("IND"));
+                            customerReportBean.setPHL(CustomerSummaryjsonarray.getString("PHL"));
+                            customerReportBean.setACN(CustomerSummaryjsonarray.getString("ACN"));
+                            customerReportBean.setAWECLN(CustomerSummaryjsonarray.getString("AWECLN"));
+                            customerReportBean.setAWE(CustomerSummaryjsonarray.getString("AWE"));
+                            customerReportBean.setAAR(CustomerSummaryjsonarray.getString("AAR"));
+                            customerReportBean.setAUR(CustomerSummaryjsonarray.getString("AUR"));
+                            customerReportBean.setASR(CustomerSummaryjsonarray.getString("ASR"));
+                            customerReportBean.setSRV(CustomerSummaryjsonarray.getString("SRV"));
+                            customerReportBean.setAVLCLN(CustomerSummaryjsonarray.getString("AVLCLN"));
+                            customerReportBean.setAVLINS(CustomerSummaryjsonarray.getString("AVLINS"));
+                            customerReportBean.setINSRPC(CustomerSummaryjsonarray.getString("INSRPC"));
+                            customerReportBean.setRPC(CustomerSummaryjsonarray.getString("RPC"));
+                            customerReportBean.setSTO(CustomerSummaryjsonarray.getString("STO"));
+                            customerReportBean.setAVL(CustomerSummaryjsonarray.getString("AVL"));
+                            customerReportBean.setOUT(CustomerSummaryjsonarray.getString("OUT"));
+                            customerReportBean.setTOTAL(CustomerSummaryjsonarray.getString("TOTAL"));
+
+                            customerReportbeanArrayList.add(customerReportBean);
 
 
+                            typeReportBean = new TypeReportBean();
+
+//                            typeReportBean.setCustomer(jsonObject.getString("Customer"));
+                            typeReportBean.setType(TypeSummaryjsonarray.getString("Type"));
+                            typeReportBean.setIND(TypeSummaryjsonarray.getString("IND"));
+                            typeReportBean.setPHL(TypeSummaryjsonarray.getString("PHL"));
+                            typeReportBean.setACN(TypeSummaryjsonarray.getString("ACN"));
+                            typeReportBean.setAWECLN(TypeSummaryjsonarray.getString("AWECLN"));
+                            typeReportBean.setAWE(TypeSummaryjsonarray.getString("AWE"));
+                            typeReportBean.setAAR(TypeSummaryjsonarray.getString("AAR"));
+                            typeReportBean.setAUR(TypeSummaryjsonarray.getString("AUR"));
+                            typeReportBean.setASR(TypeSummaryjsonarray.getString("ASR"));
+                            typeReportBean.setSRV(TypeSummaryjsonarray.getString("SRV"));
+                            typeReportBean.setAVLCLN(TypeSummaryjsonarray.getString("AVLCLN"));
+                            typeReportBean.setAVLINS(TypeSummaryjsonarray.getString("AVLINS"));
+                            typeReportBean.setINSRPC(TypeSummaryjsonarray.getString("INSRPC"));
+                            typeReportBean.setRPC(TypeSummaryjsonarray.getString("RPC"));
+                            typeReportBean.setSTO(TypeSummaryjsonarray.getString("STO"));
+                            typeReportBean.setAVL(TypeSummaryjsonarray.getString("AVL"));
+                            typeReportBean.setOUT(TypeSummaryjsonarray.getString("OUT"));
+                            typeReportBean.setTOTAL(TypeSummaryjsonarray.getString("TOTAL"));
+
+                            typeReportBeanArrayList.add(typeReportBean);
 
 
-                            pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
-                            pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
-                            pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
-                            pending_bean.setDate(jsonObject.getString("GTN_DT"));
-                            pending_bean.setTime(jsonObject.getString("GTN_TM"));
-                            pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
-                            pending_arraylist.add(pending_bean);
+                        }catch (Exception e)
+                        {
 
-
-
-                        }*/
-                    }
-                }else if(jsonarray.length()<1){
+                        }
+                }
+                /*else if(jsonarray.length()<1){
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -453,7 +659,7 @@ public class SelectOptions extends CommonActivity {
                         }
                     });
 
-                }
+                }*/
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -471,19 +677,23 @@ public class SelectOptions extends CommonActivity {
 
 
 
-        /*    if(pending_arraylist!=null)
+            if (jsonarray != null || CustomerSummaryjsonarray!=null ||TypeSummaryjsonarray!=null )
             {
-                adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
-                listview.setAdapter(adapter);
+
+               Intent i=new Intent(getApplicationContext(),GeneralReport.class);
+                GlobalConstants.customerReportbeanArrayList=customerReportbeanArrayList;
+                GlobalConstants.typeReportBeanArrayList=typeReportBeanArrayList;
+                GlobalConstants.generalReportBeanArrayList=generalReportBeanArrayList;
+
+                startActivity(i);
 
             }
-            else if(pending_arraylist.size()<1)
+            else
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 
 
             }
-*/
             progressDialog.dismiss();
 
         }

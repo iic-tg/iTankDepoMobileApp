@@ -95,8 +95,7 @@ public class Update_Gateout extends CommonActivity {
     private Intent mServiceIntent;
     private String userChoosenTask;
     private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
-    private EditText ed_time,ed_attach,ed_date,ed_status,
-            ed_location,ed_eir_no,ed_vechicle,ed_transport,ed_remark;
+    private EditText ed_time,ed_attach,ed_date,ed_status,ed_location,ed_eir_no,ed_vechicle,ed_transport,ed_remark;
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
@@ -188,6 +187,7 @@ public class Update_Gateout extends CommonActivity {
         transport= GlobalConstants.Transport_No;
         rental_bt= GlobalConstants.rental_bt;
         remark = GlobalConstants.remark;
+
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
 
@@ -230,7 +230,7 @@ public class Update_Gateout extends CommonActivity {
       //  ed_previous = (EditText)findViewById(R.id.ed_previous);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
         rental=(Switch)findViewById(R.id.switch_rental);
-
+        rental.setClickable(false);
 
 
         text1 = (TextView)findViewById(R.id.text1);
@@ -260,7 +260,7 @@ public class Update_Gateout extends CommonActivity {
 
         text1.setText(Cust_Name+" , "+equip_no+" , "+type);
         ed_transport.setText(transport);
-        ed_remark.setText(remark);
+
 
         tv_toolbarTitle.setText("Update GateOut");
         menu=(ImageView)findViewById(R.id.iv_menu) ;

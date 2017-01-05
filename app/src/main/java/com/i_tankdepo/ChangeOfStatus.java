@@ -1071,6 +1071,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
                 boxAdapter = new ListAdapter(ChangeOfStatus.this, products);
                 status_list_view.setAdapter(boxAdapter);
+                status_list_view.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
+
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
@@ -1096,6 +1099,15 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             } else {
                 shortToast(getApplicationContext(), "Data Not Found");
+                try {
+                    status_list_view.setVisibility(View.GONE);
+
+                    list_noData.setVisibility(View.VISIBLE);
+                }catch (Exception e)
+                {
+
+                }
+
             }
 
         }
@@ -1210,9 +1222,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                             wp.inDate.toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         objects.add(wp);
-                    }else{
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

@@ -578,7 +578,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                                 pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                               //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
-                              //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
+                                pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                                 pending_bean.setDate(jsonObject.getString("GTOT_DT"));
                                 pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
                                 pending_bean.setTime(jsonObject.getString("GTOT_TM"));
@@ -841,9 +841,9 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
+               /* listview.setVisibility(View.VISIBLE);
                 list_noData.setVisibility(View.GONE);
-
+*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -853,12 +853,12 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
+                       /* listview.setVisibility(View.VISIBLE);*/
 
-                    }else{
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
