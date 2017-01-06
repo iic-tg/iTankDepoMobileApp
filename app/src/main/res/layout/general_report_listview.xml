@@ -372,15 +372,19 @@
                     android:id="@+id/tv_nextTestDate"
                     android:textSize="11dp"
                     android:gravity="center|left"/>
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="0"
                     android:id="@+id/tv_nextTestType"
-
+                    android:textColor="@color/list_text"
                     android:textSize="11dp"
-                    android:gravity="center|left"/>
+                    android:gravity="center|left"
+                    android:textStyle="bold"
+                    />
+
                 <TextView
                     android:layout_width="0dp"
                     android:id="@+id/tv_remark"
@@ -388,7 +392,10 @@
                     android:layout_weight="1"
                     android:gravity="center|left"
                     android:text="0"
+                    android:textStyle="bold"
+                    android:textColor="@color/list_text"
                     android:textSize="11dp"
+
                     />
                 <TextView
                     android:layout_width="0dp"

@@ -181,12 +181,10 @@ public class Create_GateIn extends CommonActivity   {
         menu=(ImageView)findViewById(R.id.iv_menu) ;
         iv_back = (ImageView)findViewById(R.id.iv_back);
         menu.setVisibility(View.GONE);
-
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         CaptureValue = GlobalConstants.fullname;
-
         pendingsize= GlobalConstants.pendingcount;
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
@@ -480,8 +478,11 @@ public class Create_GateIn extends CommonActivity   {
 
                 // shortToast(getApplicationContext(),"get_sp_equipe_code==>"+get_sp_equipe_code);
 
-
-                new PostCustomer_Code().execute();
+                if(cd.isConnectingToInternet()) {
+                    new PostCustomer_Code().execute();
+                }else{
+                    shortToast(getApplicationContext(),"Please check your Internet Connecton..!");
+                }
 
             }
 
@@ -760,7 +761,7 @@ public class Create_GateIn extends CommonActivity   {
                         (get_time.trim().equals("") || get_time==null)||
                         (get_date.trim().equals("") || get_date==null))
                 {
-                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                 }else
                 {
 
@@ -775,7 +776,7 @@ public class Create_GateIn extends CommonActivity   {
                         if (cd.isConnectingToInternet()) {
                             new PostInfo().execute();
                         } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
                         }
 
 
@@ -785,7 +786,7 @@ public class Create_GateIn extends CommonActivity   {
                         if (cd.isConnectingToInternet()) {
                             if(get_equipment.length()< 11)
                             {
-                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number");
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
                             }else
                             {
@@ -793,7 +794,7 @@ public class Create_GateIn extends CommonActivity   {
 
                             }
                         } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
                         }
 
                     }
@@ -882,7 +883,7 @@ public class Create_GateIn extends CommonActivity   {
                         (get_time.trim().equals("") || get_time==null)||
                         (get_date.trim().equals("") || get_date==null))
                 {
-                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                 }else
                 {
 
@@ -897,7 +898,7 @@ public class Create_GateIn extends CommonActivity   {
                         if (cd.isConnectingToInternet()) {
                             new PostInfo().execute();
                         } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
                         }
 
 
@@ -908,7 +909,7 @@ public class Create_GateIn extends CommonActivity   {
 
                             if(get_equipment.length()< 11)
                             {
-                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number");
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
                             }else
                             {

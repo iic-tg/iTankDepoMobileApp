@@ -569,6 +569,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
                                 filename=filenamejson.getString("fileName");
+                                Log.d("attachment",filename);
                             }
 
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -1008,7 +1009,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
-                    GlobalConstants.attach_filename = filename;
+//                    GlobalConstants.attach_filename = filename;
                     startActivity(i);
 
                 }else {

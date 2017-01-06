@@ -410,7 +410,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                                   }*/
 
                               } else {
-                                  shortToast(getApplicationContext(), "Please Select CustomerName");
+                                  shortToast(getApplicationContext(), "Please Select Customer Name");
                               }
                           }
                       }
@@ -905,23 +905,20 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             if(jsonarray!=null)
             {
-//                worldlist.add(0,"Please Select");
-/*
+               /* worldlist.add(0,"Please Select");
                 for (int i=0; i<worldlist.size();i++){
                     if("Please Select".equalsIgnoreCase(worldlist.get(i))){
                         int index = worldlist.indexOf("Please Select");
-                      */
-/*  worldlist.remove(index);
-                        worldlist.add(0,"Please Select");*//*
-
-
-
+                        worldlist.remove(index);
+                        worldlist.add(0,"Please Select");
                     }
-                }
-*/
+                }*/
+
+
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_to_status.setAdapter(CargoAdapter);
+
 
             }
             else
@@ -932,7 +929,6 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         }
 
     }
-
 
     public class Get_ChangeOfStatus_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;

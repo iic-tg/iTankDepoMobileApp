@@ -493,7 +493,7 @@ public class Update_Gateout extends CommonActivity {
                 if((get_time.trim().equals("") || get_time==null)||
                         (get_date.trim().equals("") || get_date==null))
                 {
-                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                 }else
                 {
 
@@ -915,12 +915,12 @@ public class Update_Gateout extends CommonActivity {
 
                 } else if(responseString.equalsIgnoreCase("GateIn Not Updated")) {
 
-                    Toast.makeText(getApplicationContext(), "Update GateOut Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
 
                 }else if(responseString.equalsIgnoreCase("EINotUpdated"))
                 {
 
-                    Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
 
 
                 }

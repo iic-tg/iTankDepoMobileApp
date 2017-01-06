@@ -47,7 +47,7 @@ public class MainActivity extends CommonActivity
     Toolbar toolbar;
     private ImageView menu,up,down,iv_back,iv_changeOfStatus;
     private DrawerLayout drawer;
-    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_Stock_Report,LL_GateOut,LL_Inspection;
+    private LinearLayout LL_Gatein,LL_Heating,Ll_Cleaning,LL_Leaktest,LL_Repair,LL_History,LL_change_status,LL_Stock_Report,LL_GateOut,LL_Inspection;
     LinearLayout LL_hole;
     private TextView tv_toolbarTitle;
     private Intent mServiceIntent;
@@ -114,6 +114,7 @@ public class MainActivity extends CommonActivity
         LL_Repair = (LinearLayout)findViewById(R.id.LL_Repair);
         LL_History = (LinearLayout)findViewById(R.id.LL_History);
         LL_Stock_Report = (LinearLayout)findViewById(R.id.LL_Stock_Report);
+        LL_change_status = (LinearLayout)findViewById(R.id.LL_change_status);
 
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_toolbarTitle.setText("Home");
@@ -129,6 +130,7 @@ public class MainActivity extends CommonActivity
         LL_Repair.setOnClickListener(this);
         LL_History.setOnClickListener(this);
         LL_Stock_Report.setOnClickListener(this);
+        LL_change_status.setOnClickListener(this);
 
          drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -247,6 +249,9 @@ public class MainActivity extends CommonActivity
                 break;
             case R.id.LL_Stock_Report:
                startActivity(new Intent(getApplicationContext(),StockReport.class));
+                break;
+            case R.id.LL_change_status:
+                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
         }
     }

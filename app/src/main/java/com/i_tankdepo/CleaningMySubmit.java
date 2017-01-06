@@ -1250,14 +1250,10 @@ private ImageView iv_changeOfStatus;
 
 
 
-
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("Mode", "edit");
                 jsonObject.put("SearchValues", SearchValuesObject);
-
-               /* JSONObject jsonObject1 = new JSONObject();
-                jsonObject1.put("Credentials",jsonObject);*/
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
                 httpPost.setEntity(stringEntity);

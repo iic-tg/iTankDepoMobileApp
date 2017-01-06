@@ -448,7 +448,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                                 }
                             } else {
-                                shortToast(getApplicationContext(), "Please Select CustomerName");
+                                shortToast(getApplicationContext(), "Please Select Customer Name");
                             }
                         }
                     }
@@ -1203,11 +1203,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-           /* if ((progressDialog != null) && progressDialog.isShowing()) {
-                progressDialog.show();
-            }*/
             progressDialog.show();
-
         }
 
         @Override
