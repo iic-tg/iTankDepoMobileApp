@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="0dp"
         android:background="@drawable/field_border_thin_line"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -401,6 +400,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="0"
+                    android:textStyle="bold"
                     android:id="@+id/tv_sto"
                     android:gravity="center|left"/>
                 <TextView
@@ -409,12 +409,14 @@
                     android:layout_weight="1"
                     android:gravity="center|left"
                     android:id="@+id/tv_avl"
+                    android:textStyle="bold"
                     android:text="0"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:id="@+id/tv_out"
+                    android:textStyle="bold"
                     android:gravity="center|left"
                     android:text="0"/>
 

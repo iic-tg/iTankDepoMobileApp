@@ -187,7 +187,10 @@ public class Update_Gateout extends CommonActivity {
         transport= GlobalConstants.Transport_No;
         rental_bt= GlobalConstants.rental_bt;
         remark = GlobalConstants.remark;
+<<<<<<< HEAD
         filename =GlobalConstants.attach_filename;
+=======
+>>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
 
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
@@ -497,7 +500,7 @@ public class Update_Gateout extends CommonActivity {
                 if((get_time.trim().equals("") || get_time==null)||
                         (get_date.trim().equals("") || get_date==null))
                 {
-                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                 }else
                 {
 
@@ -919,12 +922,12 @@ public class Update_Gateout extends CommonActivity {
 
                 } else if(responseString.equalsIgnoreCase("GateIn Not Updated")) {
 
-                    Toast.makeText(getApplicationContext(), "Update GateOut Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
 
                 }else if(responseString.equalsIgnoreCase("EINotUpdated"))
                 {
 
-                    Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
 
 
                 }

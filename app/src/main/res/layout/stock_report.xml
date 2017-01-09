@@ -64,6 +64,7 @@
                             android:id="@+id/radio_bt_customer"
                             android:buttonTint="@color/Title"
                             android:text="Customer"
+                            android:textColor="@color/list_text"
                             android:checked="true"
                             style="@style/AppTheme"/>
                         <View style="@style/View_horizontal_black"
@@ -74,7 +75,9 @@
                             android:id="@+id/radio_button1"
                             android:buttonTint="@color/Title"
                             android:text="Equipment Type"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -83,7 +86,9 @@
                             android:id="@+id/radio_button3"
                             android:buttonTint="@color/Title"
                             android:text="Previous Cargo"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -92,7 +97,9 @@
                             android:id="@+id/radio_button4"
                             android:text="Current Status"
                             android:buttonTint="@color/Title"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -101,7 +108,9 @@
                             android:id="@+id/radio_button5"
                             android:buttonTint="@color/Title"
                             android:text="Next Test Type"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -110,7 +119,9 @@
                             android:id="@+id/radio_button6"
                             android:buttonTint="@color/Title"
                             android:text="Depot"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
 
@@ -145,7 +156,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Cleaning Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -153,7 +166,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Cleaning Date To"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -161,7 +176,10 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="In Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
+
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -169,7 +187,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="In Date To"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
 
@@ -178,7 +198,10 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Inspection Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
+
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -186,7 +209,9 @@
                             android:layout_height="wrap_content"
                             android:text="Inspection Date To"
                             android:buttonTint="@color/Title"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -194,7 +219,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Current Status Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -202,7 +229,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Current Status Date To"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -210,7 +239,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Next Test Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -218,7 +249,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Next Test Date To"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                     <RadioButton
@@ -226,7 +259,9 @@
                         android:layout_height="wrap_content"
                         android:buttonTint="@color/Title"
                         android:text="Equipment Number"
-                        style="@style/AppTheme"/>
+                        style="@style/AppTheme"
+                        android:textColor="@color/list_text"
+                        />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -234,7 +269,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="EIR Number"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
                         <RadioButton
@@ -242,7 +279,9 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Out Date From"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
 
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
@@ -251,7 +290,10 @@
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
                             android:text="Out Date To"
-                            style="@style/AppTheme"/>
+                            style="@style/AppTheme"
+                            android:textColor="@color/list_text"
+                            />
+
 
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>

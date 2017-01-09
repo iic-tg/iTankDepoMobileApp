@@ -287,7 +287,10 @@ public class Update_GateIn extends CommonActivity {
         ed_location.setText(location);
         ed_eir_no.setText(Eir_no);
         ed_attach.setText(filename);
+<<<<<<< HEAD
         ed_code.setText(code);
+=======
+>>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
 
 //        sp_previous_cargo.setSelection(get_sp_previous);
 
