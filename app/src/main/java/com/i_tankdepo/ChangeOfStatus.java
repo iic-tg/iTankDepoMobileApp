@@ -912,29 +912,22 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             if(jsonarray!=null)
             {
-<<<<<<< HEAD
 
                 worldlist.add(0,"Please Select");
-=======
-               /* worldlist.add(0,"Please Select");
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
                 for (int i=0; i<worldlist.size();i++){
                     if("Please Select".equalsIgnoreCase(worldlist.get(i))){
                         int index = worldlist.indexOf("Please Select");
                         worldlist.remove(index);
                         worldlist.add(0,"Please Select");
-<<<<<<< HEAD
 
 
 
                     }
                 }
-=======
-                    }
-                }*/
 
 
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
+
+
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_to_status.setAdapter(CargoAdapter);

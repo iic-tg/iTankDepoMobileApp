@@ -568,13 +568,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
-<<<<<<< HEAD
 //                                filename=filenamejson.getString("fileName");
                                 pending_bean.setFilename(filenamejson.getString("fileName"));
-=======
-                                filename=filenamejson.getString("fileName");
                                 Log.d("attachment",filename);
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
+
                             }
 
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -840,11 +837,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         attachmentstatus= list.get(position).getAttachmentStatus();
                         pre_id= list.get(position).getPrev_Id();
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
-<<<<<<< HEAD
                         filename = list.get(position).getFilename();
-=======
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
-
                         new Get_GateIn_Lock_Check().execute();
                     }
                 });
@@ -1023,11 +1016,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
-<<<<<<< HEAD
                     GlobalConstants.attach_filename = filename;
-=======
-//                    GlobalConstants.attach_filename = filename;
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
+
                     startActivity(i);
 
                 }else {

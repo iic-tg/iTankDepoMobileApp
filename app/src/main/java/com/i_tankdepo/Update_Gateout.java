@@ -187,10 +187,8 @@ public class Update_Gateout extends CommonActivity {
         transport= GlobalConstants.Transport_No;
         rental_bt= GlobalConstants.rental_bt;
         remark = GlobalConstants.remark;
-<<<<<<< HEAD
         filename =GlobalConstants.attach_filename;
-=======
->>>>>>> 684ba7aea0cfcd1d61bd96d86b23e2db46e7717c
+
 
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
