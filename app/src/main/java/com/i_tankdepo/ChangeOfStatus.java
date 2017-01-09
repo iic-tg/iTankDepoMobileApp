@@ -282,22 +282,18 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         sp_to_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-               /* ToStatus=sp_to_status.getSelectedItem().toString();
+                ToStatus=sp_to_status.getSelectedItem().toString();
                 if(ToStatus.equalsIgnoreCase("Please Select"))
                 {
 
-//                    shortToast(getApplicationContext(),"Please key-in Mandate Fields");
-
                 }else{
                     getTostatusName = sp_to_status.getSelectedItem().toString();
+
+                    int Id_position =position -1;
+                    getTostatusID = ToStatusDropdownArrayList.get(Id_position).getCode();
                     Log.d("TO Status Name",getTostatusName);
-                    getTostatusID = ToStatusDropdownArrayList.get(position++).getCode();
                     Log.d("TO STatus ID",getTostatusID);
-                }*/
-                getTostatusName = sp_to_status.getSelectedItem().toString();
-                Log.d("TO Status Name",getTostatusName);
-                getTostatusID = ToStatusDropdownArrayList.get(position++).getCode();
-                Log.d("TO STatus ID",getTostatusID);
+                }
             }
 
             @Override
@@ -372,6 +368,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
               try
               {
                   getTostatusName = sp_to_status.getSelectedItem().toString();
+
                   if(boxAdapter.getBox().size()==0) {
                       shortToast(getApplicationContext(), "Please Select atleast one Equipment..!");
                   }else {
@@ -390,7 +387,17 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                                   //   selected_name.add(set[0]);
                                   LL_hole.setVisibility(View.GONE);
                                   if (cd.isConnectingToInternet()) {
-                                      new Post_COS_details().execute();
+                                      if(getTostatusName.equalsIgnoreCase("Please select"))
+                                      {
+                                          shortToast(getApplicationContext(), "Please Select To Status..!");
+                                          LL_hole.setVisibility(View.VISIBLE);
+
+                                      }else
+                                      {
+                                          new Post_COS_details().execute();
+                                          LL_hole.setVisibility(View.GONE);
+
+                                      }
                                   } else {
                                       shortToast(getApplicationContext(), "Please check Your Internet Connection");
                                   }
@@ -905,20 +912,18 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             if(jsonarray!=null)
             {
-//                worldlist.add(0,"Please Select");
-/*
+
+                worldlist.add(0,"Please Select");
                 for (int i=0; i<worldlist.size();i++){
                     if("Please Select".equalsIgnoreCase(worldlist.get(i))){
                         int index = worldlist.indexOf("Please Select");
-                      */
-/*  worldlist.remove(index);
-                        worldlist.add(0,"Please Select");*//*
+                        worldlist.remove(index);
+                        worldlist.add(0,"Please Select");
 
 
 
                     }
                 }
-*/
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_to_status.setAdapter(CargoAdapter);
@@ -1071,6 +1076,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
                 boxAdapter = new ListAdapter(ChangeOfStatus.this, products);
                 status_list_view.setAdapter(boxAdapter);
+                status_list_view.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);
+
                 searchView2.addTextChangedListener(new TextWatcher() {
 
                     @Override
@@ -1096,6 +1104,15 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
             } else {
                 shortToast(getApplicationContext(), "Data Not Found");
+                try {
+                    status_list_view.setVisibility(View.GONE);
+
+                    list_noData.setVisibility(View.VISIBLE);
+                }catch (Exception e)
+                {
+
+                }
+
             }
 
         }
@@ -1210,9 +1227,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                             wp.inDate.toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         objects.add(wp);
-                    }else{
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

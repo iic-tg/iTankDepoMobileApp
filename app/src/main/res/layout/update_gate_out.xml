@@ -38,7 +38,6 @@
                 android:weightSum="1">
 
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -325,8 +324,6 @@
 
 
                     </LinearLayout>
-
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -339,7 +336,7 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:text="Vehicle No "
+                            android:text="Vehicle No"
                             android:textColor="@color/tv_color"
                             />
 
@@ -347,19 +344,18 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="match_parent"
-                            android:text="Transporter "
                             android:textColor="@color/tv_color"
-                            />
+                            android:text="Transporter "                            />
+
 
 
                     </LinearLayout>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:weightSum="2"
-                        android:id="@+id/edit_layout"
                         android:layout_below="@+id/text_layout"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
 
@@ -370,32 +366,31 @@
                             android:layout_height="match_parent">
                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:lines="1"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
-                                android:layout_marginTop="6dp"
                                 android:hint=""
                                 android:id="@+id/ed_vechicle"
                                 android:textColor="@color/list_text"
                                 />
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginTop="5dp"
-                                android:src="@mipmap/ic_down_dark"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@mipmap/ic_time"
                                 android:visibility="gone"
                                 android:layout_alignParentRight="true"/>
                         </RelativeLayout>
+
 
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
-                            android:layout_height="wrap_content">
-
+                            android:layout_height="match_parent">
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -404,22 +399,24 @@
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
-                                android:layout_marginTop="6dp"
                                 android:hint=""
                                 android:id="@+id/ed_transport"
                                 android:textColor="@color/list_text"
                                 />
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginTop="5dp"
-                                android:src="@mipmap/ic_down_dark"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@mipmap/ic_time"
                                 android:visibility="gone"
                                 android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
 
                     </LinearLayout>
+
+
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -432,7 +429,8 @@
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.5">
+                            android:layout_weight="1.5"
+                            >
 
                         <Switch
                             android:layout_width="0dp"
@@ -532,31 +530,30 @@
                 </LinearLayout>
 
 
-
-<!--
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="Submit &amp; Print"
-                        android:layout_gravity="center"
-                        android:textColor="@color/white"
-                        android:gravity="center"
-                        android:background="@color/submit"
-                        android:textSize="18dp"
-                        android:layout_weight="1.00" />
+                <!--
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="45dp"
+                                    android:layout_marginTop="10dp"
+                                    android:orientation="horizontal"
+                                    android:weightSum="1">
 
 
+                                    <Button
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:text="Submit &amp; Print"
+                                        android:layout_gravity="center"
+                                        android:textColor="@color/white"
+                                        android:gravity="center"
+                                        android:background="@color/submit"
+                                        android:textSize="18dp"
+                                        android:layout_weight="1.00" />
 
-                </LinearLayout>
--->
+
+
+                                </LinearLayout>
+                -->
 
             </LinearLayout>
         </ScrollView>

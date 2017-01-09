@@ -7,17 +7,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="160dp"
         android:orientation="vertical"
         android:layout_marginTop="0dp"
         android:background="@drawable/field_border_thin_line"
         android:layout_alignParentTop="true"
+        android:weightSum="4"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="5dp"
+            android:layout_weight="1"
             android:paddingLeft="3dp"
             android:orientation="vertical">
             <LinearLayout
@@ -115,8 +117,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="5dp"
+            android:layout_weight="1"
             android:paddingLeft="3dp"
             android:orientation="vertical">
             <LinearLayout
@@ -212,8 +215,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="5dp"
+            android:layout_weight="1"
             android:paddingLeft="3dp"
             android:orientation="vertical">
             <LinearLayout
@@ -307,8 +311,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="5dp"
+            android:layout_weight="1"
             android:paddingLeft="3dp"
             android:orientation="vertical">
             <LinearLayout

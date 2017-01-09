@@ -106,9 +106,10 @@ public class Update_GateIn extends CommonActivity {
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
-    private String systemDate,get_equipment,getType,get_date,get_time,get_code,get_status,get_location,get_vechicle,get_transport,get_eir_no,get_remark;
+    private String systemDate,get_equipment,get_Type_Id,getType,get_date,get_time,get_code,get_status,get_location,get_vechicle,get_transport,get_eir_no,get_remark;
     private String curTime,get_swt_heating,get_swt_rental;
     int mHour,mMinute;
+    boolean new_attachment=false;
 
     private boolean manuf_date=false,last_test_date=false;
 
@@ -134,11 +135,11 @@ public class Update_GateIn extends CommonActivity {
     List<String> Cargo_Description = new ArrayList<>();
     LinearLayout LL_Equipment_Info,LL_Submit,LL_footer_delete;
     private int pendingsize;
-    String equip_no, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
+    String equip_no,from,type_name, Cust_Name,previous_crg,cust_name,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
             trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,info_heating_bt,info_rental_bt,remark,type,status,date,time,pre_adv_id,get_swt_info_rental,get_swt_info_active;
 
     Switch heating,rental,info_active,info_rental;
-    private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id;
+    private String get_sp_customer_id,get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id,get_sp_Type_Id,get_sp_Type;
     private CustomerDropdownBean customer_DropdownBean;
     ArrayList<CustomerDropdownBean> CustomerDropdownArrayList = new ArrayList<>();
     private ArrayList<String> worldlist;
@@ -155,7 +156,7 @@ public class Update_GateIn extends CommonActivity {
     private File file;
     private String validationStatus;
     private JSONObject reqObj;
-    private Spinner sp_previous_cargo;
+    private Spinner sp_previous_cargo,sp_customer,sp_type;
     private String changes;
     private ArrayList<Equipment_Info_TypeDropdownBean> dropdown_MoreInfo_arraylist;
     private Equipment_Info_TypeDropdownBean moreInfo_DropdownBean;
@@ -183,6 +184,7 @@ public class Update_GateIn extends CommonActivity {
         equip_no= GlobalConstants.equipment_no;
         gateIn_Id= GlobalConstants.GateInId;
         pre_adv_id= GlobalConstants.pre_adv_id;
+        from= GlobalConstants.from;
         type= GlobalConstants.type;
         code= GlobalConstants.code;
         status= GlobalConstants.status;
@@ -207,6 +209,8 @@ public class Update_GateIn extends CommonActivity {
         pre_code= GlobalConstants.pre_code;
         pre_id= GlobalConstants.pre_id;
         remark = GlobalConstants.remark;
+        filename =GlobalConstants.attach_filename;
+
 
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
@@ -218,8 +222,8 @@ public class Update_GateIn extends CommonActivity {
         tv_cargo = (TextView)findViewById(R.id.tv_cargo);
         ed_date = (EditText)findViewById(R.id.ed_date);
         ed_time = (EditText)findViewById(R.id.ed_time);
-        ed_customer = (EditText)findViewById(R.id.ed_customer);
-        ed_type = (EditText)findViewById(R.id.ed_type);
+        sp_customer = (Spinner)findViewById(R.id.sp_customer);
+        sp_type = (Spinner)findViewById(R.id.sp_type);
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         LL_footer_delete.setAlpha(0.5f);
         LL_footer_delete.setClickable(false);
@@ -274,15 +278,19 @@ public class Update_GateIn extends CommonActivity {
         tv_next_text_id = (TextView) findViewById(R.id.tv_next_text_id);
         LL_Equipment_Info = (LinearLayout) findViewById(R.id.LL_Equipment_Info);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
-        ed_customer.setFocusable(false);
+//        ed_customer.setFocusable(false);
         ed_equipement.setFocusable(false);
-        ed_type.setFocusable(false);
-        ed_code.setText(code);
+//        ed_type.setFocusable(false);
         ed_status.setText(status);
         ed_date.setText(date);
         ed_time.setText(time);
         ed_location.setText(location);
         ed_eir_no.setText(Eir_no);
+        ed_attach.setText(filename);
+        ed_code.setText(code);
+
+//        sp_previous_cargo.setSelection(get_sp_previous);
+
         if(vechicle.equals("")||vechicle.equalsIgnoreCase("null")||vechicle=="null")
         {
             ed_vechicle.setText("");
@@ -291,10 +299,11 @@ public class Update_GateIn extends CommonActivity {
             ed_vechicle.setText(vechicle);
         }
 
-        ed_customer.setText(Cust_Name);
-        ed_type.setText(type);
+       /* ed_customer.setText(Cust_Name);
+        ed_type.setText(type);*/
         ed_transport.setText(transport);
         ed_remark.setText(remark);
+
 
         LL_Equipment_Info.setVisibility(View.GONE);
 
@@ -369,7 +378,8 @@ public class Update_GateIn extends CommonActivity {
 
         if(cd.isConnectingToInternet())
         {
-
+            new Create_GateIn_Customer_details().execute();
+            new Create_GateIn_EquipmentType_details().execute();
             new Create_GateIn_PreviousCargo_details().execute();
             new Create_GateIn_moreInfo_list_details().execute();
         }
@@ -437,11 +447,49 @@ public class Update_GateIn extends CommonActivity {
                 equip_down.setVisibility(View.VISIBLE);
             }
         });
+
+        sp_customer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                get_sp_customer=CustomerDropdownArrayList.get(position).getName();
+                get_sp_customer_id=CustomerDropdownArrayList.get(position).getCode();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                get_sp_Type=dropdown_equipment_arraylist.get(position).getName();
+                get_sp_Type_Id=dropdown_equipment_arraylist.get(position).getCode();
+
+                if(cd.isConnectingToInternet()) {
+                    new PostCustomer_Code().execute();
+                }else{
+                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                }
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         sp_previous_cargo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 get_sp_previous_code=dropdown_PreviousCargo_arraylist.get(i).getCode();
                 get_sp_previous_id=dropdown_PreviousCargo_arraylist.get(i).getId();
+                get_sp_previous=dropdown_PreviousCargo_arraylist.get(i).getDesc();
                 //  shortToast(getApplicationContext(),"get_sp_previous==>"+get_sp_previous);
             }
 
@@ -677,24 +725,32 @@ public class Update_GateIn extends CommonActivity {
                 break;
             case R.id.submit:
 
-                try {
-                    if (filename.length() < 0) {
+//                if((attachmentstatus.equalsIgnoreCase("true") && attachmentstatus.length()>0 || new_attachment==true)) {
+              /*  if( new_attachment==true) {
 
-                    } else {
-                        IfAttchment = "True";
-                    }
-                }catch (Exception e)
-                {
+                    IfAttchment = "True";
 
+                }else if(attachmentstatus.equalsIgnoreCase("False") ) {
                     IfAttchment = "False";
-                }
+
+                }*/
+
+                    try {
+                        if (encodedImage.length() < 0) {
+
+                        } else {
+                            IfAttchment = "True";
+                        }
+                    } catch (Exception e) {
+                         IfAttchment = "False";
+                   }
 
 
                 get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
-                get_sp_customer=ed_customer.getText().toString();
+                get_sp_customer=sp_customer.getSelectedItem().toString();
                 get_sp_equipe=ed_equipement.getText().toString();
                 get_equipment=ed_equipement.getText().toString();
-                getType=ed_type.getText().toString();
+                getType=sp_type.getSelectedItem().toString();
                 get_status=ed_status.getText().toString();
                 get_code=ed_code.getText().toString();
                 get_date=ed_date.getText().toString();
@@ -876,6 +932,8 @@ public class Update_GateIn extends CommonActivity {
                 String basename = FilenameUtils.getBaseName(Filename);
                 String fileType = FilenameUtils.getExtension(Filename);
                 ed_attach.setText(basename+fileType);
+                new_attachment=true;
+                filename=Filename.substring(Filename.lastIndexOf("/")+1);
                 Log.d(TAG, "File Path: " + path);
             }
         }
@@ -906,6 +964,7 @@ public class Update_GateIn extends CommonActivity {
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
         filename=filename.substring(filename.lastIndexOf("/")+1);
         ed_attach.setText(filename);
+        new_attachment=true;
 
     }
     public String getPath(Context context, Uri uri) {
@@ -959,6 +1018,10 @@ public class Update_GateIn extends CommonActivity {
             selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArrayImage = byteArrayOutputStream.toByteArray();
             encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            filename=Filename.substring(Filename.lastIndexOf("/")+1);
+
+            new_attachment=true;
+
 
         }
 
@@ -1095,18 +1158,18 @@ public class Update_GateIn extends CommonActivity {
                 }
                 String numberAsString = Integer.toString( pendingsize+1);
                 jsonObject.put("GTN_ID", gateIn_Id);
-                jsonObject.put("CSTMR_ID", cust_code);
+                jsonObject.put("CSTMR_ID", get_sp_customer_id);
                 jsonObject.put("CSTMR_CD", get_sp_customer);
                 jsonObject.put("EQPMNT_NO", get_equipment);
-                jsonObject.put("EQPMNT_TYP_ID", type_id);
-                jsonObject.put("EQPMNT_TYP_CD", getType);
+                jsonObject.put("EQPMNT_TYP_ID", get_sp_Type_Id);
+                jsonObject.put("EQPMNT_TYP_CD", get_sp_Type);
                 jsonObject.put("EQPMNT_CD_ID",code_id );
                 jsonObject.put("EQPMNT_CD_CD", get_code);
                 jsonObject.put("YRD_LCTN", get_location);
                 jsonObject.put("GTN_DT", get_date );
                 jsonObject.put("GTN_TM", get_time);
-                jsonObject.put("PRDCT_ID", pre_id);
-                jsonObject.put("PRDCT_CD", pre_code);
+                jsonObject.put("PRDCT_ID", get_sp_previous_id);
+                jsonObject.put("PRDCT_CD", get_sp_previous_code);
                 jsonObject.put("EIR_NO", get_eir_no);
                 jsonObject.put("VHCL_NO", get_vechicle);
                 jsonObject.put("TRNSPRTR_CD",get_transport);
@@ -1115,18 +1178,29 @@ public class Update_GateIn extends CommonActivity {
                 jsonObject.put("CHECKED", "True");
                 jsonObject.put("PRDCT_DSCRPTN_VC", get_sp_previous);
                 jsonObject.put("RNTL_BT", rental_bt);
-                jsonObject.put("hfc", reqObj);
-                if(attachmentstatus.equalsIgnoreCase("True"))
-                {
-                    jsonObject.put("RepairEstimateId", pre_adv_id);
+
+                if(from.equalsIgnoreCase("GateIn")) {
+
+
+                    if (attachmentstatus.equalsIgnoreCase("True")) {
+                        jsonObject.put("RepairEstimateId", pre_adv_id);
+                    }else {
+                        jsonObject.put("RepairEstimateId", gateIn_Id);
+
+                    }
                 }else{
                     jsonObject.put("RepairEstimateId", gateIn_Id);
 
                 }
-
                 jsonObject.put("IfAttchment",IfAttchment );
                 jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("Mode", "edit");
+
+                if(from.equalsIgnoreCase("GateIn")) {
+                    jsonObject.put("Mode", "new");
+                }else
+                {
+                    jsonObject.put("Mode", "edit");
+                }
 
                 jsonObject.put("EIMNFCTR_DT", get_manu_date);
                 jsonObject.put("EITR_WGHT_NC", get_tare_weight);
@@ -1144,6 +1218,7 @@ public class Update_GateIn extends CommonActivity {
                 jsonObject.put("EIHasChanges", changes);
                 jsonObject.put("PageName", "GateIn");
                 jsonObject.put("GateinTransactionNo",trans_no);
+                jsonObject.put("hfc", reqObj);
 
 
 
@@ -1190,6 +1265,7 @@ public class Update_GateIn extends CommonActivity {
                 if (responseString.equalsIgnoreCase("Success")) {
                     Toast.makeText(getApplicationContext(), "GateIn Updated Successfully.", Toast.LENGTH_SHORT).show();
 
+                    finish();
                     Intent i = new Intent(getApplicationContext(), GateIn.class);
                     startActivity(i);
 
@@ -1213,7 +1289,319 @@ public class Update_GateIn extends CommonActivity {
 
         }
     }
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                for(int i=0;i<dropdown_customer_list.size();i++)
+                {
+                    if(Cust_Name.equals(worldlist.get(i)))
+                    {
+
+                        int index = worldlist.indexOf(Cust_Name);
+                        worldlist.remove(index);
+                        System.out.println("before appartmentArray"+worldlist.size());
+
+                        worldlist.add(0, Cust_Name);
+                        System.out.println("after appartmentArray"+worldlist.size());
+
+                        CustomerDropdownBean cust_dropdown=CustomerDropdownArrayList.get(index);
+                        CustomerDropdownArrayList.remove(index);
+                        CustomerDropdownArrayList.add(0, cust_dropdown);
+
+
+                    }
+                }
+                ArrayAdapter<String> CustomerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
+                CustomerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sp_customer.setAdapter(CustomerAdapter);
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
+
+    public class Create_GateIn_EquipmentType_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            //  progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInEquipMentType);
+            // httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_equipment_list = new ArrayList<>();
+                        dropdown_equipment_arraylist = new ArrayList<EquipmentDropdownBean>();
+
+
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            equipment_DropdownBean = new EquipmentDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+                            equipment_DropdownBean.setName(jsonObject.getString("Type"));
+                            equipment_DropdownBean.setCode(jsonObject.getString("Code"));
+                            EquipmentType = jsonObject.getString("Type");
+                            EquipmentCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = EquipmentType;
+                            set1[1] = EquipmentCode;
+                            dropdown_equipment_list.add(EquipmentType);
+                            Equip_Type.add(set1[0]);
+                            Equip_Code.add(set1[1]);
+                            dropdown_equipment_arraylist.add(equipment_DropdownBean);
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_equipment_list!=null)
+            {
+                for(int i=0;i<dropdown_equipment_list.size();i++)
+                {
+                    if(type.equals(dropdown_equipment_list.get(i)))
+                    {
+
+                        int index = dropdown_equipment_list.indexOf(type);
+                        dropdown_equipment_list.remove(index);
+                        System.out.println("before appartmentArray"+dropdown_equipment_list.size());
+
+                        dropdown_equipment_list.add(0, type);
+                        System.out.println("after appartmentArray"+dropdown_equipment_list.size());
+
+                        EquipmentDropdownBean type_dropdown=dropdown_equipment_arraylist.get(index);
+                        dropdown_equipment_arraylist.remove(index);
+                        dropdown_equipment_arraylist.add(0, type_dropdown);
+
+
+                    }
+                }
+
+//                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
+//                listview.setAdapter(adapter);
+                ArrayAdapter<String> EquipmentAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_list);
+                EquipmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                sp_type.setAdapter(EquipmentAdapter);
+            }
+            else if(dropdown_equipment_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Create_GateIn_PreviousCargo_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -1330,8 +1718,21 @@ public class Update_GateIn extends CommonActivity {
 
             if(dropdown_PreviousCargo_list!=null)
             {
-//                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
-//                listview.setAdapter(adapter);
+                for(int i=0;i<dropdown_PreviousCargo_list.size();i++)
+                {
+                    if(get_sp_previous.equals(dropdown_PreviousCargo_list.get(i)))
+                    {
+
+                        int index = dropdown_PreviousCargo_list.indexOf(get_sp_previous);
+                        dropdown_PreviousCargo_list.remove(index);
+                        System.out.println("before appartmentArray"+dropdown_PreviousCargo_list.size());
+
+                        dropdown_PreviousCargo_list.add(0, get_sp_previous);
+                        System.out.println("after appartmentArray"+dropdown_PreviousCargo_list.size());
+
+                    }
+                }
+
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_PreviousCargo_list);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_previous_cargo.setAdapter(CargoAdapter);
@@ -1423,20 +1824,7 @@ public class Update_GateIn extends CommonActivity {
                         });
                     }else {
 
-                           /* equipment_info = new EquipMent_Info_Bean();
-                            equipment_info.setEIEQPMNT_TYP_CD(getJsonObject.getString("EIEQPMNT_TYP_CD"));
-                            equipment_info.setEICPCTY_NC(getJsonObject.getString("EICPCTY_NC"));
-                            equipment_info.setEIGRSS_WGHT_NC(getJsonObject.getString("EIGRSS_WGHT_NC"));
-                            equipment_info.setEILST_SRVYR_NM(getJsonObject.getString("EILST_SRVYR_NM"));
-                            equipment_info.setEILST_TST_DT(getJsonObject.getString("EILST_TST_DT"));
-                            equipment_info.setEILST_TST_TYP_ID(getJsonObject.getString("EILST_TST_TYP_ID"));
-                            equipment_info.setEITR_WGHT_NC(getJsonObject.getString("EITR_WGHT_NC"));
-                            equipment_info.setEIRMRKS_VC(getJsonObject.getString("EIRMRKS_VC"));
-                            equipment_info.setEIACTV_BT(getJsonObject.getString("EIACTV_BT"));
-                            equipment_info.setEIMNFCTR_DT(getJsonObject.getString("EIMNFCTR_DT"));
-                            equipment_info.setEINXT_TST_TYP_ID(getJsonObject.getString("EINXT_TST_TYP_ID"));
-                            equipment_info.setEIRNTL_BT(getJsonObject.getString("EIRNTL_BT"));
-                            equipmentBeanArrayList.add(equipment_info);*/
+
                         EIEQPMNT_TYP_CD=(getJsonObject.getString("EIEQPMNT_TYP_CD"));
                         EICPCTY_NC=(getJsonObject.getString("EICPCTY_NC"));
                         EIGRSS_WGHT_NC=(getJsonObject.getString("EIGRSS_WGHT_NC"));
@@ -1747,5 +2135,98 @@ public class Update_GateIn extends CommonActivity {
         }
     }
 
+    public class PostCustomer_Code extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        String responseString;
+        JSONObject jsonobject;
+        JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+            //  HttpPost httppost = new HttpPost("http://49.207.183.45/HH/api/accounts/RegisterUser");
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLGet_Type_Code);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("bv_strType", get_sp_Type);
+                jsonObject.put("bv_userName", sp.getString(SP_USER_ID,"user_Id"));
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("responce", resp);
+                Log.d("req", jsonObject.toString());
+                JSONObject jsonResp = new JSONObject(resp);
+
+                jsonobject = jsonResp.getJSONObject("d");
+                // jsonarray = jsonobject.getJSONArray("subcategorylist");
+                if (jsonobject != null) {
+
+                    equipement_code=jsonobject.getString("code");
+                    equipement_id=jsonobject.getString("id");
+
+/*
+                    System.out.println("Am HashMap list"+jsonarray);
+
+
+                    for (int i = 0; i < jsonarray.length(); i++) {
+
+                        jsonobject = jsonarray.getJSONObject(i);
+
+                        String Subcat_id = jsonobject.getString("SubCategoryId");
+                        String Subcat_name = jsonobject.getString("SubCategoryName");
+
+
+                    }
+*/
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            if(jsonobject!=null)
+            {
+                ed_code.setText(equipement_code);
+
+
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+            }
+
+            progressDialog.dismiss();
+
+        }
+    }
 
 }

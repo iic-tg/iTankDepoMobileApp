@@ -46,6 +46,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
@@ -200,6 +201,8 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 break;
             case R.id.im_searchview:
                 getEquipNo = ed_searchview.getText().toString();
+
+
                 if(getEquipNo == "" || getEquipNo.length()<11){
 
                     shortToast(getApplicationContext(),"Please enter the Equipment Number..!");

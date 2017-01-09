@@ -584,6 +584,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
                                 filename=filenamejson.getString("fileName");
+                                pending_bean.setFilename(filenamejson.getString("fileName"));
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -763,6 +764,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
+                holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
                 holder.LL_username.setVisibility(View.GONE);
 
 
@@ -845,6 +847,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         attachmentstatus = list.get(position).getAttachmentStatus();
                         pre_id = list.get(position).getPrev_Id();
                         pre_adv_id = list.get(position).getPR_ADVC_CD();
+                        filename = list.get(position).getFilename();
                         new Get_GateIn_Lock_Check().execute();
 
 
@@ -860,9 +863,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
+               /* listview.setVisibility(View.VISIBLE);
                 list_noData.setVisibility(View.GONE);
-
+*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -873,11 +876,11 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+//                        listview.setVisibility(View.VISIBLE);
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
@@ -887,7 +890,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
-                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
+                vechicle,transport,filename,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
@@ -995,6 +998,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 {
                     Intent i=new Intent(getApplicationContext(),Update_GateIn.class);
                     GlobalConstants.GateInId=Gate_In;
+                    GlobalConstants.from="GateIn";
                     GlobalConstants.equipment_no= equipment_no;
                     GlobalConstants.location=location;
                     GlobalConstants.customer_name=Cust_Name;
@@ -1017,7 +1021,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
-
+                    GlobalConstants.attach_filename = filename;
                     startActivity(i);
                                                                                                                                                     startActivity(i);
                 }else {

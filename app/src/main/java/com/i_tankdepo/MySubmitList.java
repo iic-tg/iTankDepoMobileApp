@@ -77,7 +77,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private ImageView menu, im_up, im_down, im_ok, im_close,iv_back;
     LinearLayout LL_hole, LL_Submit;
     Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh;
-    String equip_no, equipment_no,Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,Gate_In,cust_code,type_id,code_id,pre_code,pre_id,
+    String equip_no, equipment_no,Cust_Name,previous_crg,attachFilename,attachmentstatus,gateIn_Id,code,location,Gate_In,cust_code,type_id,code_id,pre_code,pre_id,
             vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,pre_adv_id,gatin_transaction_no;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
@@ -568,7 +568,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
-                                filename=filenamejson.getString("fileName");
+//                                filename=filenamejson.getString("fileName");
+                                pending_bean.setFilename(filenamejson.getString("fileName"));
                             }
 
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -594,6 +595,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
                             pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
                             pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+
 
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -745,6 +747,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.gatin_trans_no = (TextView) convertView.findViewById(R.id.text12);
+                holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
 
 
@@ -796,6 +799,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.type_id.setText(userListBean.getType_code());
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getPR_ADVC_CD());
+                holder.filename.setText(userListBean.getFilename());
+
 
 
 
@@ -830,6 +835,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         attachmentstatus= list.get(position).getAttachmentStatus();
                         pre_id= list.get(position).getPrev_Id();
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
+                        filename = list.get(position).getFilename();
+
                         new Get_GateIn_Lock_Check().execute();
                     }
                 });
@@ -843,8 +850,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+                /*listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -855,12 +862,14 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText))
                     {
                         list.add(wp);
+/*
                         listview.setVisibility(View.VISIBLE);
-                    }else{
+*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
 
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
@@ -872,7 +881,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
     }
     static class ViewHolder {
-        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,username,gatin_trans_no,cust_code,type_id,code_id,
+        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,username,filename,gatin_trans_no,cust_code,type_id,code_id,
 
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
@@ -986,6 +995,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.location=location;
                     GlobalConstants.customer_name=Cust_Name;
                     GlobalConstants.code=code;
+                    GlobalConstants.from="MySubmit";
                     GlobalConstants.type=type;
                     GlobalConstants.gateIn_Trans_no=gatin_transaction_no;
                     GlobalConstants.status=status;
@@ -1005,6 +1015,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_id=pre_id;
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
+                    GlobalConstants.attach_filename = filename;
                     startActivity(i);
 
                 }else {

@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class PendingBean implements Serializable {
+    String filename;
     String customerName;
     String date;
     String time;
@@ -237,4 +238,11 @@ public class PendingBean implements Serializable {
         this.GI_TRNSCTN_NO = GI_TRNSCTN_NO;
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 }

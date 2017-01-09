@@ -99,6 +99,7 @@ public class Change_Password extends CommonActivity {
         break;
 
         case R.id.change_login:
+                finish();
                 startActivity(new Intent(getApplicationContext(),Login_Activity.class));
                 break;
 
@@ -194,7 +195,7 @@ public class Change_Password extends CommonActivity {
                     oldPassword.setText("");
                     newPassword.setText("");
                     confirmPassword.setText("");
-
+                    finish();
                     Intent i = new Intent(getApplication(), Login_Activity.class);
                     startActivity(i);
 

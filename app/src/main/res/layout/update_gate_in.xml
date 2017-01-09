@@ -86,14 +86,13 @@
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
                             android:layout_height="match_parent">
-<!--
                             <Spinner
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/sp_customer"
                                 android:textColor="@color/list_text"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
--->
+<!--
                             <EditText
                                 android:layout_width="match_parent"
                                 android:id="@+id/ed_customer"
@@ -111,7 +110,7 @@
                                 android:layout_marginTop="5dp"
                                 android:visibility="gone"
                                 android:src="@mipmap/ic_down_dark"
-                                android:layout_alignParentRight="true"/>
+                                android:layout_alignParentRight="true"/>-->
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -169,14 +168,13 @@
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
                             android:layout_height="match_parent">
-<!--
                             <Spinner
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/sp_type"
                                 android:textColor="@color/list_text"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
--->
+<!--
                             <EditText
                                 android:layout_width="match_parent"
                                 android:id="@+id/ed_type"
@@ -195,6 +193,7 @@
                                 android:layout_marginTop="5dp"
                                 android:src="@mipmap/ic_down_dark"
                                 android:layout_alignParentRight="true"/>
+-->
                         </RelativeLayout>
 
                         <RelativeLayout

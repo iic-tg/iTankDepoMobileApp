@@ -98,7 +98,7 @@ public class Create_GateIn extends CommonActivity   {
     private Toolbar toolbar;
     private Intent mServiceIntent;
     private String userChoosenTask;
-    private boolean manuf_date=false,last_test_date=false;
+    private boolean imV_manuf_date=false,manuf_date=false,last_test_date=false;
     private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
     private Spinner sp_equip_type,sp_customer,sp_previous_cargo,sp_last_test_type;
     private EditText ed_time,ed_attach,ed_date,ed_equipement,ed_code,ed_status,ed_location,
@@ -170,6 +170,7 @@ public class Create_GateIn extends CommonActivity   {
     private String Filename;
     private String imageName;
     private String filePath;
+    private String CaptureValue;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -184,6 +185,7 @@ public class Create_GateIn extends CommonActivity   {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        CaptureValue = GlobalConstants.fullname;
 
         pendingsize= GlobalConstants.pendingcount;
         tv_name = (TextView)findViewById(R.id.tv_name);
@@ -260,6 +262,13 @@ public class Create_GateIn extends CommonActivity   {
         LL_Equipment_Info.setVisibility(View.GONE);
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
 
+        ed_equipement.setText(CaptureValue);
+
+        ed_time.setOnClickListener(this);
+        ed_date.setOnClickListener(this);
+        im_date.setOnClickListener(this);
+        im_time.setOnClickListener(this);
+        ed_manuf_date.setOnClickListener(this);
 
         equip_down.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -279,7 +288,8 @@ public class Create_GateIn extends CommonActivity   {
 
                 }else
                 {
-                    new Equipment_More_Info().execute();
+                    new Post_Verify_Equipment_No().execute();
+
                 }
                 //editText.requestFocus();
 
@@ -351,22 +361,13 @@ public class Create_GateIn extends CommonActivity   {
 
 
 
-
-
-
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        ed_time.setOnClickListener(this);
-        ed_date.setOnClickListener(this);
-        im_date.setOnClickListener(this);
-        im_time.setOnClickListener(this);
-        ed_manuf_date.setOnClickListener(this);
-        im_manuf_date.setOnClickListener(this);
+
 
 
         ed_last_test_date.setOnClickListener(this);
@@ -448,7 +449,7 @@ public class Create_GateIn extends CommonActivity   {
 
 
             new Create_GateIn_EquipmentType_details().execute();
-           new Create_GateIn_moreInfo_list_details().execute();
+            new Create_GateIn_moreInfo_list_details().execute();
             new GateIn_Default_Values().execute();
 
         }else
@@ -479,8 +480,11 @@ public class Create_GateIn extends CommonActivity   {
 
                 // shortToast(getApplicationContext(),"get_sp_equipe_code==>"+get_sp_equipe_code);
 
-
-                new PostCustomer_Code().execute();
+                if(cd.isConnectingToInternet()) {
+                    new PostCustomer_Code().execute();
+                }else{
+                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                }
 
             }
 
@@ -660,13 +664,13 @@ public class Create_GateIn extends CommonActivity   {
                 break;
             case R.id.ed_manfu:
                 manuf_date=true;
-
+                imV_manuf_date=false;
                 last_test_date = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_manuf_date:
                 last_test_date = false;
-
+                imV_manuf_date=true;
                 last_test_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
@@ -751,7 +755,7 @@ public class Create_GateIn extends CommonActivity   {
                 get_next_type = ed_next_type.getText().toString();
                 get_info_remark = ed_info_remark.getText().toString();
 
-                if((get_equipment.trim().equals("") || get_equipment==null) ||
+                if((get_equipment.trim().equals("") && get_equipment==null && get_equipment.length()< 11)||
                         (get_sp_customer.trim().equals("") || get_sp_customer==null) ||
                         (get_sp_equipe.trim().equals("") || get_sp_equipe==null) ||
                         (get_code.trim().equals("") || get_code==null) ||
@@ -782,7 +786,15 @@ public class Create_GateIn extends CommonActivity   {
 
                         changes = "true";
                         if (cd.isConnectingToInternet()) {
-                            new PostInfo().execute();
+                            if(get_equipment.length()< 11)
+                            {
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number");
+
+                            }else
+                            {
+                                new PostInfo().execute();
+
+                            }
                         } else {
                             shortToast(getApplicationContext(), "Please Check Your Internet Connection");
                         }
@@ -819,6 +831,7 @@ public class Create_GateIn extends CommonActivity   {
                 }
                 get_sp_customer = sp_customer.getSelectedItem().toString();
                 get_equipment = ed_equipement.getText().toString();
+
                 get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
                 get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
@@ -864,7 +877,7 @@ public class Create_GateIn extends CommonActivity   {
                 get_next_type = ed_next_type.getText().toString();
                 get_info_remark = ed_info_remark.getText().toString();
 
-                if((get_equipment.trim().equals("") || get_equipment==null) ||
+                if((get_equipment.trim().equals("") && get_equipment==null && get_equipment.length()< 11)||
                         (get_sp_customer.trim().equals("") || get_sp_customer==null) ||
                         (get_sp_equipe.trim().equals("") || get_sp_equipe==null) ||
                         (get_code.trim().equals("") || get_code==null) ||
@@ -895,7 +908,16 @@ public class Create_GateIn extends CommonActivity   {
 
                         changes = "true";
                         if (cd.isConnectingToInternet()) {
-                            new PostInfo().execute();
+
+                            if(get_equipment.length()< 11)
+                            {
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number");
+
+                            }else
+                            {
+                                new PostInfo().execute();
+
+                            }
                         } else {
                             shortToast(getApplicationContext(), "Please Check Your Internet Connection");
                         }
@@ -1152,7 +1174,7 @@ public class Create_GateIn extends CommonActivity   {
 
             view.setMinDate(System.currentTimeMillis() - 1000);
 
-            if(manuf_date==true)
+            if(manuf_date==true || imV_manuf_date==true)
             {
                 ed_manuf_date.setText(formatDate(year, month, day));
 
@@ -1454,6 +1476,9 @@ public class Create_GateIn extends CommonActivity   {
         }
 
     }
+
+
+
     public class PostInfo extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         String responseString;
@@ -1513,7 +1538,7 @@ public class Create_GateIn extends CommonActivity   {
                     });
 
                 }
-                String numberAsString = Integer.toString( pendingsize+1);
+                String numberAsString = Integer.toString(pendingsize+1);
                 jsonObject.put("GTN_ID", numberAsString);
                 jsonObject.put("CSTMR_ID", get_sp_customer_code);
                 jsonObject.put("CSTMR_CD", get_sp_customer);
@@ -1902,7 +1927,7 @@ public class Create_GateIn extends CommonActivity   {
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            //  progressDialog.show();
+            progressDialog.show();
         }
 
         @Override
@@ -1973,11 +1998,12 @@ public class Create_GateIn extends CommonActivity   {
             {
                 if(validationStatus.equalsIgnoreCase("Success"))
                 {
+                    new Equipment_More_Info().execute();
                     new Create_GateIn_EquipmentType_details().execute();
 
                 }else
                 {
-                    shortToast(getApplicationContext(),"This Equipment" +get_equipment+ "already exists for Customer"+ get_sp_customer);
+                    shortToast(getApplicationContext(),"This Equipment" + get_equipment + "already exists for Customer"+ get_sp_customer);
                 }
 
 
@@ -2005,7 +2031,7 @@ public class Create_GateIn extends CommonActivity   {
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            // progressDialog.show();
+            progressDialog.show();
         }
 
         @Override
@@ -2153,20 +2179,6 @@ public class Create_GateIn extends CommonActivity   {
                     }else {
                         equipmentBeanArrayList = new ArrayList<>();
 
-                           /* equipment_info = new EquipMent_Info_Bean();
-                            equipment_info.setEIEQPMNT_TYP_CD(getJsonObject.getString("EIEQPMNT_TYP_CD"));
-                            equipment_info.setEICPCTY_NC(getJsonObject.getString("EICPCTY_NC"));
-                            equipment_info.setEIGRSS_WGHT_NC(getJsonObject.getString("EIGRSS_WGHT_NC"));
-                            equipment_info.setEILST_SRVYR_NM(getJsonObject.getString("EILST_SRVYR_NM"));
-                            equipment_info.setEILST_TST_DT(getJsonObject.getString("EILST_TST_DT"));
-                            equipment_info.setEILST_TST_TYP_ID(getJsonObject.getString("EILST_TST_TYP_ID"));
-                            equipment_info.setEITR_WGHT_NC(getJsonObject.getString("EITR_WGHT_NC"));
-                            equipment_info.setEIRMRKS_VC(getJsonObject.getString("EIRMRKS_VC"));
-                            equipment_info.setEIACTV_BT(getJsonObject.getString("EIACTV_BT"));
-                            equipment_info.setEIMNFCTR_DT(getJsonObject.getString("EIMNFCTR_DT"));
-                            equipment_info.setEINXT_TST_TYP_ID(getJsonObject.getString("EINXT_TST_TYP_ID"));
-                            equipment_info.setEIRNTL_BT(getJsonObject.getString("EIRNTL_BT"));
-                            equipmentBeanArrayList.add(equipment_info);*/
                         EIEQPMNT_TYP_CD=(getJsonObject.getString("EIEQPMNT_TYP_CD"));
                         EICPCTY_NC=(getJsonObject.getString("EICPCTY_NC"));
                         EIGRSS_WGHT_NC=(getJsonObject.getString("EIGRSS_WGHT_NC"));

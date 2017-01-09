@@ -843,8 +843,8 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+                /*listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (RepairBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -853,11 +853,13 @@ public class SurveyCompletionPending extends CommonActivity implements Navigatio
                             wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+/*
                         listview.setVisibility(View.VISIBLE);
-                    }else{
+*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();

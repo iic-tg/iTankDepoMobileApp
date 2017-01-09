@@ -399,13 +399,9 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
             case R.id.iv_changeOfStatus:
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
-
             case R.id.bt_pending:
-
                 finish();
                 startActivity(new Intent(getApplicationContext(),GateOut.class));
-
-
                 break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
@@ -562,7 +558,9 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
-                                filename=filenamejson.getString("fileName");
+//                                filename=filenamejson.getString("fileName");
+                                pending_bean.setFilename(filenamejson.getString("fileName"));
+
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -576,7 +574,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                                 pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                               //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
-                              //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
+                                pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                                 pending_bean.setDate(jsonObject.getString("GTOT_DT"));
                                 pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
                                 pending_bean.setTime(jsonObject.getString("GTOT_TM"));
@@ -586,7 +584,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                                 pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
                                 pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
                                 pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-                         //       pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+//                                pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
 
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -737,6 +735,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                 holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
 
 
@@ -788,6 +787,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                 holder.type_id.setText(userListBean.getType_code());
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getGI_TRNSCTN_NO());
+                holder.filename.setText(userListBean.getFilename());
 
 
 
@@ -823,6 +823,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                         GlobalConstants.pre_id=list.get(position).getPrev_Id();
                         GlobalConstants.pre_adv_id=list.get(position).getGI_TRNSCTN_NO();
                         GlobalConstants.attachmentStatus=list.get(position).getAttachmentStatus();
+                        GlobalConstants.attach_filename=list.get(position).getFilename();
 
                         startActivity(i);
 
@@ -839,8 +840,8 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+               /* listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -850,11 +851,11 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
-                    }else{
+                       /* listview.setVisibility(View.VISIBLE);*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
@@ -863,7 +864,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
 
     }
     static class ViewHolder {
-        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
+        TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,filename,code_id,
                 vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,username;
         CheckBox checkBox;
         LinearLayout whole,LL_username;

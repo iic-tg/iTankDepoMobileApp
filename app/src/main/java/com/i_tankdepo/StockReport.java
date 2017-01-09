@@ -1,7 +1,9 @@
 package com.i_tankdepo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -22,9 +24,34 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.i_tankdepo.Beanclass.CustomerReportBean;
+import com.i_tankdepo.Beanclass.GeneralReportBean;
+import com.i_tankdepo.Beanclass.TypeReportBean;
+import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
+import com.i_tankdepo.helper.ServiceHandler;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Admin on 1/4/2017.
@@ -46,6 +73,24 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
     private RadioGroup radio_group,radio_group1;
     private RadioButton radioButton;
     private String selected;
+    RelativeLayout RL_run_submit;
+    private ProgressDialog progressDialog;
+    private GeneralReportBean generalReportBean;
+    private ArrayList<GeneralReportBean> generalReportBeanArrayList;
+    private TypeReportBean typeReportBean;
+    private CustomerReportBean customerReportBean;
+    private ArrayList<CustomerReportBean> customerReportbeanArrayList;
+    private ArrayList<TypeReportBean> typeReportBeanArrayList;
+    private List<String> Cust_id=new ArrayList<>();
+    private List<String> Equip_id=new ArrayList<>();
+    private List<String> prevc_id=new ArrayList<>();
+    private List<String> curnt_staus_id=new ArrayList<>();
+    private List<String> next_test_id=new ArrayList<>();
+    private List<String> dept_id=new ArrayList<>();
+    private String curTime;
+    private String systemDate;
+    private JSONObject CustomerSummaryjsonarray;
+    private JSONObject TypeSummaryjsonarray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +102,9 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
         iv_back = (ImageView) findViewById(R.id.iv_back);
         iv_back.setVisibility(View.GONE);
 
-
+        RL_run_submit=(RelativeLayout)findViewById(R.id.RL_run_submit);
+      /*  RL_run_submit.setAlpha(0.5f);
+        RL_run_submit.setClickable(false);*/
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_mandate_fields = (TextView) findViewById(R.id.tv_mandate_fields);
         tv_optional_fields = (TextView) findViewById(R.id.tv_optional_fields);
@@ -71,25 +118,11 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
         LL_run = (LinearLayout)findViewById(R.id.LL_run);
         LL_status_submit.setVisibility(View.GONE);
 
+        LL_run.setOnClickListener(this);
         radio_button = (RadioButton)findViewById(R.id.radio_button);
         radio_group = (RadioGroup)findViewById(R.id.Radio_group);
         radio_group1 = (RadioGroup)findViewById(R.id.Radio_group1);
-/*
-        radio_button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(radio_button != null)
-                {
-                    radio_button.setChecked(false);
-                }
 
-                radio_button.setChecked(true);
-                //selected = rbFolder;
-            }
-        });
-*/
 
         status_home = (Button)findViewById(R.id.status_home);
         status_refresh = (Button)findViewById(R.id.status_refresh);
@@ -101,41 +134,9 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
         status_refresh.setOnClickListener(this);
         run_report.setOnClickListener(this);
 
-/*
-        radio_group
-                .setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-                    @Override
-                    public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        Log.d("chk", "id" + checkedId);
-                        int id= radio_group.getCheckedRadioButtonId();
-                        View radioButton = radio_group.findViewById(id);
-                        int radioId = radio_group.indexOfChild(radioButton);
-                        RadioButton btn = (RadioButton) radio_group.getChildAt(radioId);
-                        if (checkedId == R.id.radio_bt_customer) {
-                            //some code
-                        } else if (checkedId == R.id.radio_button1) {
-
-                            //some code
-                        } else if (checkedId == R.id.radio_button3) {
-
-                            //some code
-                        } else if (checkedId == R.id.radio_button4) {
-
-                            //some code
-                        } else if (checkedId == R.id.radio_button5) {
-
-                            //some code
-                        } else if (checkedId == R.id.radio_button6) {
-
-                            //some code
-                        }
-
-                    }
-
-                });
-*/
-
+        SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+        curTime = time.format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -175,6 +176,24 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
                 startActivity(getIntent());
                 break;
             case R.id.run_report:
+                if(cd.isConnectingToInternet())
+                {
+                    new Post_Stock_report().execute();
+                }else
+                {
+                    shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                }
+
+                break;
+            case R.id.LL_run:
+                if(cd.isConnectingToInternet())
+                {
+                    new Post_Stock_report().execute();
+                }else
+                {
+                    shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                }
+
 
                 break;
             case R.id.tv_mandate_fields:
@@ -207,7 +226,7 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
 
                 Intent i1=new Intent(getApplicationContext(),SelectOptions.class);
                 GlobalConstants.from="Optional";
-                GlobalConstants.selectedName=selected;
+                GlobalConstants.selectedName_optional=selected;
 
                 startActivity(i1);
 
@@ -248,4 +267,289 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
     }
+
+    public class Post_Stock_report extends AsyncTask<Void, Void, Void> {
+        private JSONArray jsonarray;
+        private JSONObject preadvicejsonObject;
+        private JSONArray Custjsonlist;
+        private JSONArray Equipjsonlist;
+        private JSONArray previousjsonlist;
+        private JSONArray currentStausjsonlist;
+        private JSONArray NextTestjsonlist;
+        private JSONArray deoptjsonlist;
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(StockReport.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLStock_Run_Report);
+            // httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+            //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObjectStockReportModel = new JSONObject();
+
+                //    preadvicejsonlist = new JSONArray();
+                Custjsonlist = new JSONArray();
+                Equipjsonlist = new JSONArray();
+                previousjsonlist = new JSONArray();
+                currentStausjsonlist = new JSONArray();
+                NextTestjsonlist = new JSONArray();
+                deoptjsonlist = new JSONArray();
+
+                try {
+                    for (int i = 0; i < Cust_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", Cust_id.get(i));
+                        Custjsonlist.put(preadvicejsonObject);
+                    }
+
+
+                    for (int i = 0; i < Equip_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", Equip_id.get(i));
+                        Equipjsonlist.put(preadvicejsonObject);
+                    }
+
+                    for (int i = 0; i < prevc_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", prevc_id.get(i));
+                        previousjsonlist.put(preadvicejsonObject);
+                    }
+
+
+                    for (int i = 0; i < curnt_staus_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", curnt_staus_id.get(i));
+                        currentStausjsonlist.put(preadvicejsonObject);
+                    }
+
+                    for (int i = 0; i < next_test_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", next_test_id.get(i));
+                        NextTestjsonlist.put(preadvicejsonObject);
+                    }
+                    for (int i = 0; i < dept_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", dept_id.get(i));
+                        deoptjsonlist.put(preadvicejsonObject);
+                    }
+                }catch (Exception e)
+                {
+
+                }
+                jsonObjectStockReportModel.put("Customer",Custjsonlist);
+                jsonObjectStockReportModel.put("Depot",deoptjsonlist);
+                jsonObjectStockReportModel.put("Next_Test_Type",NextTestjsonlist);
+                jsonObjectStockReportModel.put("Current_Status",currentStausjsonlist);
+                jsonObjectStockReportModel.put("Previous_Cargo",previousjsonlist);
+                jsonObjectStockReportModel.put("Equipment_Type",Equipjsonlist);
+
+                jsonObjectStockReportModel.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObjectStockReportModel.put("Next_Test_Date_From","");
+                jsonObjectStockReportModel.put("Next_Test_Date_To", "");
+                jsonObjectStockReportModel.put("Equipment_No", "");
+                jsonObjectStockReportModel.put("EIR_No", "");
+                jsonObjectStockReportModel.put("Cleaning_Date_From","");
+                jsonObjectStockReportModel.put("Cleaning_Date_To", "");
+                jsonObjectStockReportModel.put("Inspection_Date_From", "");
+                jsonObjectStockReportModel.put("Inspection_Date_To", "");
+                jsonObjectStockReportModel.put("Current_Status_Date_From", "");
+                jsonObjectStockReportModel.put("In_Date_From", "");
+                jsonObjectStockReportModel.put("In_Date_To", "");
+                jsonObjectStockReportModel.put("Current_Status_Date_To", "");
+
+
+                    jsonObjectStockReportModel.put("Out_Date_From", systemDate);
+
+
+                    jsonObjectStockReportModel.put("Out_Date_To", systemDate);
+
+                jsonObject.put("StockReportModel",jsonObjectStockReportModel);
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                Log.d("Search_request", jsonObject.toString());
+
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("ActivityStatus");
+                CustomerSummaryjsonarray = getJsonObject.getJSONObject("CustomerSummary");
+                TypeSummaryjsonarray = getJsonObject.getJSONObject("TypeSummary");
+                if (jsonarray == null || CustomerSummaryjsonarray==null ||TypeSummaryjsonarray==null ) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                            shortToast(getApplicationContext(), "No Records Found");
+                        }
+                    });
+
+                }else {
+                    try {
+
+                        generalReportBeanArrayList = new ArrayList<GeneralReportBean>();
+                        typeReportBeanArrayList = new ArrayList<TypeReportBean>();
+                        customerReportbeanArrayList = new ArrayList<CustomerReportBean>();
+
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            jsonObject = jsonarray.getJSONObject(i);
+                            generalReportBean = new GeneralReportBean();
+
+                            generalReportBean.setDepot(jsonObject.getString("Depot"));
+                            generalReportBean.setCustomer(jsonObject.getString("Customer"));
+                            generalReportBean.setEquipmentNo(jsonObject.getString("EquipmentNo"));
+                            generalReportBean.setType(jsonObject.getString("Type"));
+                            generalReportBean.setIndate(jsonObject.getString("Indate"));
+                            generalReportBean.setPreviousCargo(jsonObject.getString("PreviousCargo"));
+                            generalReportBean.setEirNo(jsonObject.getString("EirNo"));
+                            generalReportBean.setCleaningCertNo(jsonObject.getString("CleaningCertNo"));
+                            generalReportBean.setCurrentStatusDate(jsonObject.getString("CurrentStatusDate"));
+                            generalReportBean.setCurrentStatus(jsonObject.getString("CurrentStatus"));
+                            generalReportBean.setCleaningDate(jsonObject.getString("CleaningDate"));
+                            generalReportBean.setInspectionDate(jsonObject.getString("InspectionDate"));
+                            generalReportBean.setRemarks(jsonObject.getString("Remarks"));
+                            generalReportBean.setNextTestDate(jsonObject.getString("NextTestDate"));
+                            generalReportBean.setNextTestType(jsonObject.getString("NextTestType"));
+
+                            generalReportBeanArrayList.add(generalReportBean);
+
+                        }
+
+
+                        customerReportBean = new CustomerReportBean();
+
+                        customerReportBean.setCustomer(CustomerSummaryjsonarray.getString("Customer"));
+                        // customerReportBean.setType(jsonObject.getString("Type"));
+                        customerReportBean.setIND(CustomerSummaryjsonarray.getString("IND"));
+                        customerReportBean.setPHL(CustomerSummaryjsonarray.getString("PHL"));
+                        customerReportBean.setACN(CustomerSummaryjsonarray.getString("ACN"));
+                        customerReportBean.setAWECLN(CustomerSummaryjsonarray.getString("AWECLN"));
+                        customerReportBean.setAWE(CustomerSummaryjsonarray.getString("AWE"));
+                        customerReportBean.setAAR(CustomerSummaryjsonarray.getString("AAR"));
+                        customerReportBean.setAUR(CustomerSummaryjsonarray.getString("AUR"));
+                        customerReportBean.setASR(CustomerSummaryjsonarray.getString("ASR"));
+                        customerReportBean.setSRV(CustomerSummaryjsonarray.getString("SRV"));
+                        customerReportBean.setAVLCLN(CustomerSummaryjsonarray.getString("AVLCLN"));
+                        customerReportBean.setAVLINS(CustomerSummaryjsonarray.getString("AVLINS"));
+                        customerReportBean.setINSRPC(CustomerSummaryjsonarray.getString("INSRPC"));
+                        customerReportBean.setRPC(CustomerSummaryjsonarray.getString("RPC"));
+                        customerReportBean.setSTO(CustomerSummaryjsonarray.getString("STO"));
+                        customerReportBean.setAVL(CustomerSummaryjsonarray.getString("AVL"));
+                        customerReportBean.setOUT(CustomerSummaryjsonarray.getString("OUT"));
+                        customerReportBean.setTOTAL(CustomerSummaryjsonarray.getString("TOTAL"));
+
+                        customerReportbeanArrayList.add(customerReportBean);
+
+
+                        typeReportBean = new TypeReportBean();
+
+//                            typeReportBean.setCustomer(jsonObject.getString("Customer"));
+                        typeReportBean.setType(TypeSummaryjsonarray.getString("Type"));
+                        typeReportBean.setIND(TypeSummaryjsonarray.getString("IND"));
+                        typeReportBean.setPHL(TypeSummaryjsonarray.getString("PHL"));
+                        typeReportBean.setACN(TypeSummaryjsonarray.getString("ACN"));
+                        typeReportBean.setAWECLN(TypeSummaryjsonarray.getString("AWECLN"));
+                        typeReportBean.setAWE(TypeSummaryjsonarray.getString("AWE"));
+                        typeReportBean.setAAR(TypeSummaryjsonarray.getString("AAR"));
+                        typeReportBean.setAUR(TypeSummaryjsonarray.getString("AUR"));
+                        typeReportBean.setASR(TypeSummaryjsonarray.getString("ASR"));
+                        typeReportBean.setSRV(TypeSummaryjsonarray.getString("SRV"));
+                        typeReportBean.setAVLCLN(TypeSummaryjsonarray.getString("AVLCLN"));
+                        typeReportBean.setAVLINS(TypeSummaryjsonarray.getString("AVLINS"));
+                        typeReportBean.setINSRPC(TypeSummaryjsonarray.getString("INSRPC"));
+                        typeReportBean.setRPC(TypeSummaryjsonarray.getString("RPC"));
+                        typeReportBean.setSTO(TypeSummaryjsonarray.getString("STO"));
+                        typeReportBean.setAVL(TypeSummaryjsonarray.getString("AVL"));
+                        typeReportBean.setOUT(TypeSummaryjsonarray.getString("OUT"));
+                        typeReportBean.setTOTAL(TypeSummaryjsonarray.getString("TOTAL"));
+
+                        typeReportBeanArrayList.add(typeReportBean);
+
+
+                    }catch (Exception e)
+                    {
+
+                    }
+                }
+                /*else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found");
+
+
+                        }
+                    });
+
+                }*/
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if (jsonarray != null || CustomerSummaryjsonarray!=null ||TypeSummaryjsonarray!=null )
+            {
+
+                Intent i=new Intent(getApplicationContext(),GeneralReport.class);
+                GlobalConstants.customerReportbeanArrayList=customerReportbeanArrayList;
+                GlobalConstants.typeReportBeanArrayList=typeReportBeanArrayList;
+                GlobalConstants.generalReportBeanArrayList=generalReportBeanArrayList;
+
+                startActivity(i);
+
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+
+            }
+            progressDialog.dismiss();
+
+        }
+
+    }
+
 }

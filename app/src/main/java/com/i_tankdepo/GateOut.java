@@ -564,7 +564,8 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
-                                filename=filenamejson.getString("fileName");
+//                                filename=filenamejson.getString("fileName");
+                                    pending_bean.setFilename(filenamejson.getString("fileName"));
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -578,7 +579,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                                 pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                               //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
-                              //  pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
+                                pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                                 pending_bean.setDate(jsonObject.getString("GTOT_DT"));
                                 pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
                                 pending_bean.setTime(jsonObject.getString("GTOT_TM"));
@@ -739,6 +740,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 holder.cust_code = (TextView) convertView.findViewById(R.id.tv_cust_code);
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
+                holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.LL_username.setVisibility(View.GONE);
 
@@ -790,8 +792,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 holder.type_id.setText(userListBean.getType_code());
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getGI_TRNSCTN_NO());
-
-
+                holder.filename.setText(userListBean.getFilename());
 
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -825,6 +826,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                         GlobalConstants.pre_id=list.get(position).getPrev_Id();
                         GlobalConstants.pre_adv_id=list.get(position).getGI_TRNSCTN_NO();
                         GlobalConstants.attachmentStatus=list.get(position).getAttachmentStatus();
+                        GlobalConstants.attach_filename=list.get(position).getFilename();
 
                         startActivity(i);
 
@@ -841,9 +843,9 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
+               /* listview.setVisibility(View.VISIBLE);
                 list_noData.setVisibility(View.GONE);
-
+*/
             } else {
                 for (PendingBean wp : arraylist) {
                     if (wp.getCustomerName().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -853,12 +855,12 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                             wp.getTime().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
-                        listview.setVisibility(View.VISIBLE);
+                       /* listview.setVisibility(View.VISIBLE);*/
 
-                    }else{
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
@@ -868,7 +870,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
-                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
+                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,filename;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;

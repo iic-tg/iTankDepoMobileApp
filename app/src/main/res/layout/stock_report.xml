@@ -160,7 +160,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:buttonTint="@color/Title"
-                            android:text="Inspection Date from"
+                            android:text="In Date From"
+                            style="@style/AppTheme"/>
+                        <View style="@style/View_horizontal_black"
+                            android:layout_width="wrap_content"></View>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/Title"
+                            android:text="In Date To"
+                            style="@style/AppTheme"/>
+                        <View style="@style/View_horizontal_black"
+                            android:layout_width="wrap_content"></View>
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/Title"
+                            android:text="Inspection Date From"
                             style="@style/AppTheme"/>
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
@@ -229,7 +246,15 @@
 
                         <View style="@style/View_horizontal_black"
                             android:layout_width="wrap_content"></View>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="@color/Title"
+                            android:text="Out Date To"
+                            style="@style/AppTheme"/>
 
+                        <View style="@style/View_horizontal_black"
+                            android:layout_width="wrap_content"></View>
                     </RadioGroup>
 
                 </LinearLayout>

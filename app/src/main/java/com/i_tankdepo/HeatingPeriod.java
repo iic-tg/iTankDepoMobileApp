@@ -515,6 +515,7 @@ public class HeatingPeriod extends CommonActivity  {
 //                LL_Add_New.setVisibility(View.GONE);
                 break;
             case R.id.heating:
+                finish();
                 startActivity(new Intent(getApplicationContext(),Heating.class));
                 break;
         }
@@ -823,6 +824,7 @@ public class HeatingPeriod extends CommonActivity  {
             {
                 if(responseStatus.equalsIgnoreCase("Heating Updated")){
                     shortToast(getApplicationContext(),responseStatus);
+                    finish();
                     startActivity(new Intent(getApplicationContext(),Heating.class));
                 }else{
                     shortToast(getApplicationContext(),"Heating Not Updated..!");

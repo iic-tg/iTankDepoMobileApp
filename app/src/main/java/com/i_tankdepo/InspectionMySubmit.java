@@ -814,8 +814,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-                listview.setVisibility(View.VISIBLE);
-                list_noData.setVisibility(View.GONE);
+               /* listview.setVisibility(View.VISIBLE);
+                list_noData.setVisibility(View.GONE);*/
             } else {
                 for (InspectionBean wp : arraylist) {
                     if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
@@ -825,11 +825,13 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                             wp.getEquip_statusType().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
+/*
                         listview.setVisibility(View.VISIBLE);
-                    }else{
+*/
+                    }/*else{
                         list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);
-                    }
+                    }*/
                 }
             }
             notifyDataSetChanged();
