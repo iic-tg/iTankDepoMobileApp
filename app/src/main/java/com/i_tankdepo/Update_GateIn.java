@@ -44,6 +44,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -166,6 +167,8 @@ public class Update_GateIn extends CommonActivity {
     private ImageView iv_changeOfStatus;
     private String Filename,filePath;
     private String imageName;
+    private String deleteAttachment;
+    private ListView attach_listView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -211,7 +214,6 @@ public class Update_GateIn extends CommonActivity {
         remark = GlobalConstants.remark;
         filename =GlobalConstants.attach_filename;
 
-
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
         tv_type = (TextView)findViewById(R.id.tv_type);
@@ -250,6 +252,8 @@ public class Update_GateIn extends CommonActivity {
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
         im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
 
+
+
       //  ed_previous = (EditText)findViewById(R.id.ed_previous);
         sp_previous_cargo = (Spinner)findViewById(R.id.sp_previ_cargo);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
@@ -278,6 +282,8 @@ public class Update_GateIn extends CommonActivity {
         tv_next_text_id = (TextView) findViewById(R.id.tv_next_text_id);
         LL_Equipment_Info = (LinearLayout) findViewById(R.id.LL_Equipment_Info);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
+        attach_listView = (ListView)findViewById(R.id.attach_listView);
+        attach_listView.setVisibility(View.GONE);
 //        ed_customer.setFocusable(false);
         ed_equipement.setFocusable(false);
 //        ed_type.setFocusable(false);
@@ -2229,5 +2235,96 @@ public class Update_GateIn extends CommonActivity {
 
         }
     }
+
+    public class Post_delete_attachment extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        JSONObject jsonobject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Update_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            //  progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpClient httpclient = new DefaultHttpClient();
+
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLVerify_Rental_Entry);
+            httpPost.setHeader("Content-Type", "application/json");
+            try{
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("EquipmentNo", equip_no);
+                jsonObject.put("bv_strAttachmentId", equip_no);
+                jsonObject.put("bv_strRepairEstimateId", equip_no);
+                if(from.equalsIgnoreCase("GateIn")) {
+                    jsonObject.put("Mode", "new");
+                }else
+                {
+                    jsonObject.put("Mode", "edit");
+                }
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("responce", resp);
+                Log.d("req", jsonObject.toString());
+                JSONObject jsonResp = new JSONObject(resp);
+
+                jsonobject = jsonResp.getJSONObject("d");
+
+                if (jsonobject != null) {
+
+                    deleteAttachment = jsonobject.getString("statusText");
+
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+            if(jsonobject!=null)
+            {
+                if(deleteAttachment.equalsIgnoreCase("Deleted"))
+                {
+
+
+                }else
+                {
+
+                }
+            }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+            }
+
+            progressDialog.dismiss();
+
+        }
+    }
+
 
 }

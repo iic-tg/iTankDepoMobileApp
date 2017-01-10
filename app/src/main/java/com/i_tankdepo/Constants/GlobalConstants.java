@@ -129,6 +129,7 @@ public class GlobalConstants {
     public static String EQPMNT_STTS_CD="";
     public static String attachmentStatus="";
     public static String attach_filename="";
+    public static String attach_ID="";
     public static String gt_transaction_no="";
     public static String htng_startDate="";
     public static String htng_startTime="";

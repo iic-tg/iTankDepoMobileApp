@@ -202,17 +202,28 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             case R.id.im_searchview:
                 getEquipNo = ed_searchview.getText().toString();
 
+                String Letter = getEquipNo.substring(0,4);
+                String Number = getEquipNo.substring(4,11);
+
 
                 if(getEquipNo == "" || getEquipNo.length()<11){
 
                     shortToast(getApplicationContext(),"Please enter the Equipment Number..!");
 
                 }else {
-                    if (cd.isConnectingToInternet()) {
-                        new Get_Equipment_History_details().execute();
-                    } else {
-                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                    if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                        Log.d("Character",Letter);
+                        Log.d("Numbers",Number);
+                        if (cd.isConnectingToInternet()) {
+                            new Get_Equipment_History_details().execute();
+                        } else {
+                            shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                        }
+
+                    }else{
+                        shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
                     }
+
                 }
                 break;
 

@@ -125,7 +125,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
     private JSONObject filenamejson;
-    private String filename;
+    private String filename,attachID;
     private ProgressDialog progressDialog;
     private String equipment_no;
     private String Lock_return_Message;
@@ -583,8 +583,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             for(int j=0;j<attachmentjson.length();j++)
                             {
                                 filenamejson=attachmentjson.getJSONObject(j);
-                                filename=filenamejson.getString("fileName");
+//                                filename=filenamejson.getString("fileName");
                                 pending_bean.setFilename(filenamejson.getString("fileName"));
+                                pending_bean.setAttach_ID(filenamejson.getString("attchId"));
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -765,6 +766,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
+                holder.attachID = (TextView) convertView.findViewById(R.id.tv_text14);
                 holder.LL_username.setVisibility(View.GONE);
 
 
@@ -815,7 +817,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 holder.type_id.setText(userListBean.getType_code());
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getPR_ADVC_CD());
-
+                holder.filename.setText(userListBean.getFilename());
+                holder.attachID.setText(userListBean.getAttach_ID());
 
 
                 holder.whole.setOnClickListener(new View.OnClickListener() {
@@ -848,6 +851,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         pre_id = list.get(position).getPrev_Id();
                         pre_adv_id = list.get(position).getPR_ADVC_CD();
                         filename = list.get(position).getFilename();
+                        attachID = list.get(position).getAttach_ID();
                         new Get_GateIn_Lock_Check().execute();
 
 
@@ -890,7 +894,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
-                vechicle,transport,filename,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
+                vechicle,transport,attachID,filename,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
@@ -1022,6 +1026,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     GlobalConstants.attach_filename = filename;
+                    GlobalConstants.attach_ID = attachID;
                     startActivity(i);
                                                                                                                                                     startActivity(i);
                 }else {

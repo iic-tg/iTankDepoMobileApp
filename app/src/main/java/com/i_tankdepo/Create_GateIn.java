@@ -171,6 +171,7 @@ public class Create_GateIn extends CommonActivity   {
     private String imageName;
     private String filePath;
     private String CaptureValue;
+    private String Letter,Number;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -275,21 +276,49 @@ public class Create_GateIn extends CommonActivity   {
 
                 LL_Equipment_Info.requestFocus();
 
-                get_equipment=ed_equipement.getText().toString();
+                get_equipment = ed_equipement.getText().toString();
 
-                if((get_equipment.length()<=0) || get_equipment==null ){
+
+
+                if(get_equipment.length()< 11 || get_equipment==null)
+                {
+
+                    shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+                    ed_equipement.requestFocus();
+
+
+                }else
+                {
+                    Letter = get_equipment.substring(0,4);
+                    Number = get_equipment.substring(4,11);
+                    if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                        Log.d("Character",Letter);
+                        Log.d("Numbers",Number);
+                        if (cd.isConnectingToInternet()) {
+                            new Post_Verify_Equipment_No().execute();
+                        } else {
+                            shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                        }
+
+
+                    }else{
+                        shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                    }
+                }
+
+               /* if((get_equipment.length()<=0) ||  ){
 
                     shortToast(getApplicationContext(),"Please Enter the Equipment Number");
-                    ed_equipement.requestFocus();
+
 
 
                     ed_manuf_date.setText(systemDate);
 
                 }else
                 {
-                    new Post_Verify_Equipment_No().execute();
 
-                }
+
+                }*/
                 //editText.requestFocus();
 
             }
@@ -710,6 +739,8 @@ public class Create_GateIn extends CommonActivity   {
 
                 get_sp_customer = sp_customer.getSelectedItem().toString();
                 get_equipment = ed_equipement.getText().toString();
+                 Letter = get_equipment.substring(0,4);
+                 Number = get_equipment.substring(4,11);
                 get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
                 try {
@@ -776,46 +807,62 @@ public class Create_GateIn extends CommonActivity   {
                             && get_swt_info_active.equals(EIACTV_BT)) {
 
                         changes = "False";
-                        if (cd.isConnectingToInternet()) {
-                            new PostInfo().execute();
-                        } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
+                        if(get_equipment.length()< 11)
+                        {
+
+                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+
+
+                        }else
+                        {
+                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                                Log.d("Character",Letter);
+                                Log.d("Numbers",Number);
+                                if (cd.isConnectingToInternet()) {
+                                    new PostInfo().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                }
+
+
+                            }else{
+                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                            }
                         }
 
 
                     } else {
 
                         changes = "true";
-                        if (cd.isConnectingToInternet()) {
-                            if(get_equipment.length()< 11)
-                            {
-
-                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
 
-                            }else
-                            {
-                                new PostInfo().execute();
+                        if(get_equipment.length()< 11)
+                        {
 
+                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+
+
+                        }else
+                        {
+                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                                Log.d("Character",Letter);
+                                Log.d("Numbers",Number);
+                                if (cd.isConnectingToInternet()) {
+                                    new PostInfo().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                }
+
+
+                            }else{
+                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
                             }
-                        } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
                         }
 
                     }
 
                 }
 
-
-               /* if(get_equipment==null || get_equipment.trim().equals(""))
-                {
-                    shortToast(getApplicationContext(),"Please key-in Mandate Fields");
-                    ed_equipement.requestFocus();
-
-                }else {
-
-                }
-*/
 
 
                 break;
@@ -834,6 +881,9 @@ public class Create_GateIn extends CommonActivity   {
                 }
                 get_sp_customer = sp_customer.getSelectedItem().toString();
                 get_equipment = ed_equipement.getText().toString();
+
+                Letter = get_equipment.substring(0,4);
+                Number = get_equipment.substring(4,11);
 
                 get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
@@ -900,17 +950,34 @@ public class Create_GateIn extends CommonActivity   {
                             && get_swt_info_active.equals(EIACTV_BT)) {
 
                         changes = "False";
-                        if (cd.isConnectingToInternet()) {
-                            new PostInfo().execute();
-                        } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection..!");
+                        if(get_equipment.length()< 11)
+                        {
+
+                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+
+
+                        }else
+                        {
+                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                                Log.d("Character",Letter);
+                                Log.d("Numbers",Number);
+                                if (cd.isConnectingToInternet()) {
+                                    new PostInfo().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                }
+
+
+                            }else{
+                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                            }
                         }
 
 
                     } else {
 
                         changes = "true";
-                        if (cd.isConnectingToInternet()) {
+
 
                             if(get_equipment.length()< 11)
                             {
@@ -920,11 +987,19 @@ public class Create_GateIn extends CommonActivity   {
 
                             }else
                             {
-                                new PostInfo().execute();
+                                if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                                    Log.d("Character",Letter);
+                                    Log.d("Numbers",Number);
+                                    if (cd.isConnectingToInternet()) {
+                                        new PostInfo().execute();
+                                    } else {
+                                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                    }
 
-                            }
-                        } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+
+                            }else{
+                                    shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                                }
                         }
 
                     }

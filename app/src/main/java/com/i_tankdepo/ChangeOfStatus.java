@@ -119,6 +119,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private String returnstatus;
     private ImageView iv_changeOfStatus;
     private String ToStatus;
+    private String Letter,Number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -351,12 +352,40 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 accordian_LL.setVisibility(View.VISIBLE);
                 equip_down.setVisibility(View.GONE);
                 getEquipmentNo = ed_equip_no.getText().toString();
-                if (cd.isConnectingToInternet()){
-                    new Get_To_Status().execute();
-                    new Get_ChangeOfStatus_details().execute();
-                }else{
-                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+
+                if(getEquipmentNo.length()> 0 && getEquipmentNo.length()<11 ){
+
+                    shortToast(getApplicationContext(),"Please Enter the Valid Equipment Number ..!");
+
+                }else
+                {
+                    if (cd.isConnectingToInternet()){
+                        new Get_To_Status().execute();
+                        new Get_ChangeOfStatus_details().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
+                  /*  Letter = getEquipmentNo.substring(0,4);
+                    Number = getEquipmentNo.substring(4,11);
+
+                    if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                        Log.d("Character",Letter);
+                        Log.d("Numbers",Number);
+                        if (cd.isConnectingToInternet()) {
+                            new Get_To_Status().execute();
+                            new Get_ChangeOfStatus_details().execute();
+                        } else {
+                            shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                        }
+                    }else{
+                        shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                    }*/
                 }
+
+
+
+
+
                 break;
             case R.id.status_submit:
                 selected_list=new ArrayList<>();

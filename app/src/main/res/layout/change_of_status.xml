@@ -173,6 +173,7 @@
                             android:id="@+id/ed_equip_no"
                             android:gravity="center|left"
                             android:maxLength="11"
+                            android:inputType="textCapCharacters|textNoSuggestions"
                             android:textColor="@color/list_text"
                             android:layout_toLeftOf="@+id/im_search" />
 

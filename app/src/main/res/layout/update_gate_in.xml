@@ -649,30 +649,50 @@
                         android:textColor="@color/tv_color"
                         android:text="Attach files"/>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-
-                        <EditText
-                            android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.8"
-                            android:focusable="false"
-                            android:id="@+id/ed_attach"
-                            android:textColor="@color/list_text"/>
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/im_Attachment"
-                            android:layout_weight=".2"
-                            android:layout_toLeftOf="@+id/Attachment"
-                            android:src="@mipmap/ic_attach_camera"
-                            android:text="Attach files"/>
+                            android:orientation="horizontal"
+                            android:weightSum="2">
 
-                    </LinearLayout>
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1.8">
+                                <EditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1.8"
+                                    android:focusable="false"
+                                    android:id="@+id/ed_attach"
+                                    android:textColor="@color/list_text"/>
+
+                                <com.i_tankdepo.HorizontalListView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:id="@+id/attach_listView"
+                                    >
+
+                                </com.i_tankdepo.HorizontalListView>
+                            </RelativeLayout>
+
+                            <ImageView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/im_Attachment"
+                                android:layout_weight=".2"
+                                android:layout_toLeftOf="@+id/Attachment"
+                                android:src="@mipmap/ic_attach_camera"
+                                android:text="Attach files"/>
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"

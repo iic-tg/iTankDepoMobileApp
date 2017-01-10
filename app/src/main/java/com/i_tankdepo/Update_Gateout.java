@@ -716,6 +716,7 @@ public class Update_Gateout extends CommonActivity {
             selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArrayImage = byteArrayOutputStream.toByteArray();
             encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            filename=Filename.substring(Filename.lastIndexOf("/")+1);
 
         }
 
@@ -802,7 +803,7 @@ public class Update_Gateout extends CommonActivity {
             HttpResponse response = null;
             HttpClient httpclient = new DefaultHttpClient();
             //  HttpPost httppost = new HttpPost("http://49.207.183.45/HH/api/accounts/RegisterUser");
-            HttpPost httpPost = new HttpPost(ConstantValues.baseURLUpdate_GateOut);
+            HttpPost httpPost = new HttpPost(ConstantValues.    baseURLUpdate_GateOut);
             httpPost.setHeader("Content-Type", "application/json");
             try{
                 JSONObject jsonObject = new JSONObject();
@@ -848,8 +849,8 @@ public class Update_Gateout extends CommonActivity {
                 jsonObject.put("TransPorter",get_transport);
                 jsonObject.put("Remarks",get_remark);
                 jsonObject.put("Rental", get_swt_rental);
-                jsonObject.put("hfc", reqObj);
                 jsonObject.put("RepairEstimateId", Gi_transaction_id);
+
                /* if(attachmentstatus.equalsIgnoreCase("True"))
                 {
 
@@ -869,6 +870,7 @@ public class Update_Gateout extends CommonActivity {
                     jsonObject.put("Mode", "edit");
                 }
 
+                jsonObject.put("hfc", reqObj);
 
 
 
@@ -915,19 +917,12 @@ public class Update_Gateout extends CommonActivity {
                 if (responseString.equalsIgnoreCase("Updated")) {
                     Toast.makeText(getApplicationContext(), "GateOut Updated Successfully.", Toast.LENGTH_SHORT).show();
 
+                    finish();
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
 
-                } else if(responseString.equalsIgnoreCase("GateIn Not Updated")) {
-
-                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
-
-                }else if(responseString.equalsIgnoreCase("EINotUpdated"))
-                {
-
-                    Toast.makeText(getApplicationContext(), "GateOut Not Updated", Toast.LENGTH_SHORT).show();
-
-
+                }else{
+                    shortToast(getApplicationContext(),"GateOut Not Updated..!");
                 }
             }else
             {

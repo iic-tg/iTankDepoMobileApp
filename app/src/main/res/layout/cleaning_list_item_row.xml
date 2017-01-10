@@ -310,7 +310,7 @@
                 android:focusable="false"
                 android:textColor="@color/list_text_date"
                 android:id="@+id/tv_additional_cleraning"
-                android:text="Reclean"/>
+                android:text="Cleaning"/>
 
 
         </LinearLayout>

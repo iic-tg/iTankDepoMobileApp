@@ -102,7 +102,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
     private EditText searchView2,searchView1,ed_text;
     private ProgressDialog progressDialog;
-    private String filename;
+    private String filename,attachID;
     private String Lock_return_Message;
     private String getEditText;
     private ImageView iv_changeOfStatus;
@@ -570,6 +570,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                                 filenamejson=attachmentjson.getJSONObject(j);
 //                                filename=filenamejson.getString("fileName");
                                 pending_bean.setFilename(filenamejson.getString("fileName"));
+                                pending_bean.setAttach_ID(filenamejson.getString("attchId"));
                                 Log.d("attachment",filename);
 
                             }
@@ -750,6 +751,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.gatin_trans_no = (TextView) convertView.findViewById(R.id.text12);
                 holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
+                holder.attachID = (TextView) convertView.findViewById(R.id.tv_text14);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
 
 
@@ -802,6 +804,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getPR_ADVC_CD());
                 holder.filename.setText(userListBean.getFilename());
+                holder.attachID.setText(userListBean.getAttach_ID());
 
 
 
@@ -838,6 +841,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         pre_id= list.get(position).getPrev_Id();
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
                         filename = list.get(position).getFilename();
+                        attachID = list.get(position).getAttach_ID();
                         new Get_GateIn_Lock_Check().execute();
                     }
                 });
@@ -883,8 +887,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,username,filename,gatin_trans_no,cust_code,type_id,code_id,
-
-                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type;
+                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,attachID;
         CheckBox checkBox;
 
         LinearLayout whole;
@@ -1017,7 +1020,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.pre_adv_id=pre_adv_id;
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     GlobalConstants.attach_filename = filename;
-
+                    GlobalConstants.attach_ID = attachID;
                     startActivity(i);
 
                 }else {

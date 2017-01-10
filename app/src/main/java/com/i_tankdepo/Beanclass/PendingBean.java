@@ -34,6 +34,7 @@ public class PendingBean implements Serializable {
     String PR_ADVC_CD;
 
     String GI_TRNSCTN_NO;
+    String Attach_ID;
 
 
 
@@ -242,7 +243,17 @@ public class PendingBean implements Serializable {
         return filename;
     }
 
+    public String getAttach_ID() {
+        return Attach_ID;
+    }
+
+    public void setAttach_ID(String attach_ID) {
+        Attach_ID = attach_ID;
+    }
+
     public void setFilename(String filename) {
         this.filename = filename;
+
+
     }
 }
