@@ -279,6 +279,7 @@
                     android:gravity="center|right"
                     android:layout_marginRight="10dp"
                     android:text="Billing Status"
+                    android:id="@+id/tv_billing_status"
                     android:textColor="@color/submit"
                     android:layout_weight="1"/>
 

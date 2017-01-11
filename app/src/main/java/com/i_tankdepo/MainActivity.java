@@ -57,7 +57,7 @@ public class MainActivity extends CommonActivity
     private ImageView im_gatein,im_gateout,im_heating,im_cleaning,im_Inspection,im_repair,im_leaktest,im_equipement,im_stock,home_changeStatus;
     private Button gateoutCount,gateInCount,heatingCount,cleaningCount,leaktestCount,repairCount,inspectionCount;
     private String gateIn,gateout,cleaning,heating,inspection,leaktest;
-    private String GateinCount,GateOutCount,CleaningCount,InspectionCount,HeatingCount,LeaktestCount;
+    private String GateinCount,GateOutCount,CleaningCount,InspectionCount,HeatingCount,LeaktestCount,authorization;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,7 +224,7 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.LL_GateIn:
-                    startActivity(new Intent(getApplicationContext(),GateIn.class));
+                startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;
             case R.id.LL_GateOut:
                 startActivity(new Intent(getApplicationContext(),GateOut.class));
@@ -319,6 +319,8 @@ public class MainActivity extends CommonActivity
                 InspectionCount = getJsonObject.getString("InspectionCount");
                 HeatingCount = getJsonObject.getString("HeatingCount");
                 LeaktestCount = getJsonObject.getString("LeakTestCount");
+//                authorization = getJsonObject.getString("Status");
+//                Log.d("error...",authorization);
 
                 try {
 

@@ -215,20 +215,26 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
                  selectedId = radio_group1.getCheckedRadioButtonId();
 
                 radioButton = (RadioButton) findViewById(selectedId);
+
                 try {
                     selected = radioButton.getText().toString();
+                    if(selected.length()<=0)
+                    {
+
+                    }else
+                    {
+                        Intent i1 = new Intent(getApplicationContext(), SelectOptions.class);
+                        GlobalConstants.from = "Optional";
+                        GlobalConstants.selectedName_optional = selected;
+                        startActivity(i1);
+                    }
 
                 }catch (Exception e)
                 {
+                    shortToast(getApplicationContext(),"Please Select One Optional Field..!");
 
                 }
-             //   shortToast(getApplicationContext(), selected);
 
-                Intent i1=new Intent(getApplicationContext(),SelectOptions.class);
-                GlobalConstants.from="Optional";
-                GlobalConstants.selectedName_optional=selected;
-
-                startActivity(i1);
 
                 break;
         }
@@ -240,6 +246,7 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            finish();
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             // Handle the camera action
         } else if (id == R.id.nav_changePwd) {

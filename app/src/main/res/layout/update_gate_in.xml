@@ -670,13 +670,7 @@
                                     android:id="@+id/ed_attach"
                                     android:textColor="@color/list_text"/>
 
-                                <com.i_tankdepo.HorizontalListView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="40dp"
-                                    android:id="@+id/attach_listView"
-                                    >
 
-                                </com.i_tankdepo.HorizontalListView>
                             </RelativeLayout>
 
                             <ImageView
@@ -748,6 +742,7 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
+                                android:id="@+id/tv_manuf_date"
                                 android:textColor="@color/tv_color"
                                 android:layout_height="match_parent"
                                 android:text="Manuf. Date"

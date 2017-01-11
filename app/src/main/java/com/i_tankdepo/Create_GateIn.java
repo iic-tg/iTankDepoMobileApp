@@ -720,6 +720,7 @@ public class Create_GateIn extends CommonActivity   {
                 break;
 
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.submit:

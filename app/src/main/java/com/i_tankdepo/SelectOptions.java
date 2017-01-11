@@ -200,6 +200,7 @@ public class SelectOptions extends CommonActivity {
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.tv_selected:

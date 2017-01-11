@@ -108,6 +108,7 @@ public class TypeReport extends CommonActivity {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.iv_changeOfStatus:

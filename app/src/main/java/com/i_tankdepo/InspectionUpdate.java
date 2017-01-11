@@ -101,6 +101,7 @@ public class InspectionUpdate extends CommonActivity {
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
         }

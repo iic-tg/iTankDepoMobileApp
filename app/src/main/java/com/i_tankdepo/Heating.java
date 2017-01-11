@@ -440,6 +440,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            finish();
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
             // Handle the camera action
         } else if (id == R.id.nav_changePwd) {

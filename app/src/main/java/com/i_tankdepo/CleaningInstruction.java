@@ -181,6 +181,7 @@ public class CleaningInstruction extends CommonActivity {
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.ed_org_cleanDate:

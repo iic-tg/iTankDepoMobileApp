@@ -243,6 +243,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            finish();
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             // Handle the camera action
         }else if (id == R.id.nav_changePwd) {
@@ -496,6 +497,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 holder.tv_remark = (TextView) convertView.findViewById(R.id.tv_remark);
                 holder.Gi_trans_no = (TextView) convertView.findViewById(R.id.tv_code);
                 holder.Tracking_ID = (TextView) convertView.findViewById(R.id.tv_location);
+                holder.Billing_Status = (TextView) convertView.findViewById(R.id.tv_billing_status);
 
                 holder.delete_grey = (ImageView)convertView.findViewById(R.id.im_delete_grey);
                 holder.delete_red= (ImageView)convertView.findViewById(R.id.im_delete_red);
@@ -524,6 +526,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 holder.Gi_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
                 holder.Tracking_ID.setText(userListBean.getTracking_id());
+                holder.Billing_Status.setText(userListBean.getINVC_GNRTN());
 
                 for(int i=0;i<list.size();i++){
                     if(position==0) {
@@ -561,7 +564,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,eir_no,tv_activityName,tv_activity,tv_RefNo,tv_modifiedBy,tv_Invoice_Party,tv_modifiedDate
-                ,tv_remark,Gi_trans_no,Tracking_ID;
+                ,tv_remark,Gi_trans_no,Tracking_ID,Billing_Status;
         CheckBox checkBox;
         ImageView delete_red,delete_grey;
 
@@ -771,7 +774,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                    }
                 }else if(deleteActivity.contains("Incorrect syntax"))
                 {
-
+                    shortToast(getApplicationContext(),"Activity could not be deleted..!");
                 }
             }
             else

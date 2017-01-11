@@ -94,7 +94,7 @@ public class Update_GateIn extends CommonActivity {
 
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
-    private TextView tv_toolbarTitle,tv_next_text_id,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
+    private TextView tv_toolbarTitle,tv_manuf_date,tv_next_text_id,tv_add,tv_name,tv_equip_no,tv_type,tv_code,tv_status,tv_date,tv_time,tv_cargo;
 
     private ImageView menu,im_date,im_time,im_Attachment,iv_back,im_manuf_date,im_last_testDate;
     private DrawerLayout drawer;
@@ -192,7 +192,11 @@ public class Update_GateIn extends CommonActivity {
         code= GlobalConstants.code;
         status= GlobalConstants.status;
         location= GlobalConstants.location;
-
+        if(cd.isConnectingToInternet()) {
+            new Equipment_More_Info().execute();
+        }else{
+            shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
+        }
         trans_no= GlobalConstants.gateIn_Trans_no;
 
         date= GlobalConstants.date;
@@ -239,7 +243,7 @@ public class Update_GateIn extends CommonActivity {
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
         ed_manuf_date.setOnClickListener(this);
         im_manuf_date.setOnClickListener(this);
-        ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
+
         ed_tare_weight=(EditText)findViewById(R.id.ed_tare_weight);
         ed_Gross_weight=(EditText)findViewById(R.id.ed_gross_weight);
         ed_capacity=(EditText)findViewById(R.id.ed_capacity);
@@ -249,6 +253,8 @@ public class Update_GateIn extends CommonActivity {
         ed_next_date=(EditText)findViewById(R.id.ed_next_date);
         ed_next_type=(EditText)findViewById(R.id.ed_next_testtype);
         ed_info_remark=(EditText)findViewById(R.id.ed_info_remark);
+
+        tv_manuf_date = (TextView)findViewById(R.id.tv_manuf_date);
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
         im_last_testDate = (ImageView)findViewById(R.id.im_last_Testdate);
 
@@ -282,8 +288,7 @@ public class Update_GateIn extends CommonActivity {
         tv_next_text_id = (TextView) findViewById(R.id.tv_next_text_id);
         LL_Equipment_Info = (LinearLayout) findViewById(R.id.LL_Equipment_Info);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
-        attach_listView = (ListView)findViewById(R.id.attach_listView);
-        attach_listView.setVisibility(View.GONE);
+
 //        ed_customer.setFocusable(false);
         ed_equipement.setFocusable(false);
 //        ed_type.setFocusable(false);
@@ -310,7 +315,6 @@ public class Update_GateIn extends CommonActivity {
         ed_type.setText(type);*/
         ed_transport.setText(transport);
         ed_remark.setText(remark);
-
 
         LL_Equipment_Info.setVisibility(View.GONE);
 
@@ -362,12 +366,13 @@ public class Update_GateIn extends CommonActivity {
             @Override
             public void onClick(View view) {
 
-                LL_Equipment_Info.requestFocus();
+
                 LL_Equipment_Info.setVisibility(View.VISIBLE);
-                get_equipment=ed_equipement.getText().toString();
 
-                Log.i("get_equipment",get_equipment);
+                equip_up.setVisibility(View.VISIBLE);
+                equip_down.setVisibility(View.GONE);
 
+/*
                 if((get_equipment.length()<=0) || get_equipment==null ){
 
                     shortToast(getApplicationContext(),"Please Enter the Equipment Number");
@@ -376,8 +381,8 @@ public class Update_GateIn extends CommonActivity {
 
                 }else
                 {
-                    new Equipment_More_Info().execute();
-                }
+
+                }*/
                 //editText.requestFocus();
 
             }
@@ -546,7 +551,7 @@ public class Update_GateIn extends CommonActivity {
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
-        ed_manuf_date.setText(systemDate);
+//        ed_manuf_date.setText(systemDate);
         ed_last_test_date.setText(systemDate);
 
         sp_last_test_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -582,7 +587,7 @@ public class Update_GateIn extends CommonActivity {
         String date = getColoredSpanned("In Date","#bbbbbb");
         String t_time = getColoredSpanned("Time","#bbbbbb");
         String cargo = getColoredSpanned("Previous Cargo","#bbbbbb");
-
+//        String manuf_date = getColoredSpanned("Manuf. Date","#bbbbbb");
         String surName = getColoredSpanned("*","#cb0da5");
 
         tv_name.setText(Html.fromHtml(customer+" "+surName));
@@ -593,6 +598,7 @@ public class Update_GateIn extends CommonActivity {
         tv_date.setText(Html.fromHtml(date+" "+surName));
         tv_time.setText(Html.fromHtml(t_time+" "+surName));
         tv_cargo.setText(Html.fromHtml(cargo+" "+surName));
+//        tv_manuf_date.setText(Html.fromHtml(manuf_date+" "+surName));
 
 
 
@@ -693,7 +699,6 @@ public class Update_GateIn extends CommonActivity {
             case R.id.im_date:
                 manuf_date=false;
 
-
                 last_test_date=false;
 
                 showDialog(DATE_DIALOG_ID);
@@ -728,6 +733,7 @@ public class Update_GateIn extends CommonActivity {
 
 
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.submit:
@@ -859,6 +865,7 @@ public class Update_GateIn extends CommonActivity {
                 timePickerDialog.show();
                 break;
             case R.id.home:
+                finish();
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
             case R.id.refresh:
@@ -1799,7 +1806,7 @@ public class Update_GateIn extends CommonActivity {
              "Attachment":"False",*/
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("EquipmentNo", get_equipment);
+                jsonObject.put("EquipmentNo", equip_no);
                 jsonObject.put("PageName","GateIn");
                 jsonObject.put("Attachment","False");
                 jsonObject.put("GateinTransactionNo","");

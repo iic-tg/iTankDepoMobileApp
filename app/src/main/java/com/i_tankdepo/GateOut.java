@@ -474,10 +474,11 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            finish();
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             // Handle the camera action
         }else if (id == R.id.nav_changePwd) {
-                 startActivity(new Intent(getApplicationContext(),Change_Password.class));
+            startActivity(new Intent(getApplicationContext(),Change_Password.class));
         } else if (id == R.id.nav_Logout) {
                     if(mServiceIntent!=null)
                         getApplicationContext().stopService(mServiceIntent);
@@ -566,6 +567,8 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                                 filenamejson=attachmentjson.getJSONObject(j);
 //                                filename=filenamejson.getString("fileName");
                                     pending_bean.setFilename(filenamejson.getString("fileName"));
+                                    pending_bean.setAttach_ID(filenamejson.getString("attchId"));
+
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
@@ -741,6 +744,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 holder.type_id = (TextView) convertView.findViewById(R.id.tv_type_code);
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.filename = (TextView) convertView.findViewById(R.id.tv_text13);
+                holder.attach_ID = (TextView) convertView.findViewById(R.id.tv_text14);
                 holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
                 holder.LL_username.setVisibility(View.GONE);
 
@@ -793,13 +797,11 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 holder.code_id.setText(userListBean.getCode_Id());
                 holder.pre_adv_id.setText(userListBean.getGI_TRNSCTN_NO());
                 holder.filename.setText(userListBean.getFilename());
+                holder.attach_ID.setText(userListBean.getAttach_ID());
 
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-
-
 
                         Intent i=new Intent(getApplicationContext(),Update_Gateout.class);
 
@@ -827,7 +829,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                         GlobalConstants.pre_adv_id=list.get(position).getGI_TRNSCTN_NO();
                         GlobalConstants.attachmentStatus=list.get(position).getAttachmentStatus();
                         GlobalConstants.attach_filename=list.get(position).getFilename();
-
+                        GlobalConstants.attach_ID = list.get(position).getAttach_ID();
                         startActivity(i);
 
 
@@ -870,7 +872,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
     }
     static class ViewHolder {
         TextView equip_no,time, Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,pre_id,pre_code,cust_code,type_id,code_id,
-                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,filename;
+                vechicle,transport,Eir_no,heating_bt,rental_bt,remark,status,pre_adv_id,type,filename,attach_ID;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;

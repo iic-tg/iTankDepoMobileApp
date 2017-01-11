@@ -246,6 +246,7 @@ public class LeakTestCreate extends CommonActivity {
                 startActivity(getIntent());
                 break;
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.ed_in_Date:

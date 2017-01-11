@@ -38,42 +38,46 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_margin="10dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:layout_weight="0.5"
                         android:id="@+id/LL_GateIn">
                         <RelativeLayout
-                            style="@style/DashboardImage_AM">
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
 
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_gray_gatein"
-                                android:id="@+id/im_grey_gatein"/>
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_gatein"
-                                android:id="@+id/im_gatein"/>
-                            <Button
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:gravity="center"
-                                android:text="0"
-                                android:visibility="gone"
-                                android:id="@+id/bt_gateinCount"
-                                android:textColor="@color/white"
-                                android:layout_marginRight="48dp"
-                                android:textSize="8sp"
-                                android:background="@drawable/circle_button"
-                                android:layout_alignParentRight="true"/>
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_gray_gatein"
+                                    android:id="@+id/im_grey_gatein"/>
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_gatein"
+                                    android:id="@+id/im_gatein"/>
+                                <Button
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:gravity="center"
+                                    android:text="0"
+                                    android:visibility="gone"
+                                    android:id="@+id/bt_gateinCount"
+                                    android:textColor="@color/white"
+                                    android:layout_marginRight="48dp"
+                                    android:textSize="8sp"
+                                    android:background="@drawable/circle_button"
+                                    android:layout_alignParentRight="true"/>
+
+
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Gate In"
                                 android:id="@+id/GateIn"
-                                android:layout_marginTop="5dp"
                                 android:layout_alignParentBottom="true"
                                 android:gravity="center"
                                 />
-
                         </RelativeLayout>
 
 
@@ -89,7 +93,9 @@
                         android:layout_weight="0.5"
                         android:id="@+id/LL_GateOut"
                         >
-
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
                         <RelativeLayout
                             style="@style/DashboardImage_AM">
                             <ImageView
@@ -97,13 +103,7 @@
                                 android:src="@mipmap/ic_gray_gate_out"
                                 android:id="@+id/im_grey_gateout"/>
 
-                            <TextView
-                                style="@style/DashboardText_AM"
-                                android:text="Gate Out"
-                                android:id="@+id/GateOut"
-                                android:layout_marginTop="5dp"
-                                android:layout_alignParentBottom="true"
-                                android:gravity="center"/>
+
 
                             <ImageView
                                 style="@style/DashboardImage_AM"
@@ -122,7 +122,14 @@
                                 android:background="@drawable/circle_button"
                                 android:layout_alignParentRight="true"/>
                         </RelativeLayout>
-
+                            <TextView
+                                style="@style/DashboardText_AM"
+                                android:text="Gate Out"
+                                android:id="@+id/GateOut"
+                                android:layout_marginTop="5dp"
+                                android:layout_alignParentBottom="true"
+                                android:gravity="center"/>
+                        </RelativeLayout>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -145,6 +152,9 @@
                         android:layout_weight="0.5"
                       >
                         <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                        <RelativeLayout
                             style="@style/DashboardImage_AM">
                             <ImageView
                                 style="@style/DashboardImage_AM"
@@ -166,6 +176,10 @@
                                 android:textSize="8sp"
                                 android:background="@drawable/circle_button"
                                 android:layout_alignParentRight="true"/>
+
+
+
+                        </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Heating"
@@ -173,10 +187,7 @@
                                 android:layout_alignParentBottom="true"
                                 android:gravity="center"
                                 android:id="@+id/Heating" />
-
-
                         </RelativeLayout>
-
 
 
 
@@ -196,14 +207,16 @@
                         >
 
 
-
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
                         <RelativeLayout
                             style="@style/DashboardImage_AM">
                             <ImageView
                                 style="@style/DashboardImage_AM"
                                 android:src="@mipmap/ic_gray_cleaning"
                                 android:id="@+id/im_grey_cleaning"
-                               />
+                                />
                             <ImageView
                                 style="@style/DashboardImage_AM"
                                 android:src="@mipmap/ic_cleaning"
@@ -222,14 +235,16 @@
                                 android:background="@drawable/circle_button"
                                 android:layout_alignParentRight="true"/>
 
-                            <TextView
-                                style="@style/DashboardText_AM"
-                                android:text="Cleaning"
-                                android:id="@+id/Cleaning"
-                                android:layout_marginTop="5dp"
-                                android:layout_alignParentBottom="true"
-                                android:gravity="center"/>
+
                         </RelativeLayout>
+                        <TextView
+                            style="@style/DashboardText_AM"
+                            android:text="Cleaning"
+                            android:id="@+id/Cleaning"
+                            android:layout_marginTop="5dp"
+                            android:layout_alignParentBottom="true"
+                            android:gravity="center"/>
+                    </RelativeLayout>
 
                     </LinearLayout>
 
@@ -253,29 +268,33 @@
                         android:id="@+id/LL_Inspection"
                         android:layout_weight="0.5"
                         >
-
                         <RelativeLayout
-                            style="@style/DashboardImage_AM">
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_gray_inspection"
-                                android:id="@+id/im_grey_Inspection" />
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_inspection"
-                                android:id="@+id/im_Inspection" />
-                            <Button
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:gravity="center"
-                                android:text="0"
-                                android:visibility="gone"
-                                android:id="@+id/bt_inspectionCount"
-                                android:textColor="@color/white"
-                                android:layout_marginRight="48dp"
-                                android:textSize="8sp"
-                                android:background="@drawable/circle_button"
-                                android:layout_alignParentRight="true"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_gray_inspection"
+                                    android:id="@+id/im_grey_Inspection" />
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_inspection"
+                                    android:id="@+id/im_Inspection" />
+                                <Button
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:gravity="center"
+                                    android:text="0"
+                                    android:visibility="gone"
+                                    android:id="@+id/bt_inspectionCount"
+                                    android:textColor="@color/white"
+                                    android:layout_marginRight="48dp"
+                                    android:textSize="8sp"
+                                    android:background="@drawable/circle_button"
+                                    android:layout_alignParentRight="true"/>
+
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Inspection"
@@ -297,7 +316,9 @@
                         android:id="@+id/LL_Repair"
                         android:layout_weight="0.5"
                         >
-
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
                         <RelativeLayout
                             style="@style/DashboardImage_AM">
                             <ImageView
@@ -320,14 +341,16 @@
                                 android:textSize="8sp"
                                 android:background="@drawable/circle_button"
                                 android:layout_alignParentRight="true"/>
-                            <TextView
-                                style="@style/DashboardText_AM"
-                                android:text="Repair"
-                                android:id="@+id/Repair"
-                                android:layout_marginTop="5dp"
-                                android:layout_alignParentBottom="true"
-                                android:gravity="center"/>
+
                         </RelativeLayout>
+                        <TextView
+                            style="@style/DashboardText_AM"
+                            android:text="Repair"
+                            android:id="@+id/Repair"
+                            android:layout_marginTop="5dp"
+                            android:layout_alignParentBottom="true"
+                            android:gravity="center"/>
+                    </RelativeLayout>
 
                     </LinearLayout>
                 </LinearLayout>
@@ -352,29 +375,36 @@
                         android:id="@+id/LL_Leaktest"
                         android:layout_weight="0.5"
                         >
-                        <RelativeLayout
-                            style="@style/DashboardImage_AM">
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_grey_leaktest"
-                                android:id="@+id/im_grey_leaktest"/>
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_leaktest"
-                                android:id="@+id/im_leaktest"/>
-                            <Button
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:gravity="center"
-                                android:text="0"
-                                android:visibility="gone"
-                                android:id="@+id/bt_leaktestCount"
-                                android:textColor="@color/white"
-                                android:layout_marginRight="48dp"
-                                android:textSize="8sp"
-                                android:background="@drawable/circle_button"
-                                android:layout_alignParentRight="true"/>
 
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_grey_leaktest"
+                                    android:id="@+id/im_grey_leaktest"/>
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_leaktest"
+                                    android:id="@+id/im_leaktest"/>
+                                <Button
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:gravity="center"
+                                    android:text="0"
+                                    android:visibility="gone"
+                                    android:id="@+id/bt_leaktestCount"
+                                    android:textColor="@color/white"
+                                    android:layout_marginRight="48dp"
+                                    android:textSize="8sp"
+                                    android:background="@drawable/circle_button"
+                                    android:layout_alignParentRight="true"/>
+
+
+
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Leak Test"
@@ -382,7 +412,6 @@
                                 android:layout_marginTop="5dp"
                                 android:layout_alignParentBottom="true"
                                 android:gravity="center"/>
-
                         </RelativeLayout>
 
                     </LinearLayout>
@@ -398,17 +427,23 @@
 
                         android:layout_weight="0.5"
                         android:id="@+id/LL_History">
+
                         <RelativeLayout
-                            style="@style/DashboardImage_AM">
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:id="@+id/im_grey_history"
-                                android:src="@mipmap/ic_grey_equip_history"/>
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_history"
-                                android:id="@+id/im_history"
-                                />
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:id="@+id/im_grey_history"
+                                    android:src="@mipmap/ic_grey_equip_history"/>
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_history"
+                                    android:id="@+id/im_history"
+                                    />
+
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Equipment History"
@@ -440,28 +475,34 @@
                         android:layout_weight="0.5"
                         android:gravity="center"
                         android:id="@+id/LL_Stock_Report">
-                        <RelativeLayout
-                            style="@style/DashboardImage_AM">
-                        <ImageView
-                            style="@style/DashboardImage_AM"
-                            android:src="@mipmap/ic_grey_report"
-                            android:id="@+id/im_grey_report"/>
 
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_grey_report"
+                                    android:id="@+id/im_grey_report"/>
+
+
+
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_report"
+                                    android:id="@+id/im_report"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignParentLeft="true"
+                                    android:layout_alignParentStart="true" />
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
-                                android:text="Stock report"
+                                android:text="Stock Report"
                                 android:id="@+id/Report"
                                 android:layout_marginTop="5dp"
                                 android:layout_alignParentBottom="true"
                                 android:gravity="center"/>
-
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_report"
-                                android:id="@+id/im_report"
-                                android:layout_alignParentTop="true"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true" />
                         </RelativeLayout>
 
 
@@ -472,23 +513,27 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_margin="10dp"
-                        android:visibility="invisible"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_weight="0.5"
                         android:id="@+id/LL_change_status"
                       >
                         <RelativeLayout
-                            style="@style/DashboardImage_AM">
-                            <ImageView
-                                style="@style/DashboardImage_AM"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <RelativeLayout
+                                style="@style/DashboardImage_AM">
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
 
-                                android:src="@mipmap/ic_grey_equip_history"/>
-                            <ImageView
-                                style="@style/DashboardImage_AM"
-                                android:src="@mipmap/ic_history"
+                                    android:src="@mipmap/ic_cos_grey"/>
+                                <ImageView
+                                    style="@style/DashboardImage_AM"
+                                    android:src="@mipmap/ic_cos"
 
-                                />
+                                    />
+
+                            </RelativeLayout>
                             <TextView
                                 style="@style/DashboardText_AM"
                                 android:text="Change Of Status"

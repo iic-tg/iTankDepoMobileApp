@@ -465,12 +465,13 @@ public class Update_Gateout extends CommonActivity {
                 break;
 
             case R.id.iv_back:
+                finish();
                 onBackPressed();
                 break;
             case R.id.heat_submit:
 
                 try {
-                    if (filename.length() < 0) {
+                    if (encodedImage.length() < 0) {
 
                     } else {
                         IfAttchment = "True";

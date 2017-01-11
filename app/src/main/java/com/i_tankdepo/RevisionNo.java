@@ -145,6 +145,7 @@ public class RevisionNo extends CommonActivity {
     public void onClick(View view) {
     switch (view.getId()){
         case R.id.iv_back:
+            finish();
             onBackPressed();
             break;
         case R.id.heat_home:

@@ -473,6 +473,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            finish();
             startActivity(new Intent(getApplicationContext(),MainActivity.class));
             // Handle the camera action
         }else if (id == R.id.nav_changePwd) {
@@ -571,7 +572,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 //                                filename=filenamejson.getString("fileName");
                                 pending_bean.setFilename(filenamejson.getString("fileName"));
                                 pending_bean.setAttach_ID(filenamejson.getString("attchId"));
-                                Log.d("attachment",filename);
+                             //   Log.d("attachment",filename);
 
                             }
 
