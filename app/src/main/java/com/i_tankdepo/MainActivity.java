@@ -319,8 +319,8 @@ public class MainActivity extends CommonActivity
                 InspectionCount = getJsonObject.getString("InspectionCount");
                 HeatingCount = getJsonObject.getString("HeatingCount");
                 LeaktestCount = getJsonObject.getString("LeakTestCount");
-//                authorization = getJsonObject.getString("Status");
-//                Log.d("error...",authorization);
+               /* authorization = getJsonObject.getString("Status");
+                Log.d("error...",authorization);*/
 
                 try {
 
@@ -477,7 +477,17 @@ public class MainActivity extends CommonActivity
         }
         @Override
         protected void onPostExecute(Void aVoid) {
-
+            super.onPostExecute(aVoid);
+       /* if(authorization.equalsIgnoreCase("Authentication Required")){
+            if(mServiceIntent!=null)
+                getApplicationContext().stopService(mServiceIntent);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean(SP_LOGGED_IN, false);
+                editor.commit();
+                finish();
+                Intent in = new Intent(getApplicationContext(), Login_Activity.class);
+                startActivity(in);
+        }else {*/
             gateInCount.setText(GateinCount);
             gateoutCount.setText(GateOutCount);
             heatingCount.setText(HeatingCount);
@@ -485,15 +495,15 @@ public class MainActivity extends CommonActivity
             cleaningCount.setText(CleaningCount);
             leaktestCount.setText(LeaktestCount);
 
-             gateInCount.setVisibility(View.VISIBLE);
+            gateInCount.setVisibility(View.VISIBLE);
             gateoutCount.setVisibility(View.VISIBLE);
             heatingCount.setVisibility(View.VISIBLE);
             cleaningCount.setVisibility(View.VISIBLE);
             inspectionCount.setVisibility(View.VISIBLE);
             leaktestCount.setVisibility(View.VISIBLE);
 
+//        }
 
-            super.onPostExecute(aVoid);
 
 
             progressDialog.dismiss();

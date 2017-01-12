@@ -518,6 +518,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
             HttpEntity httpEntity = null;
             HttpResponse response = null;
+
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLGateMySubmit);
             // httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-Type", "application/json");

@@ -2363,7 +2363,7 @@ public class Create_GateIn extends CommonActivity   {
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            //  progressDialog.show();
+            progressDialog.show();
         }
 
         @Override
