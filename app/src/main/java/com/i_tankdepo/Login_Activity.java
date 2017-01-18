@@ -65,7 +65,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-
+        setTheme(R.style.AppTheme);
 
         username=(EditText)findViewById(R.id.username);
         password=(EditText)findViewById(R.id.password);

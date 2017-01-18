@@ -278,42 +278,45 @@ public class SelectOptions extends CommonActivity {
                                 {
                                     selected_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Cust_Id=selected_id_list;
-                                    shortToast(getApplicationContext(),"Customer selected");
+                                    shortToast(getApplicationContext(),"Customer Selected");
+                                    Log.d("Customer", String.valueOf(selected_id_list));
+
                                 }else if(selected_name.equalsIgnoreCase("Equipment Type"))
                                 {
                                     selected_equip_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Equp_Id=selected_equip_id_list;
-                                    shortToast(getApplicationContext(),"Equipment Type");
+                                    shortToast(getApplicationContext(),"Equipment Type Selected");
+                                    Log.d("Equipment", String.valueOf(selected_equip_id_list));
 
                                 }else if(selected_name.equalsIgnoreCase("Previous Cargo"))
                                 {
                                     selected_prev_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Prev_Crg_Id=selected_prev_id_list;
-                                    shortToast(getApplicationContext(),"Previous Cargo");
-
+                                    shortToast(getApplicationContext(),"Previous Cargo Selected");
+                                    Log.d("Previous", String.valueOf(selected_prev_id_list));
 
                                 }else if(selected_name.equalsIgnoreCase("Current Status")) {
                                     selected_curnt_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Curnt_Status_Id=selected_curnt_id_list;
-                                    shortToast(getApplicationContext(),"Current Status");
-
+                                    shortToast(getApplicationContext(),"Current Status Selected");
+                                    Log.d("Current", String.valueOf(selected_curnt_id_list));
 
                                 }else if(selected_name.equalsIgnoreCase("Next Test Type"))
                                 {
                                     selected_next_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Nxt_Tst_Type_Id=selected_next_id_list;
-                                    shortToast(getApplicationContext(),"Next Test Type");
-
+                                    shortToast(getApplicationContext(),"Next Test Type Selected");
+                                    Log.d("Next", String.valueOf(selected_next_id_list));
 
                                 }else if(selected_name.equalsIgnoreCase("Depot")) {
                                     selected_depo_id_list.add(set[0]);
                                     GlobalConstants.selected_Stock_Depot_Id=selected_depo_id_list;
                                     shortToast(getApplicationContext(),"Depot selected");
-
+                                    Log.d("Depot", String.valueOf(selected_depo_id_list));
 
                                 }
                             } else {
-                                shortToast(getApplicationContext(), "Please Select CustomerName");
+                                shortToast(getApplicationContext(), "Please Select Customer Name..!");
                             }
                         }
                     }
@@ -322,11 +325,12 @@ public class SelectOptions extends CommonActivity {
 
             case R.id.run_report:
 
-
                     Cust_id=GlobalConstants.selected_Stock_Cust_Id;
+
                     Equip_id=GlobalConstants.selected_Stock_Equp_Id;
                     prevc_id=GlobalConstants.selected_Stock_Prev_Crg_Id;
                     curnt_staus_id=GlobalConstants.selected_Stock_Curnt_Status_Id;
+
                     next_test_id=GlobalConstants.selected_Stock_Nxt_Tst_Type_Id;
                     dept_id=GlobalConstants.selected_Stock_Depot_Id;
 
@@ -351,7 +355,7 @@ public class SelectOptions extends CommonActivity {
                         new Post_Stock_report().execute();
                     }else
                     {
-                        shortToast(getApplicationContext(),"Please Check Your Intenet Connection");
+                        shortToast(getApplicationContext(),"Please Check Your Internet Connection..!");
                     }
 
 
@@ -463,6 +467,7 @@ public class SelectOptions extends CommonActivity {
 
 
                 for (int i = 0; i < Equip_id.size(); i++) {
+
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", Equip_id.get(i));
                     Equipjsonlist.put(preadvicejsonObject);
@@ -476,6 +481,7 @@ public class SelectOptions extends CommonActivity {
 
 
                 for (int i = 0; i < curnt_staus_id.size(); i++) {
+                    Log.d("Current Status", String.valueOf(curnt_staus_id));
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", curnt_staus_id.get(i));
                     currentStausjsonlist.put(preadvicejsonObject);
@@ -691,7 +697,7 @@ public class SelectOptions extends CommonActivity {
             }
             else
             {
-                shortToast(getApplicationContext(),"Data Not Found");
+                shortToast(getApplicationContext(),"No Records Found..!");
 
 
             }

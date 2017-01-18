@@ -218,8 +218,8 @@ public class CustomerReport extends CommonActivity {
 
 
                 userListBean = list.get(position);
-                holder.ind.setText(userListBean.getIND() );
-                holder.cust_name.setText(userListBean.getCustomer() );
+                holder.ind.setText(userListBean.getIND());
+                holder.cust_name.setText(userListBean.getCustomer());
                 holder.total.setText(userListBean.getTOTAL());
                 holder.aar.setText(userListBean.getAAR());
                 holder.acn.setText(userListBean.getACN());
