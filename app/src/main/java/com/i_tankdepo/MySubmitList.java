@@ -82,7 +82,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,list_noData;
+    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,list_noData,tv_cust_name,tv_cargo,tv_equip_no,tv_type;
     private LinearLayout footer_add_btn,LL_footer_delete,LL_search_Value,LL_username;
 
     private Intent mServiceIntent;
@@ -168,7 +168,13 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
         LL_search_Value.setVisibility(View.GONE);
 //        tv_search_options.setVisibility(View.GONE);
-
+        tv_cust_name = (TextView)findViewById(R.id.tv_cust_name);
+        tv_cargo = (TextView)findViewById(R.id.tv_cargo);
+        tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
+        tv_type = (TextView)findViewById(R.id.tv_type);
+        tv_cargo.setVisibility(View.GONE);
+        tv_type.setVisibility(View.GONE);
+        tv_equip_no.setVisibility(View.GONE);
 
         tv_add.setOnClickListener(this);
 
@@ -253,6 +259,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(fieldItems.equalsIgnoreCase("Customer"))
                 {
                     fieldItems="CSTMR_CD";
+                    tv_cust_name.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                         LL_hole.setVisibility(View.GONE);
@@ -263,6 +273,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }else if(fieldItems.equalsIgnoreCase("Equipment No"))
                 {
                     fieldItems="EQPMNT_NO";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
                     if (cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -271,6 +285,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }else if(fieldItems.equalsIgnoreCase("Type"))
                 {
                     fieldItems="EQPMNT_TYP_CD";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.VISIBLE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.GONE);
                     if (cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -279,6 +297,10 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 }else if(fieldItems.equalsIgnoreCase("Previous Cargo"))
                 {
                     fieldItems="PRDCT_DSCRPTN_VC";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.VISIBLE);
                     if (cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -773,7 +795,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 System.out.println("from date after split" + part1_date);
                 holder.equip_no.setText(userListBean.getEquipmentNo()+","+ userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date+ " & " +part1_time);
+                holder.time.setText(part1_date+ " & " +userListBean.getTime());
                 holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());

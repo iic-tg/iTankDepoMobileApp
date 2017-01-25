@@ -459,44 +459,49 @@ public class SelectOptions extends CommonActivity {
                 deoptjsonlist = new JSONArray();
 
             try {
+                if(!Cust_id.equals("")){
                 for (int i = 0; i < Cust_id.size(); i++) {
+                    Log.d("Current Status", String.valueOf(Cust_id));
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", Cust_id.get(i));
                     Custjsonlist.put(preadvicejsonObject);
                 }
-
+            }else if(!Equip_id.equals("")){
 
                 for (int i = 0; i < Equip_id.size(); i++) {
-
+                    Log.d("Current Status", String.valueOf(Equip_id));
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", Equip_id.get(i));
                     Equipjsonlist.put(preadvicejsonObject);
                 }
-
+            }else if(!prevc_id.equals("")){
                 for (int i = 0; i < prevc_id.size(); i++) {
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", prevc_id.get(i));
                     previousjsonlist.put(preadvicejsonObject);
                 }
 
-
+            }else if(!curnt_staus_id.equals("")){
                 for (int i = 0; i < curnt_staus_id.size(); i++) {
-                    Log.d("Current Status", String.valueOf(curnt_staus_id));
+
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", curnt_staus_id.get(i));
                     currentStausjsonlist.put(preadvicejsonObject);
                 }
-
-                for (int i = 0; i < next_test_id.size(); i++) {
-                    preadvicejsonObject = new JSONObject();
-                    preadvicejsonObject.put("Type", next_test_id.get(i));
-                    NextTestjsonlist.put(preadvicejsonObject);
+            }else if(!next_test_id.equals("")) {
+                    for (int i = 0; i < next_test_id.size(); i++) {
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", next_test_id.get(i));
+                        NextTestjsonlist.put(preadvicejsonObject);
+                    }
                 }
+                else if (!dept_id.equals("")){
                 for (int i = 0; i < dept_id.size(); i++) {
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", dept_id.get(i));
                     deoptjsonlist.put(preadvicejsonObject);
                 }
+            }
             }catch (Exception e)
             {
 

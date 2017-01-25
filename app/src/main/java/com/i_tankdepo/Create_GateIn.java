@@ -9,7 +9,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,7 +18,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,10 +27,8 @@ import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -55,6 +51,7 @@ import com.i_tankdepo.Beanclass.Equipment_Info_TypeDropdownBean;
 import com.i_tankdepo.Beanclass.Previous_CargoDropdownBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
+import com.i_tankdepo.SQLite.DBAdapter;
 import com.i_tankdepo.Util.Utility;
 import com.i_tankdepo.helper.ServiceHandler;
 
@@ -172,6 +169,7 @@ public class Create_GateIn extends CommonActivity   {
     private String filePath;
     private String CaptureValue;
     private String Letter,Number;
+    private DBAdapter db;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -185,8 +183,11 @@ public class Create_GateIn extends CommonActivity   {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        CaptureValue = GlobalConstants.fullname;
 
+        db = new DBAdapter(Create_GateIn.this);
+
+
+        CaptureValue = GlobalConstants.fullname;
         pendingsize= GlobalConstants.pendingcount;
         tv_name = (TextView)findViewById(R.id.tv_name);
         tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
@@ -724,189 +725,237 @@ public class Create_GateIn extends CommonActivity   {
                 onBackPressed();
                 break;
             case R.id.submit:
+                if(cd.isConnectingToInternet()) {
 
-                try {
-                    if (filename.length() < 0) {
+                    try {
+                        if (filename.length() < 0) {
 
-                    } else {
-                        IfAttchment = "True";
+                        } else {
+                            IfAttchment = "True";
+                        }
+                    } catch (Exception e) {
+
+                        IfAttchment = "False";
                     }
-                }catch (Exception e)
-                {
 
-                    IfAttchment = "False";
-                }
+                    get_sp_customer = sp_customer.getSelectedItem().toString();
+                   get_equipment = ed_equipement.getText().toString();
+                   /* Letter = get_equipment.substring(0, 4);
+                    Number = get_equipment.substring(4, 11);*/
 
-
-                get_sp_customer = sp_customer.getSelectedItem().toString();
-                get_equipment = ed_equipement.getText().toString();
-                 Letter = get_equipment.substring(0,4);
-                 Number = get_equipment.substring(4,11);
-                get_sp_equipe = sp_equip_type.getSelectedItem().toString();
-
-                try {
-                    if(sp_last_test_type.getSelectedItem().toString().length()==0 || ed_last_test_date.getText().toString().length()==0)
+                    if(get_equipment.length()< 11 || get_equipment==null)
                     {
+
+                        shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+                        ed_equipement.requestFocus();
+
 
                     }else
                     {
-                        get_last_test_type = sp_last_test_type.getSelectedItem().toString();
-                        get_last_test_date = ed_last_test_date.getText().toString();
+                        Letter = get_equipment.substring(0,4);
+                        Number = get_equipment.substring(4,11);
+                        if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                            Log.d("Character",Letter);
+                            Log.d("Numbers",Number);
+                            if (cd.isConnectingToInternet()) {
+                                new Post_Verify_Equipment_No().execute();
+                            } else {
+                                shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                            }
+
+
+                        }else{
+                            shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                        }
                     }
 
-                }catch (Exception e)
-                {
-                    shortToast(getApplicationContext(),"Please Select Equipment Info");
-                    get_last_test_type="";
-                    get_last_test_date="";
-                }
+                    get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
+                    try {
+                        if (sp_last_test_type.getSelectedItem().toString().length() == 0 || ed_last_test_date.getText().toString().length() == 0) {
 
-                get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
-
-
-
-
-                get_status = ed_status.getText().toString();
-                get_code = ed_code.getText().toString();
-                get_date = ed_date.getText().toString();
-                get_time = ed_time.getText().toString();
-                get_location = ed_location.getText().toString();
-                get_eir_no = ed_eir_no.getText().toString();
-                get_vechicle = ed_vechicle.getText().toString();
-                get_transport = ed_transport.getText().toString();
-                get_remark = ed_remark.getText().toString();
-
-
-                get_manu_date = ed_manuf_date.getText().toString();
-                get_tare_weight = ed_tare_weight.getText().toString();
-                get_gross = ed_Gross_weight.getText().toString();
-                get_last_survy = ed_last_survey.getText().toString();
-                get_capacity = ed_capacity.getText().toString();
-                get_last_test_date = ed_last_test_date.getText().toString();
-                get_next_date = ed_next_date.getText().toString();
-                get_next_type = ed_next_type.getText().toString();
-                get_info_remark = ed_info_remark.getText().toString();
-
-                if((get_equipment.trim().equals("") && get_equipment==null && get_equipment.length()< 11)||
-                        (get_sp_customer.trim().equals("") || get_sp_customer==null) ||
-                        (get_sp_equipe.trim().equals("") || get_sp_equipe==null) ||
-                        (get_code.trim().equals("") || get_code==null) ||
-                        (get_sp_previous.trim().equals("") || get_sp_previous==null) ||
-                        (get_time.trim().equals("") || get_time==null)||
-                        (get_date.trim().equals("") || get_date==null))
-                {
-                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
-                }else
-                {
-
-                    if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
-                            && get_capacity.equals(EICPCTY_NC)
-                            && get_last_survy.equals(EILST_SRVYR_NM) && get_last_test_date.equals(EILST_TST_DT)
-                            && get_last_test_type.equals(EILST_TST_TYP_ID) && get_next_date.equals(EINXT_TST_DT)
-                            && get_next_type.equals(EINXT_TST_TYP_ID) && get_info_remark.equals(EIRMRKS_VC) && get_swt_info_rental.equals(EIRNTL_BT)
-                            && get_swt_info_active.equals(EIACTV_BT)) {
-
-                        changes = "False";
-                        if(get_equipment.length()< 11)
-                        {
-
-                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
-
-
-                        }else
-                        {
-                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
-                                Log.d("Character",Letter);
-                                Log.d("Numbers",Number);
-                                if (cd.isConnectingToInternet()) {
-                                    new PostInfo().execute();
-                                } else {
-                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
-                                }
-
-
-                            }else{
-                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
-                            }
+                        } else {
+                            get_last_test_type = sp_last_test_type.getSelectedItem().toString();
+                            get_last_test_date = ed_last_test_date.getText().toString();
                         }
 
+                    } catch (Exception e) {
+                        shortToast(getApplicationContext(), "Please Select Equipment Info");
+                        get_last_test_type = "";
+                        get_last_test_date = "";
+                    }
 
+
+                    get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
+
+
+                    get_status = ed_status.getText().toString();
+                    get_code = ed_code.getText().toString();
+                    get_date = ed_date.getText().toString();
+                    get_time = ed_time.getText().toString();
+                    get_location = ed_location.getText().toString();
+                    get_eir_no = ed_eir_no.getText().toString();
+                    get_vechicle = ed_vechicle.getText().toString();
+                    get_transport = ed_transport.getText().toString();
+                    get_remark = ed_remark.getText().toString();
+
+
+                    get_manu_date = ed_manuf_date.getText().toString();
+                    get_tare_weight = ed_tare_weight.getText().toString();
+                    get_gross = ed_Gross_weight.getText().toString();
+                    get_last_survy = ed_last_survey.getText().toString();
+                    get_capacity = ed_capacity.getText().toString();
+                    get_last_test_date = ed_last_test_date.getText().toString();
+                    get_next_date = ed_next_date.getText().toString();
+                    get_next_type = ed_next_type.getText().toString();
+                    get_info_remark = ed_info_remark.getText().toString();
+
+                    if ((get_equipment.trim().equals("") && get_equipment == null && get_equipment.length() < 11) ||
+                            (get_sp_customer.trim().equals("") || get_sp_customer == null) ||
+                            (get_sp_equipe.trim().equals("") || get_sp_equipe == null) ||
+                            (get_code.trim().equals("") || get_code == null) ||
+                            (get_sp_previous.trim().equals("") || get_sp_previous == null) ||
+                            (get_time.trim().equals("") || get_time == null) ||
+                            (get_date.trim().equals("") || get_date == null)) {
+                        shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                     } else {
 
-                        changes = "true";
+                        if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
+                                && get_capacity.equals(EICPCTY_NC)
+                                && get_last_survy.equals(EILST_SRVYR_NM) && get_last_test_date.equals(EILST_TST_DT)
+                                && get_last_test_type.equals(EILST_TST_TYP_ID) && get_next_date.equals(EINXT_TST_DT)
+                                && get_next_type.equals(EINXT_TST_TYP_ID) && get_info_remark.equals(EIRMRKS_VC) && get_swt_info_rental.equals(EIRNTL_BT)
+                                && get_swt_info_active.equals(EIACTV_BT)) {
+
+                            changes = "False";
+                            if (get_equipment.length() < 11) {
+
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
 
-                        if(get_equipment.length()< 11)
-                        {
+                            } else {
+                                if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                    Log.d("Character", Letter);
+                                    Log.d("Numbers", Number);
+                                    if (cd.isConnectingToInternet()) {
+                                        new PostInfo().execute();
+                                    } else {
+                                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                    }
 
-                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
-
-                        }else
-                        {
-                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
-                                Log.d("Character",Letter);
-                                Log.d("Numbers",Number);
-                                if (cd.isConnectingToInternet()) {
-                                    new PostInfo().execute();
                                 } else {
-                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                    shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
                                 }
-
-
-                            }else{
-                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
                             }
+
+
+                        } else {
+
+                            changes = "true";
+
+
+                            if (get_equipment.length() < 11) {
+
+                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+
+
+                            } else {
+                                if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                    Log.d("Character", Letter);
+                                    Log.d("Numbers", Number);
+                                    if (cd.isConnectingToInternet()) {
+                                        new PostInfo().execute();
+                                    } else {
+                                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                    }
+
+
+                                } else {
+                                    shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
+                                }
+                            }
+
                         }
 
                     }
+                }else{
+
+                    db.open();
+                    db.insertContact(get_sp_customer,get_equipment,get_sp_equipe,get_code,get_status,get_location,get_date,get_time,get_sp_previous
+                    ,get_vechicle,get_eir_no,get_transport,get_remark);
+                    db.close();
+
+/*
+                    db.insertData(get_sp_customer,get_equipment,get_sp_equipe,get_code,get_status,get_location,get_date,get_time,get_sp_previous,get_vechicle,get_eir_no,
+                            get_transport,get_remark,get_swt_heating,get_swt_rental,filename,get_manu_date,get_tare_weight,get_gross
+                    ,get_capacity,get_last_survy,get_last_test_date,get_last_test_type,get_next_date,get_next_type,get_info_remark,get_swt_info_active,get_swt_info_rental);
+*/
+
+
 
                 }
-
-
-
                 break;
             case R.id.LL_Submit:
-
+        if(cd.isConnectingToInternet()) {
                 try {
                     if (filename.length() < 0) {
 
                     } else {
                         IfAttchment = "True";
                     }
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
 
                     IfAttchment = "False";
                 }
                 get_sp_customer = sp_customer.getSelectedItem().toString();
-                get_equipment = ed_equipement.getText().toString();
+               get_equipment = ed_equipement.getText().toString();
 
+               /* Letter = get_equipment.substring(0, 4);
+                Number = get_equipment.substring(4, 11);*/
+            if(get_equipment.length()< 11 || get_equipment==null)
+            {
+                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
+                ed_equipement.requestFocus();
+
+
+            }else
+            {
                 Letter = get_equipment.substring(0,4);
                 Number = get_equipment.substring(4,11);
+                if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
+                    Log.d("Character",Letter);
+                    Log.d("Numbers",Number);
+                    if (cd.isConnectingToInternet()) {
+                        new Post_Verify_Equipment_No().execute();
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                    }
+
+
+                }else{
+                    shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                }
+            }
+
 
                 get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
                 get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
 
                 try {
-                    if(sp_last_test_type.getSelectedItem().toString().length()==0 || ed_last_test_date.getText().toString().length()==0)
-                    {
+                    if (sp_last_test_type.getSelectedItem().toString().length() == 0 || ed_last_test_date.getText().toString().length() == 0) {
 
-                    }else
-                    {
+                    } else {
                         get_last_test_type = sp_last_test_type.getSelectedItem().toString();
                         get_last_test_date = ed_last_test_date.getText().toString();
                     }
 
-                }catch (Exception e)
-                {
-                    shortToast(getApplicationContext(),"Please Select Equipment Info");
-                    get_last_test_type="";
-                    get_last_test_date="";
+                } catch (Exception e) {
+                    shortToast(getApplicationContext(), "Please Select Equipment Info");
+                    get_last_test_type = "";
+                    get_last_test_date = "";
                 }
-
 
 
                 get_status = ed_status.getText().toString();
@@ -931,17 +980,15 @@ public class Create_GateIn extends CommonActivity   {
                 get_next_type = ed_next_type.getText().toString();
                 get_info_remark = ed_info_remark.getText().toString();
 
-                if((get_equipment.trim().equals("") && get_equipment==null && get_equipment.length()< 11)||
-                        (get_sp_customer.trim().equals("") || get_sp_customer==null) ||
-                        (get_sp_equipe.trim().equals("") || get_sp_equipe==null) ||
-                        (get_code.trim().equals("") || get_code==null) ||
-                        (get_sp_previous.trim().equals("") || get_sp_previous==null) ||
-                        (get_time.trim().equals("") || get_time==null)||
-                        (get_date.trim().equals("") || get_date==null))
-                {
+                if ((get_equipment.trim().equals("") && get_equipment == null && get_equipment.length() < 11) ||
+                        (get_sp_customer.trim().equals("") || get_sp_customer == null) ||
+                        (get_sp_equipe.trim().equals("") || get_sp_equipe == null) ||
+                        (get_code.trim().equals("") || get_code == null) ||
+                        (get_sp_previous.trim().equals("") || get_sp_previous == null) ||
+                        (get_time.trim().equals("") || get_time == null) ||
+                        (get_date.trim().equals("") || get_date == null)) {
                     shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
-                }else
-                {
+                } else {
 
                     if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
                             && get_capacity.equals(EICPCTY_NC)
@@ -951,17 +998,15 @@ public class Create_GateIn extends CommonActivity   {
                             && get_swt_info_active.equals(EIACTV_BT)) {
 
                         changes = "False";
-                        if(get_equipment.length()< 11)
-                        {
+                        if (get_equipment.length() < 11) {
 
                             shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
 
-                        }else
-                        {
-                            if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
-                                Log.d("Character",Letter);
-                                Log.d("Numbers",Number);
+                        } else {
+                            if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                Log.d("Character", Letter);
+                                Log.d("Numbers", Number);
                                 if (cd.isConnectingToInternet()) {
                                     new PostInfo().execute();
                                 } else {
@@ -969,8 +1014,8 @@ public class Create_GateIn extends CommonActivity   {
                                 }
 
 
-                            }else{
-                                shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                            } else {
+                                shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
                             }
                         }
 
@@ -980,33 +1025,38 @@ public class Create_GateIn extends CommonActivity   {
                         changes = "true";
 
 
-                            if(get_equipment.length()< 11)
-                            {
+                        if (get_equipment.length() < 11) {
 
-                                shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
-
-
-                            }else
-                            {
-                                if(Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))){
-                                    Log.d("Character",Letter);
-                                    Log.d("Numbers",Number);
-                                    if (cd.isConnectingToInternet()) {
-                                        new PostInfo().execute();
-                                    } else {
-                                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
-                                    }
+                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
 
 
-                            }else{
-                                    shortToast(getApplicationContext(),"This Equipment Number is Not Valid..!");
+                        } else {
+                            if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                Log.d("Character", Letter);
+                                Log.d("Numbers", Number);
+                                if (cd.isConnectingToInternet()) {
+                                    new PostInfo().execute();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                                 }
+
+
+                            } else {
+                                shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
+                            }
                         }
 
                     }
 
                 }
+            }else{
 
+            db.open();
+            db.insertContact(get_sp_customer,get_equipment,get_sp_equipe,get_code,get_status,get_location,get_date,get_time,get_sp_previous
+                    ,get_vechicle,get_eir_no,get_transport,get_remark);
+            db.close();
+
+        }
 
                 break;
 
@@ -1716,7 +1766,7 @@ public class Create_GateIn extends CommonActivity   {
                     startActivity(i);
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "GateIn Created Faild", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "GateIn Created Failed", Toast.LENGTH_SHORT).show();
 
                 }
             }else
@@ -2421,7 +2471,7 @@ public class Create_GateIn extends CommonActivity   {
 
                 }else if(validationStatus.contains("cannot be marked for Rental Gate In"))
                 {
-                    longToast(getApplicationContext(),"Equipment" +get_equipment+ "cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
+                    longToast(getApplicationContext(),"This Equipment Number cannot be marked for Rental Gate In, as there is no Rental Entry / Rental Gate Out created");
                     get_swt_rental="False";
                 }
             }

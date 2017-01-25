@@ -82,7 +82,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text,list_noData;
+    private TextView tv_type,tv_equip_no,tv_cargo,tv_cust_name,tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<PendingBean> pending_arraylist = new ArrayList<>();
     private PendingBean pending_bean;
@@ -195,6 +195,14 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
 
         tv_toolbarTitle.setText("Gate Out");
 
+        tv_cust_name = (TextView)findViewById(R.id.tv_cust_name);
+        tv_cargo = (TextView)findViewById(R.id.tv_cargo);
+        tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
+        tv_type = (TextView)findViewById(R.id.tv_type);
+        tv_cargo.setVisibility(View.GONE);
+        tv_type.setVisibility(View.GONE);
+        tv_equip_no.setVisibility(View.GONE);
+
         RL_musubmit.setBackgroundColor(Color.parseColor("#ffffff"));
 
         searchView2.requestFocus();
@@ -273,6 +281,10 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 getEditText = "";
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
+                    tv_cust_name.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                         LL_hole.setVisibility(View.GONE);
@@ -281,6 +293,10 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -288,6 +304,10 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.VISIBLE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -295,6 +315,10 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.VISIBLE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -766,7 +790,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
 
                 holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date + " & " + part1_time);
+                holder.time.setText(part1_date + " & " + userListBean.getTime());
 
                 holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());

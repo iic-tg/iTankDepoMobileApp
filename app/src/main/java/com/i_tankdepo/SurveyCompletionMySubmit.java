@@ -87,7 +87,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text,list_noData;
+    private TextView tv_type,tv_equip_no,tv_cargo,tv_cust_name,tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text,list_noData;
     private Intent mServiceIntent;
     private ArrayList<RepairBean> repair_arraylist = new ArrayList<>();
     private RepairBean repair_bean;
@@ -195,7 +195,13 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         LL_search_Value.setVisibility(View.GONE);
         tv_toolbarTitle.setText("Survey Completion");
 
-
+        tv_cust_name = (TextView)findViewById(R.id.tv_cust_name);
+        tv_cargo = (TextView)findViewById(R.id.tv_cargo);
+        tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
+        tv_type = (TextView)findViewById(R.id.tv_type);
+        tv_cargo.setVisibility(View.GONE);
+        tv_type.setVisibility(View.GONE);
+        tv_equip_no.setVisibility(View.GONE);
 
         RL_pending.setBackgroundColor(Color.parseColor("#ffffff"));
 
@@ -274,6 +280,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 Log.i("Selected item : ", fieldItems);
                 if (fieldItems.equalsIgnoreCase("Customer")) {
                     fieldItems = "CSTMR_CD";
+                    tv_cust_name.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
                         LL_hole.setVisibility(View.GONE);
@@ -282,6 +292,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
                     }else{
@@ -289,6 +303,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.VISIBLE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
                     }else{
@@ -296,6 +314,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
+                    tv_cust_name.setVisibility(View.GONE);
+                    tv_type.setVisibility(View.GONE);
+                    tv_equip_no.setVisibility(View.GONE);
+                    tv_cargo.setVisibility(View.VISIBLE);
                     if(cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
                     }else{

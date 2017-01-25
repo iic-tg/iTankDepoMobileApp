@@ -482,7 +482,10 @@ public class LeakTestCreate extends CommonActivity {
                            // shortToast();
                         }else
                         {
-                            get_type=equipNoBeanArrayList.get(position).getType();
+                            int Id_position =position -1;
+                           // getTostatusID = ToStatusDropdownArrayList.get(Id_position).getCode();
+                            get_type=equipNoBeanArrayList.get(Id_position).getType();
+                            Log.d("EQUIPMENT NUMBER",get_type);
                             getInDate = ed_in_Date.getText().toString();
                             getCust_Name =ed_customer.getText().toString();
                             getCurrentStatus = ed_current_status.getText().toString();

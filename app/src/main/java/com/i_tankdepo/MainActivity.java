@@ -3,6 +3,8 @@ package com.i_tankdepo;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
+import com.i_tankdepo.SQLite.DBAdapter;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -58,11 +61,21 @@ public class MainActivity extends CommonActivity
     private Button gateoutCount,gateInCount,heatingCount,cleaningCount,leaktestCount,repairCount,inspectionCount;
     private String gateIn,gateout,cleaning,heating,inspection,leaktest;
     private String GateinCount,GateOutCount,CleaningCount,InspectionCount,HeatingCount,LeaktestCount,authorization;
+    private DBAdapter db;
+    private  long Total_Count;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        db = new DBAdapter(MainActivity.this);
+
+        /* Total_Count = db.Count();
+
+        Log.d("Total Count", String.valueOf(Total_Count));*/
+
 
         im_gatein=(ImageView)findViewById(R.id.im_gatein);
         im_gateout=(ImageView)findViewById(R.id.im_gateout);
@@ -255,6 +268,7 @@ public class MainActivity extends CommonActivity
                 break;
         }
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
