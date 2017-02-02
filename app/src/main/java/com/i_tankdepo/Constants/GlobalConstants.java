@@ -168,4 +168,5 @@ public class GlobalConstants {
 
     public static String roleID="";
         public static int pendingcount=0;
+    public static String validationStatus="";
 }

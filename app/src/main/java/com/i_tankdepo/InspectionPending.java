@@ -448,6 +448,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                 for (Product p : boxAdapter.getBox()) {
                     if (p.box) {
                         if (p.box == true) {
@@ -801,7 +802,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                     @Override
                     public void onClick(View v) {
 
-//                        Intent i = new Intent(getApplicationContext(), InspectionUpdate.class);
+                        Intent i = new Intent(getApplicationContext(), InspectionUpdate.class);
 
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
@@ -824,7 +825,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
                         GlobalConstants.slab_rate = list.get(position).getSlabrate();
                         GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
 
-//                        startActivity(i);
+                        startActivity(i);
 
 
 
@@ -1148,7 +1149,7 @@ public class InspectionPending extends CommonActivity implements NavigationView.
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override

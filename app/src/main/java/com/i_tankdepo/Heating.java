@@ -422,6 +422,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -1117,7 +1118,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override

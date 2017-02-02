@@ -109,6 +109,7 @@ public class HeatingPeriod extends CommonActivity  {
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -286,15 +287,16 @@ public class HeatingPeriod extends CommonActivity  {
         int hour = c.get(Calendar.HOUR);
         //24 hour format
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
-        SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
         ed_startDate.setText(systemDate);
         ed_endDate.setText(systemDate);
         ed_startTime.setText(curTime);
-        ed_startTime.setText(curTime);
+//        ed_startTime.setText(curTime);
 
+        
         String startDate = getColoredSpanned("Start Date","#bbbbbb");
         String startTime = getColoredSpanned("Start Time","#bbbbbb");
         String endDate = getColoredSpanned("End Date","#bbbbbb");
@@ -364,6 +366,7 @@ public class HeatingPeriod extends CommonActivity  {
             case R.id.ed_startDate:
 
                 endDate = false;
+
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.ed_endDate:
@@ -390,20 +393,23 @@ public class HeatingPeriod extends CommonActivity  {
                 mTimePicker = new TimePickerDialog(HeatingPeriod.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        ed_startTime.setText(selectedHour + ":" + selectedMinute);
+                        ed_startTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
+
                     }
                 }, hour, minute,true
                 );
                 mTimePicker.show();
                 break;
             case R.id.ed_endTime:
+
                  mcurrentTime = Calendar.getInstance();
                  hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
                  minute = mcurrentTime.get(Calendar.MINUTE);
                 mTimePicker = new TimePickerDialog(HeatingPeriod.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        ed_endTime.setText(selectedHour + ":" + selectedMinute);
+                        ed_endTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
+
 
                         get_startDate = ed_startDate.getText().toString();
                         get_startTime = ed_startTime.getText().toString();
@@ -435,6 +441,7 @@ public class HeatingPeriod extends CommonActivity  {
                 break;
 
             case R.id.im_startTime:
+
                  mcurrentTime = Calendar.getInstance();
                  hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
                  minute = mcurrentTime.get(Calendar.MINUTE);
@@ -442,7 +449,7 @@ public class HeatingPeriod extends CommonActivity  {
                 mTimePicker = new TimePickerDialog(HeatingPeriod.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        ed_startTime.setText(selectedHour + ":" + selectedMinute);
+                        ed_startTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
                     }
                 }, hour, minute,true
                 );
@@ -457,7 +464,8 @@ public class HeatingPeriod extends CommonActivity  {
                 mTimePicker = new TimePickerDialog(HeatingPeriod.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        ed_endTime.setText(selectedHour + ":" + selectedMinute);
+//                        ed_endTime.setText(selectedHour + ":" + selectedMinute);
+                        ed_endTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
 
                         get_startDate = ed_startDate.getText().toString();
                         get_startTime = ed_startTime.getText().toString();
@@ -471,11 +479,8 @@ public class HeatingPeriod extends CommonActivity  {
                             shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
                         }else{
                             if (cd.isConnectingToInternet()){
+
                                 new Post_Calc_Heating_period().execute();
-                                /*ed_startDate.setText("");
-                                ed_startTime.setText("");
-                                ed_endDate.setText("");
-                                ed_endTime.setText("");*/
 
                             }else{
                                 shortToast(getApplicationContext(),"Please Check Your Internet Connection");
@@ -499,7 +504,8 @@ public class HeatingPeriod extends CommonActivity  {
                 get_MinRate = ed_minRate.getText().toString();
                 get_Totalheat_Cost = tv_totalCost.getText().toString();
                 get_Totalheat_Period = ed_totalPrd.getText().toString();
-
+                Log.d("Total Cost",get_Totalheat_Cost);
+                Log.d("Total Period",get_Totalheat_Period);
                 if((get_startDate.equals("") || get_startDate == null) ||
                         (get_startTime.equals("") || get_startTime == null ) ||
                         (get_endDate.equals("") || get_endDate == null) ||
@@ -523,6 +529,7 @@ public class HeatingPeriod extends CommonActivity  {
 
     }
 
+    
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -545,7 +552,7 @@ public class HeatingPeriod extends CommonActivity  {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -574,7 +581,6 @@ public class HeatingPeriod extends CommonActivity  {
 
         }
     };
-
 
 
 
@@ -739,6 +745,7 @@ public class HeatingPeriod extends CommonActivity  {
             if(jsonobject!=null)
             {
                 tv_totalCost.setText(total_htng_rate);
+
             }
             else
             {

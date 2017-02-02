@@ -207,65 +207,119 @@ public class SelectOptions extends CommonActivity {
 
                 String date=ed_date.getText().toString();
 
-                if(selected_name_optional.equalsIgnoreCase("Cleaning Date From"))
-                {
-                        GlobalConstants.Cleaning_date_from=date;
-                }else  if(selected_name_optional.equalsIgnoreCase("Cleaning Date To"))
-                {
-                    GlobalConstants.Cleaning_date_to=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("In Date From"))
-                {
-                    GlobalConstants.In_date_from=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("In Date To"))
-                {
-                    GlobalConstants.In_date_to=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Inspection Date From"))
-                {
-                    GlobalConstants.Inspection_date_from=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Inspection Date To"))
-                {
-                    GlobalConstants.Inspection_date_to=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Current Status Date From"))
-                {
-                    GlobalConstants.Current_status_date_from=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Current Status Date To"))
-                {
-                    GlobalConstants.Current_status_date_to=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Next Test Date From"))
-                {
-                    GlobalConstants.Nxt_Tst_date_from=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Next Test Date To"))
-                {
-                    GlobalConstants.Nxt_Tst_date_to=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Equipment Number"))
-                {
-                    GlobalConstants.Equip_No_date=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("EIR Number"))
-                {
-                    GlobalConstants.EIR_No_date=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Out Date From"))
-                {
-                    GlobalConstants.Out_date_from=date;
-
-                }else  if(selected_name_optional.equalsIgnoreCase("Out Date To"))
-                {
-                    GlobalConstants.Out_date_to=date;
-
+                if (selected_name_optional.equalsIgnoreCase("Cleaning Date From")) {
+                    GlobalConstants.Cleaning_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Cleaning Date To")) {
+                    GlobalConstants.Cleaning_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("In Date From")) {
+                    GlobalConstants.In_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
                 }
+                else if (selected_name_optional.equalsIgnoreCase("In Date To")) {
+                    GlobalConstants.In_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                }
+                else if (selected_name_optional.equalsIgnoreCase("Inspection Date From")) {
+                    GlobalConstants.Inspection_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Inspection Date To")) {
+                    GlobalConstants.Inspection_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Current Status Date From")) {
+                    GlobalConstants.Current_status_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Current Status Date To")) {
+                    GlobalConstants.Current_status_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Next Test Date From")) {
+                    GlobalConstants.Nxt_Tst_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Next Test Date To")) {
+                    GlobalConstants.Nxt_Tst_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Equipment Number")) {
+                    GlobalConstants.Equip_No_date = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("EIR Number")) {
+                    GlobalConstants.EIR_No_date = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Out Date From")) {
+                    GlobalConstants.Out_date_from = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                } else if (selected_name_optional.equalsIgnoreCase("Out Date To")) {
+                    GlobalConstants.Out_date_to = date;
+                    if(date.length()!=0) {
+                        shortToast(getApplicationContext(), "Date Selected");
+                    }else{
+                        shortToast(getApplicationContext(), "Please Select the date..!");
+                    }
+                }
+
                 if(boxAdapter.getBox().size()==0) {
                    // shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+
+                    selected_id_list.clear();
+                    selected_equip_id_list.clear();
+                    selected_prev_id_list.clear();
+                    selected_curnt_id_list.clear();
+                    selected_next_id_list.clear();
+                    selected_depo_id_list.clear();
+
                     for (Product_Stock p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -459,49 +513,87 @@ public class SelectOptions extends CommonActivity {
                 deoptjsonlist = new JSONArray();
 
             try {
-                if(!Cust_id.equals("")){
-                for (int i = 0; i < Cust_id.size(); i++) {
-                    Log.d("Current Status", String.valueOf(Cust_id));
-                    preadvicejsonObject = new JSONObject();
-                    preadvicejsonObject.put("Type", Cust_id.get(i));
-                    Custjsonlist.put(preadvicejsonObject);
+                if (Cust_id.size() != 0) {
+                    for (int i = 0; i < Cust_id.size(); i++) {
+                        Log.d("Current Status", String.valueOf(Cust_id));
+                        preadvicejsonObject = new JSONObject();
+                        preadvicejsonObject.put("Type", Cust_id.get(i));
+                        Custjsonlist.put(preadvicejsonObject);
+                    }
                 }
-            }else if(!Equip_id.equals("")){
+            }catch (Exception e)
+            {
 
-                for (int i = 0; i < Equip_id.size(); i++) {
-                    Log.d("Current Status", String.valueOf(Equip_id));
-                    preadvicejsonObject = new JSONObject();
-                    preadvicejsonObject.put("Type", Equip_id.get(i));
-                    Equipjsonlist.put(preadvicejsonObject);
-                }
-            }else if(!prevc_id.equals("")){
-                for (int i = 0; i < prevc_id.size(); i++) {
-                    preadvicejsonObject = new JSONObject();
-                    preadvicejsonObject.put("Type", prevc_id.get(i));
-                    previousjsonlist.put(preadvicejsonObject);
-                }
+            }
+          try
+          {
+           if(Equip_id.size()!=0) {
 
-            }else if(!curnt_staus_id.equals("")){
+               for (int i = 0; i < Equip_id.size(); i++) {
+                   Log.d("Current Status", String.valueOf(Equip_id));
+                   preadvicejsonObject = new JSONObject();
+                   preadvicejsonObject.put("Type", Equip_id.get(i));
+                   Equipjsonlist.put(preadvicejsonObject);
+               }
+           }
+    } catch (Exception e)
+          {
+
+          }
+
+                try {
+                    if (prevc_id.size() != 0) {
+                        for (int i = 0; i < prevc_id.size(); i++) {
+                            preadvicejsonObject = new JSONObject();
+                            preadvicejsonObject.put("Type", prevc_id.get(i));
+                            previousjsonlist.put(preadvicejsonObject);
+                        }
+                    }
+                }
+                catch (Exception e)
+
+                {
+
+                }
+                try
+                {
+                if(curnt_staus_id.size()!=0) {
+
                 for (int i = 0; i < curnt_staus_id.size(); i++) {
 
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", curnt_staus_id.get(i));
                     currentStausjsonlist.put(preadvicejsonObject);
                 }
-            }else if(!next_test_id.equals("")) {
-                    for (int i = 0; i < next_test_id.size(); i++) {
-                        preadvicejsonObject = new JSONObject();
-                        preadvicejsonObject.put("Type", next_test_id.get(i));
-                        NextTestjsonlist.put(preadvicejsonObject);
-                    }
+                        }
                 }
-                else if (!dept_id.equals("")){
+                catch (Exception e)
+                {
+
+                }
+                try
+                {
+                    if(next_test_id.size()!=0) {
+                        for (int i = 0; i < next_test_id.size(); i++) {
+                            preadvicejsonObject = new JSONObject();
+                            preadvicejsonObject.put("Type", next_test_id.get(i));
+                            NextTestjsonlist.put(preadvicejsonObject);
+                        }
+                    }
+                }catch (Exception e)
+                {
+
+                }
+                    try
+                {
+                if(dept_id.size()!=0) {
+
                 for (int i = 0; i < dept_id.size(); i++) {
                     preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("Type", dept_id.get(i));
                     deoptjsonlist.put(preadvicejsonObject);
                 }
-            }
+             }
             }catch (Exception e)
             {
 
@@ -577,6 +669,7 @@ public class SelectOptions extends CommonActivity {
                             generalReportBeanArrayList = new ArrayList<GeneralReportBean>();
                             typeReportBeanArrayList = new ArrayList<TypeReportBean>();
                             customerReportbeanArrayList = new ArrayList<CustomerReportBean>();
+
 
                             for (int i = 0; i < jsonarray.length(); i++) {
                                 jsonObject = jsonarray.getJSONObject(i);
@@ -792,8 +885,9 @@ public class SelectOptions extends CommonActivity {
                     }else {
 
                         pending_accordion_arraylist = new ArrayList<PendingAccordionBean>();
-
+                        pending_accordion_arraylist.clear();
                         products = new ArrayList<Product_Stock>();
+                        products.clear();
                         for (int i = 0; i < jsonarray.length(); i++) {
 
                             pending_accordion_bean = new PendingAccordionBean();
@@ -992,4 +1086,14 @@ public class SelectOptions extends CommonActivity {
 
     }
 
+    protected void onResume(){
+        super.onResume();
+        selected_id_list.clear();
+        selected_equip_id_list.clear();
+        selected_prev_id_list.clear();
+        selected_curnt_id_list.clear();
+        selected_next_id_list.clear();
+        selected_depo_id_list.clear();
+
+    }
 }

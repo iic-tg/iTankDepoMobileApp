@@ -330,7 +330,7 @@ public class Update_Gateout extends CommonActivity {
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
@@ -743,7 +743,7 @@ public class Update_Gateout extends CommonActivity {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         return sdf.format(date).toString();
     }

@@ -39,9 +39,9 @@ public class DBAdapter {
     public static  final String VEHICLE_NO = "vehicle_no";
     public static  final String TRANSPORTER = "transporter";
     public static  final String REMARKS = "remarks";
-     public static  final String HEATING_BIT = "heat_bit";
-     public static  final String RENTAL_BIT = "rental_bit";
-     public static  final String ATTACHMENT = "attach_files";
+    public static  final String HEATING_BIT = "heat_bit";
+    public static  final String RENTAL_BIT = "rental_bit";
+
      public static  final String MANUF_DATE = "manuf_date";
      public static  final String TARE_WEIGHT = "tare_weight";
      public static  final String GROSS_WEIGHT = "gross_weight";
@@ -60,9 +60,10 @@ public class DBAdapter {
     private static final String DATABASE_CREATE_GATEIN =
             "create table create_gatein (_id integer primary key autoincrement, "
                     + "customer text not null, equipment_no text not null, type text not null, code text not null,status text not null," +
-                    " location text not null, indate text not null, time text not null," +
-                    " previous_crg text not null, eir_no text not null, vehicle_no text not null, transporter text not null, " +
-                    " remarks text not null );";
+                    " location text , indate text not null, time text not null, previous_crg text not null, eir_no text , vehicle_no text , transporter text , " +
+                    " remarks text , heat_bit text , rental_bit text , manuf_date text , tare_weight text , gross_weight text , capacity text , last_surveyor text , last_testdate text , last_testtype text , next_testdate text , next_testtype text , info_remarks text);";
+  /*  , manuf_date text , tare_weight text , gross_weight text , capacity text" +
+            " last_surveyor text , last_testdate text , last_testtype text , next_testdate text , next_testtype text , info_remarks text*/
     private final Context context;
     private DatabaseHelper DBHelper;
     private SQLiteDatabase db;
@@ -124,7 +125,9 @@ public class DBAdapter {
 
     //---insert a contact into the database---
     public long insertContact(String customer , String equipment_no, String type, String code,String status, String location, String indate, String time
-            ,String previous_crg, String vehicle_no , String eir_no,String transporter,String remarks)
+            ,String previous_crg, String vehicle_no , String eir_no,String transporter,String remarks, String heat_bit, String rental_bit
+   ,String manuf_date , String tare_weight, String gross_weight, String capacity , String last_surveyor , String last_testdate, String last_testtype
+    ,String next_testdate, String next_testtype , String info_remarks/*, String info_active_bit, String info_rental_bit*/)
     {
         ContentValues contentValues = new ContentValues();
         contentValues.put(CUSTOMER,customer);
@@ -140,7 +143,21 @@ public class DBAdapter {
         contentValues.put(EIRNO,eir_no);
         contentValues.put(TRANSPORTER,transporter);
         contentValues.put(REMARKS,remarks);
-
+        contentValues.put(HEATING_BIT,heat_bit);
+        contentValues.put(RENTAL_BIT,rental_bit);
+       contentValues.put(MANUF_DATE,manuf_date);
+        contentValues.put(TARE_WEIGHT,tare_weight);
+        contentValues.put(GROSS_WEIGHT,gross_weight);
+        contentValues.put(CAPACITY,capacity);
+        contentValues.put(LAST_SURVEYOR,last_surveyor);
+        contentValues.put(LAST_TESTDATE,last_testdate);
+        contentValues.put(LAST_TESTTYPE,last_testtype);
+        contentValues.put(NEXT_TESTDATE,next_testdate);
+        contentValues.put(NEXT_TESTTYPE,next_testtype);
+        contentValues.put(INFO_REMARKS,info_remarks);
+        /* contentValues.put(INFO_ACTIVE_BIT,info_active_bit);
+        contentValues.put(INFO_RENTAL_BIT,info_rental_bit);*/
+        Toast.makeText(this.context, "Stored In Database..!", Toast.LENGTH_SHORT).show();
         return db.insert(DATABASE_TABLE, null, contentValues);
     }
 

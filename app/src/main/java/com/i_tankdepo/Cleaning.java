@@ -446,6 +446,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -793,7 +794,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                     @Override
                     public void onClick(View v) {
 
-//                        Intent i = new Intent(getApplicationContext(), CleaningInstruction.class);
+                        Intent i = new Intent(getApplicationContext(), CleaningInstruction.class);
 
                         GlobalConstants.equipment_no = list.get(position).getEquipno();
                         GlobalConstants.customer_name = list.get(position).getCustomerName();
@@ -813,7 +814,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         GlobalConstants.slab_rate = list.get(position).getSlabRate();
                         GlobalConstants.gi_trans_no = list.get(position).getGiTransactionNo();
 
-//                        startActivity(i);
+                        startActivity(i);
 
                     }
                 });
@@ -1226,7 +1227,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override

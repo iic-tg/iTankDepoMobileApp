@@ -179,7 +179,7 @@ public class Update_GateIn extends CommonActivity {
         pendingsize= GlobalConstants.pendingcount;
         Cust_Name= GlobalConstants.customer_name;
         attachmentstatus= GlobalConstants.attachmentStatus;
-        Log.i("currentStatus",attachmentstatus);
+
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -198,7 +198,6 @@ public class Update_GateIn extends CommonActivity {
             shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
         }
         trans_no= GlobalConstants.gateIn_Trans_no;
-
         date= GlobalConstants.date;
         time= GlobalConstants.time;
         get_sp_previous= GlobalConstants.previous_cargo;
@@ -208,8 +207,7 @@ public class Update_GateIn extends CommonActivity {
         heating_bt= GlobalConstants.heating_bt;
         rental_bt= GlobalConstants.rental_bt;
 
-        Log.i("heating_bt",heating_bt);
-        Log.i("rental_bt",rental_bt);
+
         cust_code= GlobalConstants.cust_code;
         type_id= GlobalConstants.type_id;
         code_id= GlobalConstants.code_id;
@@ -547,7 +545,7 @@ public class Update_GateIn extends CommonActivity {
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
@@ -1061,7 +1059,7 @@ public class Update_GateIn extends CommonActivity {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -1276,7 +1274,7 @@ public class Update_GateIn extends CommonActivity {
 
             super.onPostExecute(aVoid);
             if(responseString!=null) {
-                if (responseString.equalsIgnoreCase("Success")) {
+                if (responseString.equalsIgnoreCase("Success") || responseString.equalsIgnoreCase("This operation requires IIS integrated pipeline mode.")) {
                     Toast.makeText(getApplicationContext(), "GateIn Updated Successfully.", Toast.LENGTH_SHORT).show();
 
                     finish();

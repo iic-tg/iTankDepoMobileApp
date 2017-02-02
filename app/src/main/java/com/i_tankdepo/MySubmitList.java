@@ -106,6 +106,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String Lock_return_Message;
     private String getEditText;
     private ImageView iv_changeOfStatus;
+    private JSONObject filenamejson;
 
 
 
@@ -446,6 +447,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -520,7 +522,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     public class Get_GateIn_MySubmit_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONArray jsonarray;
-        private JSONObject filenamejson;
+
 
         @Override
         protected void onPreExecute() {
@@ -1018,6 +1020,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 if(Lock_return_Message.equalsIgnoreCase("Success"))
                 {
                     Intent i=new Intent(getApplicationContext(),Update_GateIn.class);
+
                     GlobalConstants.GateInId=Gate_In;
                     GlobalConstants.equipment_no= equipment_no;
                     GlobalConstants.location=location;
@@ -1045,6 +1048,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     GlobalConstants.attach_filename = filename;
                     GlobalConstants.attach_ID = attachID;
+
                     startActivity(i);
 
                 }else {
@@ -1447,7 +1451,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override
@@ -1528,15 +1532,44 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean = new PendingBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
+                            JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
 
+                            for(int j=0;j<attachmentjson.length();j++)
+                            {
+                                filenamejson=attachmentjson.getJSONObject(j);
+//                                filename=filenamejson.getString("fileName");
+                                pending_bean.setFilename(filenamejson.getString("fileName"));
+                                pending_bean.setAttach_ID(filenamejson.getString("attchId"));
+                                //   Log.d("attachment",filename);
 
+                            }
 
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
                             pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
                             pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
+                            pending_bean.setCode(jsonObject.getString("EQPMNT_CD_CD"));
+                            pending_bean.setLocation(jsonObject.getString("YRD_LCTN"));
+                            pending_bean.setVechicle(jsonObject.getString("VHCL_NO"));
+                            pending_bean.setTransport(jsonObject.getString("TRNSPRTR_CD"));
+                            pending_bean.setEir_no(jsonObject.getString("EIR_NO"));
+                            pending_bean.setHeating_bt(jsonObject.getString("HTNG_BT"));
+                            pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
+                            pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
+                            pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                             pending_bean.setDate(jsonObject.getString("GTN_DT"));
+                            pending_bean.setGateIn_Id(jsonObject.getString("GTN_ID"));
                             pending_bean.setTime(jsonObject.getString("GTN_TM"));
+                            pending_bean.setCust_code(jsonObject.getString("CSTMR_ID"));
+                            pending_bean.setType_code(jsonObject.getString("EQPMNT_TYP_ID"));
+                            pending_bean.setCode_Id(jsonObject.getString("EQPMNT_CD_ID"));
+                            pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
+                            pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
+                            pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
                             pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+                            pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+
+
+
                             pending_arraylist.add(pending_bean);
 
 
@@ -1579,6 +1612,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
             if(pending_arraylist!=null)
             {
+
                 adapter = new UserListAdapter(MySubmitList.this, R.layout.list_item_row, pending_arraylist);
                 listview.setAdapter(adapter);
 

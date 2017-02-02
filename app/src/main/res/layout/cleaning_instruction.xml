@@ -184,7 +184,6 @@
                                      android:paddingRight="10dp"
                                      android:layout_marginRight="4dp"
                                      android:textColor="@color/list_text"
-                                     android:focusable="false"
                                      android:id="@+id/ed_cleanBy"
                                      android:hint=""
                                      />

@@ -178,7 +178,7 @@ public class LeakTestCreate extends CommonActivity {
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("yyyy-MMM-dd").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
 
         get_switch_shellTest="False";
@@ -310,7 +310,7 @@ public class LeakTestCreate extends CommonActivity {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         return sdf.format(date).toString();
     }

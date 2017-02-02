@@ -149,7 +149,7 @@
                                 android:layout_width="0dp"
                                 android:layout_weight="1"
                                 android:layout_height="match_parent"
-                                android:text="In Date &amp; Time"
+                                android:text="In Date"
                                 />
                             <TextView
                                 android:layout_width="0dp"

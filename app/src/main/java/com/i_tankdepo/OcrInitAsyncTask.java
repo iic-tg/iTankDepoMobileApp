@@ -687,8 +687,7 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
       activity.resumeOCR();
       activity.showLanguageName();
     } else {
-      activity.showErrorMessage("Error", "Network is unreachable - cannot download language data. "
-          + "Please enable network access and restart this app.");
+//      activity.showErrorMessage("Error", "Network is unreachable - cannot download language data. "+ "Please enable network access and restart this app.");
     }
   }
 }

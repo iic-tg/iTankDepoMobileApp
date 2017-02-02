@@ -79,7 +79,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,footer_add_btn,LL_search_Value;
     Button bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print;
-    private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
+    private String[] Fields = {"Customer", "Equipment No", "Type"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
     private TextView tv_type,tv_equip_no,tv_cargo,tv_cust_name,tv_toolbarTitle, tv_add, tv_search_options,no_data,leakTest_text,list_noData;
@@ -318,7 +318,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                     tv_cust_name.setVisibility(View.GONE);
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
-                    tv_cargo.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_GateIn_Dropdown_details().execute();
                     }else{
@@ -450,6 +450,7 @@ public class GateOut extends CommonActivity implements NavigationView.OnNavigati
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -1184,7 +1185,7 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
 //        if ((progressDialog != null) && progressDialog.isShowing()) {
-        progressDialog.show();
+//        progressDialog.show();
 //        }
     }
 
@@ -1260,15 +1261,48 @@ public class Get_GateIn_SearchList_details extends AsyncTask<Void, Void, Void> {
                         pending_bean = new PendingBean();
                         jsonObject = jsonarray.getJSONObject(i);
 
+                        JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
 
 
+                        for(int j=0;j<attachmentjson.length();j++)
+                        {
+                            filenamejson=attachmentjson.getJSONObject(j);
+//                                filename=filenamejson.getString("fileName");
+                            pending_bean.setFilename(filenamejson.getString("fileName"));
+                            pending_bean.setAttach_ID(filenamejson.getString("attchId"));
+
+                        }
 
                         pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
                         pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
                         pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
+                        pending_bean.setCode(jsonObject.getString("EQPMNT_CD_CD"));
+                        pending_bean.setLocation(jsonObject.getString("YRD_LCTN"));
+                        pending_bean.setVechicle(jsonObject.getString("VHCL_NO"));
+                        pending_bean.setTransport(jsonObject.getString("TRNSPRTR_CD"));
+                        pending_bean.setEir_no(jsonObject.getString("EIR_NO"));
+                        pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
+                        pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
+                        //  pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
+                        pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
                         pending_bean.setDate(jsonObject.getString("GTOT_DT"));
+                        pending_bean.setGateIn_Id(jsonObject.getString("GTOT_ID"));
                         pending_bean.setTime(jsonObject.getString("GTOT_TM"));
-                      //  pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+                        pending_bean.setCust_code(jsonObject.getString("CSTMR_ID"));
+                        pending_bean.setType_code(jsonObject.getString("EQPMNT_TYP_ID"));
+                        pending_bean.setCode_Id(jsonObject.getString("EQPMNT_CD_ID"));
+                        pending_bean.setPrev_Id(jsonObject.getString("PRDCT_ID"));
+                        pending_bean.setPrev_code(jsonObject.getString("PRDCT_CD"));
+                        pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
+                        //       pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
+
+                        if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
+                        {
+                            pending_bean.setAttachmentStatus("False");
+                        }else
+                        {
+                            pending_bean.setAttachmentStatus("True");
+                        }
                         pending_arraylist.add(pending_bean);
 
 

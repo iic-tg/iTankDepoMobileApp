@@ -33,10 +33,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.text.ClipboardManager;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
@@ -559,11 +561,27 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       handler = new CaptureActivityHandler(this, cameraManager, isContinuousModeActive);
       
     } catch (IOException ioe) {
-      showErrorMessage("Error", "Could not initialize camera. Please try restarting device.");
+      final Intent i = new Intent();
+      i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      i.addCategory(Intent.CATEGORY_DEFAULT);
+      i.setData(Uri.parse("package:" + getPackageName()));
+      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      startActivity(i);
+//      showErrorMessage("Error", "Could not initialize camera. Please try restarting device.");
     } catch (RuntimeException e) {
       // Barcode Scanner has seen crashes in the wild of this variety:
       // java.?lang.?RuntimeException: Fail to connect to camera service
-      showErrorMessage("Error", "Could not initialize camera. Please try restarting device.");
+      final Intent i = new Intent();
+      i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      i.addCategory(Intent.CATEGORY_DEFAULT);
+      i.setData(Uri.parse("package:" + getPackageName()));
+      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      startActivity(i);
+//      showErrorMessage("Error", "Could not initialize camera. Please try restarting device.");
     }   
   }
   
@@ -699,7 +717,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       state = Environment.getExternalStorageState();
     } catch (RuntimeException e) {
       Log.e(TAG, "Is the SD card visible?", e);
-      showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable.");
+      final Intent i = new Intent();
+      i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      i.addCategory(Intent.CATEGORY_DEFAULT);
+      i.setData(Uri.parse("package:" + getPackageName()));
+      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      startActivity(i);
+//      showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable.");
     }
     
     if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -713,7 +739,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       } catch (NullPointerException e) {
         // We get an error here if the SD card is visible, but full
         Log.e(TAG, "External storage is unavailable");
-        showErrorMessage("Error", "Required external storage (such as an SD card) is full or unavailable.");
+        final Intent i = new Intent();
+        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        i.addCategory(Intent.CATEGORY_DEFAULT);
+        i.setData(Uri.parse("package:" + getPackageName()));
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        startActivity(i);
+//        showErrorMessage("Error", "Required external storage (such as an SD card) is full or unavailable.");
       }
       
       //        } else {
@@ -727,12 +761,28 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
     	// We can only read the media
     	Log.e(TAG, "External storage is read-only");
-      showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable for data storage.");
+      final Intent i = new Intent();
+      i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      i.addCategory(Intent.CATEGORY_DEFAULT);
+      i.setData(Uri.parse("package:" + getPackageName()));
+      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      startActivity(i);
+//      showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable for data storage.");
     } else {
     	// Something else is wrong. It may be one of many other states, but all we need
       // to know is we can neither read nor write
     	Log.e(TAG, "External storage is unavailable");
-    	showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable or corrupted.");
+      final Intent i = new Intent();
+      i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      i.addCategory(Intent.CATEGORY_DEFAULT);
+      i.setData(Uri.parse("package:" + getPackageName()));
+      i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      startActivity(i);
+//    	showErrorMessage("Error", "Required external storage (such as an SD card) is unavailable or corrupted.");
     }
     return null;
   }
@@ -1337,12 +1387,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
    * @param title The title for the dialog box
    * @param message The error message to be displayed
    */
-  void showErrorMessage(String title, String message) {
+ /* void showErrorMessage(String title, String message) {
 	  new AlertDialog.Builder(this)
 	    .setTitle(title)
 	    .setMessage(message)
 	    .setOnCancelListener(new FinishListener(this))
 	    .setPositiveButton( "Done", new FinishListener(this))
 	    .show();
-  }
+  }*/
 }

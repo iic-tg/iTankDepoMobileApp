@@ -77,7 +77,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     private ImageView menu, im_down, im_up, im_heat_close, im_heat_ok, iv_back;
     private ListView heating_list_view;
 
-    private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
+    private String[] Fields = {"Customer", "Equipment No", "Type"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
 
 
@@ -294,7 +294,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                     tv_cust_name.setVisibility(View.GONE);
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
-                    tv_cargo.setVisibility(View.VISIBLE);
+                    tv_cargo.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
                         new Get_LeakTest_filter().execute();
                     }else{
@@ -424,6 +424,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
+                    selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -1200,7 +1201,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-            progressDialog.show();
+//            progressDialog.show();
         }
 
         @Override
