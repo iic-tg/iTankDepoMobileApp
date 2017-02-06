@@ -184,7 +184,7 @@ public class Create_GateIn extends CommonActivity   {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-
+        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 //        db = new DBAdapter(Create_GateIn.this);
 
 
@@ -678,7 +678,6 @@ public class Create_GateIn extends CommonActivity   {
 
 
                 last_test_date=false;
-
                 showDialog(DATE_DIALOG_ID);
 
                 break;
@@ -691,7 +690,7 @@ public class Create_GateIn extends CommonActivity   {
             case R.id.im_manuf_date:
                 last_test_date = false;
                 imV_manuf_date=true;
-                last_test_date=false;
+
                 showDialog(DATE_DIALOG_ID);
                 break;
 
@@ -704,7 +703,7 @@ public class Create_GateIn extends CommonActivity   {
             case R.id.im_last_Testdate:
                 manuf_date=false;
                 last_test_date = true;
-                last_test_date=true;
+
                 manuf_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
@@ -740,7 +739,7 @@ public class Create_GateIn extends CommonActivity   {
                     get_next_type = ed_next_type.getText().toString();
                     get_info_remark = ed_info_remark.getText().toString();
 
-              /*  if(cd.isConnectingToInternet()) {*/
+
 
                     try {
                         if (filename.length() < 0) {
@@ -847,168 +846,8 @@ public class Create_GateIn extends CommonActivity   {
                         }
 
                     }
-               /* }else{
 
-                    db.open();
-                    db.insertContact(get_sp_customer,get_equipment,get_sp_equipe,get_code,get_status,get_location,get_date,get_time,get_sp_previous
-                    ,get_vechicle,get_eir_no,get_transport,get_remark,get_swt_heating,get_swt_rental,get_manu_date,get_tare_weight,get_gross
-                            ,get_capacity,get_last_survy,get_last_test_date,get_last_test_type,get_next_date,get_next_type,get_info_remark*//*,get_swt_info_active,get_swt_info_rental*//*);
-                    db.close();
-
-*//*
-
-
-
-                }*/
                 break;
-            case R.id.LL_Submit:
-
-                clickMessage="Submit";
-
-                    get_sp_customer = sp_customer.getSelectedItem().toString();
-                    get_equipment = ed_equipement.getText().toString();
-                    get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
-                    get_status = ed_status.getText().toString();
-                    get_code = ed_code.getText().toString();
-                    get_date = ed_date.getText().toString();
-                    get_time = ed_time.getText().toString();
-                    get_location = ed_location.getText().toString();
-                    get_eir_no = ed_eir_no.getText().toString();
-                    get_vechicle = ed_vechicle.getText().toString();
-                    get_transport = ed_transport.getText().toString();
-                    get_remark = ed_remark.getText().toString();
-
-
-                    get_manu_date = ed_manuf_date.getText().toString();
-                    get_tare_weight = ed_tare_weight.getText().toString();
-                    get_gross = ed_Gross_weight.getText().toString();
-                    get_last_survy = ed_last_survey.getText().toString();
-                    get_capacity = ed_capacity.getText().toString();
-                    get_last_test_date = ed_last_test_date.getText().toString();
-                    get_last_test_type = sp_last_test_type.getSelectedItem().toString();
-                    get_next_date = ed_next_date.getText().toString();
-                    get_next_type = ed_next_type.getText().toString();
-                    get_info_remark = ed_info_remark.getText().toString();
-
-
-
-      /*  if(cd.isConnectingToInternet()) {*/
-                try {
-                    if (filename.length() < 0) {
-
-                    } else {
-                        IfAttchment = "True";
-                    }
-                } catch (Exception e) {
-
-                    IfAttchment = "False";
-                }
-
-
-                get_sp_equipe = sp_equip_type.getSelectedItem().toString();
-
-                get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
-
-                try {
-                    if (sp_last_test_type.getSelectedItem().toString().length() == 0 || ed_last_test_date.getText().toString().length() == 0) {
-
-                    } else {
-                        get_last_test_type = sp_last_test_type.getSelectedItem().toString();
-                        get_last_test_date = ed_last_test_date.getText().toString();
-                    }
-
-                } catch (Exception e) {
-                    shortToast(getApplicationContext(), "Please Select Equipment Info");
-                    get_last_test_type = "";
-                    get_last_test_date = "";
-                }
-
-
-
-
-                if ((get_equipment.trim().equals("") && get_equipment == null && get_equipment.length() < 11) ||
-                        (get_sp_customer.trim().equals("") || get_sp_customer == null) ||
-                        (get_sp_equipe.trim().equals("") || get_sp_equipe == null) ||
-                        (get_code.trim().equals("") || get_code == null) ||
-                        (get_sp_previous.trim().equals("") || get_sp_previous == null) ||
-                        (get_time.trim().equals("") || get_time == null) ||
-                        (get_date.trim().equals("") || get_date == null)) {
-                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
-                } else {
-
-                    if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
-                            && get_capacity.equals(EICPCTY_NC)
-                            && get_last_survy.equals(EILST_SRVYR_NM) && get_last_test_date.equals(EILST_TST_DT)
-                            && get_last_test_type.equals(EILST_TST_TYP_ID) && get_next_date.equals(EINXT_TST_DT)
-                            && get_next_type.equals(EINXT_TST_TYP_ID) && get_info_remark.equals(EIRMRKS_VC) && get_swt_info_rental.equals(EIRNTL_BT)
-                            && get_swt_info_active.equals(EIACTV_BT)) {
-
-                        changes = "False";
-                        if (get_equipment.length() < 11) {
-
-                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
-
-
-                        } else {
-                            Letter = get_equipment.substring(0,4);
-                            Number = get_equipment.substring(4,11);
-                            if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
-                                Log.d("Character", Letter);
-                                Log.d("Numbers", Number);
-                                if (cd.isConnectingToInternet()) {
-                                    new Post_Verify_Equipment_No().execute();
-                                } else {
-                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
-                                }
-
-
-                            } else {
-                                shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
-                            }
-                        }
-
-
-                    } else {
-
-                        changes = "true";
-
-
-                        if (get_equipment.length() < 11) {
-
-                            shortToast(getApplicationContext(), "Please Enter Valid Equipment Number..!");
-
-
-                        } else {
-                            Letter = get_equipment.substring(0,4);
-                            Number = get_equipment.substring(4,11);
-                            if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
-                                Log.d("Character", Letter);
-                                Log.d("Numbers", Number);
-                                if (cd.isConnectingToInternet()) {
-                                    new Post_Verify_Equipment_No().execute();
-                                } else {
-                                    shortToast(getApplicationContext(), "Please check your Internet Connection..!");
-                                }
-
-                            } else {
-                                shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
-                            }
-                        }
-
-                    }
-
-                }
-                break;
-           /* }else{
-
-            db.open();
-            db.insertContact(get_sp_customer,get_equipment,get_sp_equipe,get_code,get_status,get_location,get_date,get_time,get_sp_previous
-                    ,get_vechicle,get_eir_no,get_transport,get_remark,get_swt_heating,get_swt_rental,get_manu_date,get_tare_weight,get_gross
-                    ,get_capacity,get_last_survy,get_last_test_date,get_last_test_type,get_next_date,get_next_type,get_info_remark*//*,get_swt_info_active,get_swt_info_rental*//*);
-            db.close();
-
-        }
-                */
 
             case R.id.ed_time:
                 mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -1253,7 +1092,6 @@ public class Create_GateIn extends CommonActivity   {
             month = selectedMonth;
             day   = selectedDay;
 
-            view.setMinDate(System.currentTimeMillis() - 1000);
 
             if(manuf_date==true || imV_manuf_date==true)
             {
@@ -2083,15 +1921,31 @@ public class Create_GateIn extends CommonActivity   {
                     new Create_GateIn_EquipmentType_details().execute();
                     if(clickMessage.equalsIgnoreCase("Submit"))
                     {
-                        new PostInfo().execute();
+                        if(systemDate.compareTo(get_date)<0 )
+                        {
+                            shortToast(getApplicationContext(),"In Date cannot be greater than Current Date..!");
+                        }else if( systemDate.compareTo(get_manu_date)<0)
+                        {
+                            shortToast(getApplicationContext(),"Maunf. Date cannot be greater than Current Date..!");
+
+                        }else {
+                            new PostInfo().execute();
+                        }
 
                     }else if(clickMessage.equals("Accordion"))
                     {
+                        /*if(systemDate.compareTo(get_date)<0 )
+                        {
+                            shortToast(getApplicationContext(),"In Date cannot be greater than Current Date..!");
+                        }else if( systemDate.compareTo(get_manu_date)<0)
+                        {
+                            shortToast(getApplicationContext(),"Maunf. Date cannot be greater than Current Date..!");
 
+                        }*/
                     }
                 }else
                 {
-                    shortToast(getApplicationContext(),"This Equipment" + get_equipment + "already exists for Customer"+  get_sp_customer );
+                    shortToast(getApplicationContext()," This Equipment " + get_equipment + "already exists for Customer"+  get_sp_customer );
                 }
 
 

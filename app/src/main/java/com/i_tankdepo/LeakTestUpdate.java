@@ -455,7 +455,7 @@ public class LeakTestUpdate extends CommonActivity{
                     Toast.makeText(getApplicationContext(), "Leak Test Updated Successfully.", Toast.LENGTH_SHORT).show();
 
                     finish();
-                    Intent i = new Intent(getApplication(), MainActivity.class);
+                    Intent i = new Intent(getApplication(), LeakTest.class);
                     startActivity(i);
 
                 } else {

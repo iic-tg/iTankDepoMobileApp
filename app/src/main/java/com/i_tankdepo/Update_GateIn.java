@@ -192,6 +192,8 @@ public class Update_GateIn extends CommonActivity {
         code= GlobalConstants.code;
         status= GlobalConstants.status;
         location= GlobalConstants.location;
+
+
         if(cd.isConnectingToInternet()) {
             new Equipment_More_Info().execute();
         }else{
@@ -226,8 +228,8 @@ public class Update_GateIn extends CommonActivity {
         tv_cargo = (TextView)findViewById(R.id.tv_cargo);
         ed_date = (EditText)findViewById(R.id.ed_date);
         ed_time = (EditText)findViewById(R.id.ed_time);
-        sp_customer = (Spinner)findViewById(R.id.sp_customer);
-        sp_type = (Spinner)findViewById(R.id.sp_type);
+//        sp_customer = (Spinner)findViewById(R.id.sp_customer);
+//        sp_type = (Spinner)findViewById(R.id.sp_type);
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         LL_footer_delete.setAlpha(0.5f);
         LL_footer_delete.setClickable(false);
@@ -236,6 +238,7 @@ public class Update_GateIn extends CommonActivity {
         ed_last_test_date=(EditText)findViewById(R.id.ed_test_date);
         ed_last_test_date.setOnClickListener(this);
         im_last_testDate.setOnClickListener(this);
+        ed_customer = (EditText)findViewById(R.id.ed_customer);
         ed_type = (EditText)findViewById(R.id.ed_type);
         im_manuf_date = (ImageView)findViewById(R.id.im_manuf_date);
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
@@ -287,9 +290,9 @@ public class Update_GateIn extends CommonActivity {
         LL_Equipment_Info = (LinearLayout) findViewById(R.id.LL_Equipment_Info);
         LL_Submit = (LinearLayout) findViewById(R.id.LL_Submit);
 
-//        ed_customer.setFocusable(false);
+        ed_customer.setFocusable(false);
         ed_equipement.setFocusable(false);
-//        ed_type.setFocusable(false);
+        ed_type.setFocusable(false);
         ed_status.setText(status);
         ed_date.setText(date);
         ed_time.setText(time);
@@ -309,8 +312,8 @@ public class Update_GateIn extends CommonActivity {
             ed_vechicle.setText(vechicle);
         }
 
-       /* ed_customer.setText(Cust_Name);
-        ed_type.setText(type);*/
+        ed_customer.setText(Cust_Name);
+        ed_type.setText(type);
         ed_transport.setText(transport);
         ed_remark.setText(remark);
 
@@ -388,8 +391,8 @@ public class Update_GateIn extends CommonActivity {
 
         if(cd.isConnectingToInternet())
         {
-            new Create_GateIn_Customer_details().execute();
-            new Create_GateIn_EquipmentType_details().execute();
+           /* new Create_GateIn_Customer_details().execute();
+            new Create_GateIn_EquipmentType_details().execute();*/
             new Create_GateIn_PreviousCargo_details().execute();
             new Create_GateIn_moreInfo_list_details().execute();
         }
@@ -458,6 +461,7 @@ public class Update_GateIn extends CommonActivity {
             }
         });
 
+/*
         sp_customer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -472,6 +476,8 @@ public class Update_GateIn extends CommonActivity {
 
             }
         });
+*/
+/*
         sp_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -493,6 +499,7 @@ public class Update_GateIn extends CommonActivity {
 
             }
         });
+*/
 
         sp_previous_cargo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -549,7 +556,7 @@ public class Update_GateIn extends CommonActivity {
 
         ed_date.setText(systemDate);
         ed_time.setText(curTime);
-//        ed_manuf_date.setText(systemDate);
+        ed_manuf_date.setText(systemDate);
         ed_last_test_date.setText(systemDate);
 
         sp_last_test_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -711,7 +718,7 @@ public class Update_GateIn extends CommonActivity {
             case R.id.im_manuf_date:
                 last_test_date = false;
 
-                last_test_date=false;
+                manuf_date=true;
                 showDialog(DATE_DIALOG_ID);
                 break;
 
@@ -724,7 +731,7 @@ public class Update_GateIn extends CommonActivity {
             case R.id.im_last_Testdate:
                 manuf_date=false;
                 last_test_date = true;
-                last_test_date=true;
+
                 manuf_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
@@ -758,10 +765,10 @@ public class Update_GateIn extends CommonActivity {
 
 
                 get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
-                get_sp_customer=sp_customer.getSelectedItem().toString();
+                get_sp_customer=ed_customer.getText().toString();
                 get_sp_equipe=ed_equipement.getText().toString();
                 get_equipment=ed_equipement.getText().toString();
-                getType=sp_type.getSelectedItem().toString();
+                getType=ed_type.getText().toString();
                 get_status=ed_status.getText().toString();
                 get_code=ed_code.getText().toString();
                 get_date=ed_date.getText().toString();
@@ -793,7 +800,16 @@ public class Update_GateIn extends CommonActivity {
                         (get_date.trim().equals("") || get_date==null))
                 {
                     shortToast(getApplicationContext(), "Please key-in Mandate Fields");
-                }else
+                }else if(systemDate.compareTo(get_date)<0){
+
+                    shortToast(getApplicationContext(),"In Date cannot be greater than Current Date..!");
+
+                }else if( systemDate.compareTo(get_manu_date)<0)
+                {
+                    shortToast(getApplicationContext(),"Maunf. Date cannot be greater than Current Date..!");
+
+                }
+                else
                 {
 
                     if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
@@ -1170,11 +1186,11 @@ public class Update_GateIn extends CommonActivity {
                 }
                 String numberAsString = Integer.toString( pendingsize+1);
                 jsonObject.put("GTN_ID", gateIn_Id);
-                jsonObject.put("CSTMR_ID", get_sp_customer_id);
+                jsonObject.put("CSTMR_ID", cust_code);
                 jsonObject.put("CSTMR_CD", get_sp_customer);
                 jsonObject.put("EQPMNT_NO", get_equipment);
-                jsonObject.put("EQPMNT_TYP_ID", get_sp_Type_Id);
-                jsonObject.put("EQPMNT_TYP_CD", get_sp_Type);
+                jsonObject.put("EQPMNT_TYP_ID", type_id);
+                jsonObject.put("EQPMNT_TYP_CD", getType);
                 jsonObject.put("EQPMNT_CD_ID",code_id );
                 jsonObject.put("EQPMNT_CD_CD", get_code);
                 jsonObject.put("YRD_LCTN", get_location);
@@ -1278,9 +1294,13 @@ public class Update_GateIn extends CommonActivity {
                     Toast.makeText(getApplicationContext(), "GateIn Updated Successfully.", Toast.LENGTH_SHORT).show();
 
                     finish();
-                    Intent i = new Intent(getApplicationContext(), GateIn.class);
-                    startActivity(i);
-
+                    if(GlobalConstants.from.equalsIgnoreCase("GateIn")) {
+                        Intent i = new Intent(getApplicationContext(), GateIn.class);
+                        startActivity(i);
+                    }else{
+                        Intent i = new Intent(getApplicationContext(), MySubmitList.class);
+                        startActivity(i);
+                    }
                 } else if(responseString.equalsIgnoreCase("GateIn Not Updated")) {
 
                     Toast.makeText(getApplicationContext(), "Update GateIn Failed", Toast.LENGTH_SHORT).show();
@@ -1449,7 +1469,7 @@ public class Update_GateIn extends CommonActivity {
                 }
                 ArrayAdapter<String> CustomerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CustomerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_customer.setAdapter(CustomerAdapter);
+//                sp_customer.setAdapter(CustomerAdapter);
 
             }
             else if(dropdown_customer_list.size()<1)
@@ -1600,7 +1620,7 @@ public class Update_GateIn extends CommonActivity {
 //                listview.setAdapter(adapter);
                 ArrayAdapter<String> EquipmentAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_list);
                 EquipmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_type.setAdapter(EquipmentAdapter);
+//                sp_type.setAdapter(EquipmentAdapter);
             }
             else if(dropdown_equipment_list.size()<1)
             {

@@ -910,7 +910,7 @@ public class GateOut_Mysubmit extends CommonActivity implements NavigationView.O
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-//         progressDialog.show();
+             progressDialog.show();
 
         }
 

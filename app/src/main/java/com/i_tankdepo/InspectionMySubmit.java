@@ -884,7 +884,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-//            progressDialog.show();
+            progressDialog.show();
 
         }
 

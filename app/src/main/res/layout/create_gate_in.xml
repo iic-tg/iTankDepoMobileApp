@@ -471,6 +471,8 @@
                             android:layout_height="match_parent"
                             android:textColor="@color/list_text"
                             android:id="@+id/ed_eir_no"
+                            android:maxLength="50"
+                            android:digits="0123456789,qwertzuiopasdfghjklyxcvbnm"
                             />
                     </RelativeLayout>
 
@@ -526,6 +528,7 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
+                                android:maxLength="70"
                                 android:id="@+id/ed_vechicle"
                                 android:textColor="@color/list_text"
                                 />
@@ -548,6 +551,7 @@
                             android:layout_height="match_parent"
                             android:textColor="@color/list_text"
                             android:id="@+id/ed_transport"
+                            android:maxLength="70"
                             />
                         </RelativeLayout>
 
@@ -658,6 +662,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1.8"
                             android:focusable="false"
+                            android:longClickable="false"
                             android:id="@+id/ed_attach"
                             android:textColor="@color/list_text"/>
                         <ImageView
@@ -738,6 +743,7 @@
                             android:layout_weight="1"
                             android:textColor="@color/tv_color"
                             android:layout_height="match_parent"
+                            android:inputType="number"
                             android:text="Tare Weight(Kgs)"
                             />
 
@@ -794,6 +800,9 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
+                                android:maxLength="14"
+                                android:inputType="number|textNoSuggestions"
+                                android:digits="0123456789"
                                 android:id="@+id/ed_tare_weight"
                                 android:textColor="@color/list_text"
                                 />
@@ -857,6 +866,8 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
+                                android:inputType="number|textNoSuggestions"
+                                android:digits="0123456789"
                                 android:id="@+id/ed_gross_weight"
                                 android:textColor="@color/list_text"
                                 />
@@ -884,6 +895,8 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:id="@+id/ed_capacity"
+                                android:inputType="number|textNoSuggestions"
+                                android:digits="0123456789"
                                 android:hint=""
                                 android:textColor="@color/list_text"
                                 />

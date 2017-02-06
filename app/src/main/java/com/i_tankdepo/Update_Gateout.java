@@ -919,9 +919,13 @@ public class Update_Gateout extends CommonActivity {
                     Toast.makeText(getApplicationContext(), "GateOut Updated Successfully.", Toast.LENGTH_SHORT).show();
 
                     finish();
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(i);
-
+                    if(GlobalConstants.from.equalsIgnoreCase("new")) {
+                        Intent i = new Intent(getApplicationContext(), GateOut.class);
+                        startActivity(i);
+                    }else{
+                        Intent i = new Intent(getApplicationContext(), GateOut_Mysubmit.class);
+                        startActivity(i);
+                    }
                 }else{
                     shortToast(getApplicationContext(),"GateOut Not Updated..!");
                 }

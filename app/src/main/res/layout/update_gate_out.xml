@@ -186,6 +186,8 @@
                                 android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:lines="1"
+                                android:maxLength="50"
+                                android:inputType="textCapCharacters|textNoSuggestions"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
@@ -306,6 +308,9 @@
                                 android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:lines="1"
+                                android:maxLength="50"
+                                android:inputType="textCapCharacters|textNoSuggestions"
+                                android:digits="0123456789,qwertzuiopasdfghjklyxcvbnm"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
@@ -512,6 +517,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1.8"
                             android:focusable="false"
+                            android:longClickable="false"
                             android:id="@+id/ed_attach"
                             android:textColor="@color/list_text"/>
                         <ImageView
