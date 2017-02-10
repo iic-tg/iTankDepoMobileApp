@@ -28,6 +28,7 @@ import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.EquipNoBean;
 import com.i_tankdepo.Beanclass.LeakTestBean;
 import com.i_tankdepo.Constants.ConstantValues;
+import com.i_tankdepo.SQLite.DBAdapter;
 import com.i_tankdepo.helper.ServiceHandler;
 
 import org.apache.http.HttpEntity;
@@ -90,6 +91,7 @@ public class LeakTestCreate extends CommonActivity {
     private String EquipmentNo,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
     private TextView tv_equip_no,tv_name,tv_testDate;
     private ImageView iv_changeOfStatus;
+    private DBAdapter db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,9 @@ public class LeakTestCreate extends CommonActivity {
         setContentView(R.layout.create_leaktest);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        db = new DBAdapter(LeakTestCreate.this);
+
         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         add_new_heating = (ImageView) findViewById(R.id.im_add);
@@ -262,24 +267,46 @@ public class LeakTestCreate extends CommonActivity {
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.heat_submit:
-                getTestDate = ed_testDate.getText().toString();
+
                 getreliefvalue1 = ed_relief_value1.getText().toString();
                 getreliefvalue2 = ed_relief_value2.getText().toString();
                 getpress_guage1 = ed_press_guage1.getText().toString();
                 getpress_guage2 = ed_press_guage2.getText().toString();
-                getCust_Name=ed_customer.getText().toString();
                 getReamrk = ed_remarks.getText().toString();
-                EquipmentNumber = sp_equipment_no.getSelectedItem().toString();
 
-                if( (getTestDate.trim().equals("") || getTestDate==null) ||  EquipmentNumber.equalsIgnoreCase("please select")||
-                        (getCust_Name.trim().equals("") || getCust_Name==null))
-                {
-                    shortToast(getApplicationContext(), "Please key-in Mandate Fields");
-                }else {
-                    if (cd.isConnectingToInternet()) {
-                        new CreateLeakTest().execute();
+                EquipmentNumber = sp_equipment_no.getSelectedItem().toString();
+                getTestDate = ed_testDate.getText().toString();
+                getInDate = ed_in_Date.getText().toString();
+
+                getCust_Name =ed_customer.getText().toString();
+
+                getCurrentStatus = ed_current_status.getText().toString();
+
+
+
+
+                if(cd.isConnectingToInternet()) {
+                    if ((getTestDate.trim().equals("") || getTestDate == null) || EquipmentNumber.equalsIgnoreCase("please select") ||
+                            (getCust_Name.trim().equals("") || getCust_Name == null)) {
+                        shortToast(getApplicationContext(), "Please key-in Mandate Fields");
                     } else {
-                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                        if (cd.isConnectingToInternet()) {
+                            new CreateLeakTest().execute();
+                        } else {
+                            shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                        }
+                    }
+                }else{
+                    if ((getTestDate.trim().equals("") || getTestDate == null) || EquipmentNumber.equalsIgnoreCase("please select") ||
+                            (getCust_Name.trim().equals("") || getCust_Name == null)) {
+                        shortToast(getApplicationContext(), "Please key-in Mandate Fields");
+                    } else {
+                        db.open();
+
+                        db.createLeakTest(sp.getString(SP_USER_ID, "user_Id"),"", EquipmentNumber,getTestDate,get_switch_shellTest,get_switch_steam,
+                                get_type,getCurrentStatus, "True" ,getInDate,getCust_Name,getreliefvalue1,getreliefvalue2,getpress_guage1,getpress_guage2,getReamrk);
+
+                        db.close();
                     }
                 }
                 break;
@@ -615,8 +642,8 @@ public class LeakTestCreate extends CommonActivity {
             if(responseString!=null) {
                 if (responseString.equalsIgnoreCase("Updated Successfully") ) {
                     Toast.makeText(getApplicationContext(), "Leak Test Created Successfully.", Toast.LENGTH_SHORT).show();
-
-                    Intent i = new Intent(getApplication(), MainActivity.class);
+                    finish();
+                    Intent i = new Intent(getApplication(), LeakTest.class);
                     startActivity(i);
 
                 } else {

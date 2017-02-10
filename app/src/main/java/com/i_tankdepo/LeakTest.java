@@ -926,8 +926,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-
-//            progressDialog.show();
+            progressDialog.show();
 
 
         }

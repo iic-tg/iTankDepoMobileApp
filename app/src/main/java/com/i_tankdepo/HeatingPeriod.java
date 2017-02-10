@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.i_tankdepo.Beanclass.HeatingBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
+import com.i_tankdepo.SQLite.DBAdapter;
 import com.i_tankdepo.helper.ServiceHandler;
 
 import org.apache.http.HttpEntity;
@@ -108,6 +109,7 @@ public class HeatingPeriod extends CommonActivity  {
     private String responseStatus;
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
+    private DBAdapter db;
 
 
     @Override
@@ -116,6 +118,9 @@ public class HeatingPeriod extends CommonActivity  {
         setContentView(R.layout.heating_period);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        db = new DBAdapter(HeatingPeriod.this);
+        
         menu=(ImageView)findViewById(R.id.iv_menu) ;
         iv_back = (ImageView)findViewById(R.id.iv_back);
         add_new_heating = (ImageView)findViewById(R.id.im_add);
@@ -506,20 +511,35 @@ public class HeatingPeriod extends CommonActivity  {
                 get_Totalheat_Period = ed_totalPrd.getText().toString();
                 Log.d("Total Cost",get_Totalheat_Cost);
                 Log.d("Total Period",get_Totalheat_Period);
-                if((get_startDate.equals("") || get_startDate == null) ||
-                        (get_startTime.equals("") || get_startTime == null ) ||
-                        (get_endDate.equals("") || get_endDate == null) ||
-                        (get_endTime.equals("")|| get_endTime == null) ||
-                        (get_temp.equals("") || get_temp == null)){
-                   shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                if(cd.isConnectingToInternet()) {
+                    if ((get_startDate.equals("") || get_startDate == null) ||
+                            (get_startTime.equals("") || get_startTime == null) ||
+                            (get_endDate.equals("") || get_endDate == null) ||
+                            (get_endTime.equals("") || get_endTime == null) ||
+                            (get_temp.equals("") || get_temp == null)) {
+                        shortToast(getApplicationContext(), "Please select the Mandatory Fields.");
+                    } else {
+                        if (cd.isConnectingToInternet()) {
+                            new Post_Heating_Update().execute();
+                        } else {
+                            shortToast(getApplicationContext(), "Please check your Internet Connection");
+                        }
+                    }
                 }else{
-                    if(cd.isConnectingToInternet()){
-                        new Post_Heating_Update().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection");
+                    if ((get_startDate.equals("") || get_startDate == null) ||
+                            (get_startTime.equals("") || get_startTime == null) ||
+                            (get_endDate.equals("") || get_endDate == null) ||
+                            (get_endTime.equals("") || get_endTime == null) ||
+                            (get_temp.equals("") || get_temp == null)) {
+                        shortToast(getApplicationContext(), "Please select the Mandatory Fields.");
+                    }else {
+                        db.open();
+
+                        db.heatingUpdate(sp.getString(SP_USER_ID, "user_Id"), Equip_NO, get_startDate, get_startTime, get_endDate, get_endTime, get_temp, get_HourlyRate, get_MinRate, get_Totalheat_Cost, get_Totalheat_Period);
+
+                        db.close();
                     }
                 }
-//                LL_Add_New.setVisibility(View.GONE);
                 break;
             case R.id.heating:
                 finish();

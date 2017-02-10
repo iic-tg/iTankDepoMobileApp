@@ -843,8 +843,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-
-//            progressDialog.show();
+            progressDialog.show();
 
 
         }

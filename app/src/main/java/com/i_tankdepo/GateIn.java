@@ -616,6 +616,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                             }
 
                                 pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
+
                                 pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
                                 pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
                                 pending_bean.setCode(jsonObject.getString("EQPMNT_CD_CD"));
@@ -829,6 +830,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                else{
                     holder.vechicle.setText(userListBean.getVechicle());
                 }*/
+
 
                 holder.transport.setText(userListBean.getTransport());
                 holder.Eir_no.setText(userListBean.getEir_no());
@@ -1057,7 +1059,6 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                     GlobalConstants.attach_ID = attachID;
 
                     startActivity(i);
-                                                                                                                                                    startActivity(i);
                 }else {
                     shortToast(getApplicationContext(),Lock_return_Message);
 
@@ -1089,7 +1090,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-//            progressDialog.show();
+            progressDialog.show();
 
         }
 

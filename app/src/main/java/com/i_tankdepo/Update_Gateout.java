@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -50,9 +51,11 @@ import android.widget.Toast;
 import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.EquipmentDropdownBean;
 import com.i_tankdepo.Beanclass.Equipment_Info_TypeDropdownBean;
+import com.i_tankdepo.Beanclass.Multi_Photo_Bean;
 import com.i_tankdepo.Beanclass.Previous_CargoDropdownBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
+import com.i_tankdepo.SQLite.DBAdapter;
 import com.i_tankdepo.Util.Utility;
 
 import org.apache.http.HttpEntity;
@@ -75,6 +78,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -94,6 +98,8 @@ public class Update_Gateout extends CommonActivity {
     private Toolbar toolbar;
     private Intent mServiceIntent;
     private String userChoosenTask;
+    private static final int CustomGallerySelectId = 1;//Set Intent Id
+
     private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
     private EditText ed_time,ed_attach,ed_date,ed_status,ed_location,ed_eir_no,ed_vechicle,ed_transport,ed_remark;
     static final int DATE_DIALOG_ID = 1999;
@@ -159,6 +165,11 @@ public class Update_Gateout extends CommonActivity {
     private String imageName;
     private String filePath;
     private Switch rentalbit;
+    public static final String CustomGalleryIntentKey = "ImageArray";//Set Intent Key Value
+    private ArrayList<Multi_Photo_Bean> encodeArray;
+    private Bitmap selectedImageBitmap;
+    private Multi_Photo_Bean multi_photo_bean;
+    private DBAdapter db;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -173,6 +184,8 @@ public class Update_Gateout extends CommonActivity {
         Gi_transaction_id = GlobalConstants.pre_adv_id;
         attachmentstatus= GlobalConstants.attachmentStatus;
         Log.i("transactionNO",attachmentstatus);
+
+        db = new DBAdapter(Update_Gateout.this);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -494,27 +507,35 @@ public class Update_Gateout extends CommonActivity {
 
 
               //  get_last_test_type=sp_last_test_type.getSelectedItem().toString();
+            if(cd.isConnectingToInternet()) {
 
-
-                if((get_time.trim().equals("") || get_time==null)||
-                        (get_date.trim().equals("") || get_date==null))
-                {
+                if ((get_time.trim().equals("") || get_time == null) ||
+                        (get_date.trim().equals("") || get_date == null)) {
                     shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
-                }else
-                {
+                } else {
 
 
-                        if (cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
 
-                            new PostInfo().execute();
+                        new PostInfo_GateOut().execute();
 
-                        } else {
-                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
-                        }
-
+                    } else {
+                        shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                    }
 
 
                 }
+            }else{
+                if ((get_time.trim().equals("") || get_time == null) ||
+                        (get_date.trim().equals("") || get_date == null)) {
+                    shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
+                } else {
+                    db.open();
+                    db.updateGateOut(sp.getString(SP_USER_ID,"user_Id"),equip_no,get_location,get_date,get_time,get_eir_no,get_vechicle,get_transport,
+                            get_remark,get_swt_rental,Gi_transaction_id,IfAttchment,From);
+                    db.close();
+                }
+            }
                 break;
 
             case R.id.ed_time:
@@ -570,7 +591,7 @@ public class Update_Gateout extends CommonActivity {
     }
 
     private void selectImage() {
-        final CharSequence[] items = { "Take Photo", "Choose from Library"};
+        final CharSequence[] items = { "Choose from Library" };
 
         isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
         AlertDialog.Builder builder = new AlertDialog.Builder(Update_Gateout.this);
@@ -580,15 +601,16 @@ public class Update_Gateout extends CommonActivity {
             public void onClick(DialogInterface dialog, int item) {
                 boolean result= Utility.checkPermission(Update_Gateout.this, isCamPermission);
 
-                if (items[item].equals("Take Photo")) {
+              /*  if (items[item].equals("Take Photo")) {
                     userChoosenTask ="Take Photo";
                     if(result)
                         cameraIntent();
 
-                } else if (items[item].equals("Choose from Library")) {
+                } else*/ if (items[item].equals("Choose from Library")) {
                     userChoosenTask ="Choose from Library";
                     if(result)
-                        galleryIntent();
+                    startActivityForResult(new Intent(Update_Gateout.this, CustomGallery_Activity.class), CustomGallerySelectId);
+
 
                 }
             }
@@ -616,9 +638,13 @@ public class Update_Gateout extends CommonActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE)
-                onSelectFromGalleryResult(data);
-            else if (requestCode == REQUEST_CAMERA)
+            if (requestCode == SELECT_FILE) {
+                String imagesArray = data.getStringExtra(CustomGalleryIntentKey);//get Intent data
+                //Convert string array into List by splitting by ',' and substring after '[' and before ']'
+                List<String> selectedImages = Arrays.asList(imagesArray.substring(1, imagesArray.length() - 1).split(", "));
+                loadGridView(new ArrayList<String>(selectedImages), data);//call load gridview method by passing converted list into arrayList
+            }
+            /*else if (requestCode == REQUEST_CAMERA)
                 onCaptureImageResult(data);
             else
             {
@@ -636,7 +662,41 @@ public class Update_Gateout extends CommonActivity {
                 ed_attach.setText(basename+fileType);
                 Log.d(TAG, "File Path: " + path);
             }
+        }*/
         }
+    }
+    private void loadGridView(ArrayList<String> imagesArray,Intent imagereturnintent) {
+        GridView_Adapter adapter = new GridView_Adapter(Update_Gateout.this, imagesArray, false);
+
+        encodeArray=new ArrayList<Multi_Photo_Bean>();
+
+        for (int i=0;i<imagesArray.size();i++){
+//            imagesPathList.add(imagesArray(i));
+            selectedImageBitmap = BitmapFactory.decodeFile(imagesArray.get(i));
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            byte[] byteArrayImage = byteArrayOutputStream.toByteArray();
+            encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+            Log.i("encodedImage ", encodedImage);
+           /* filePath = imagereturnintent.getData().getPath();
+            multi_photo_bean= new Multi_Photo_Bean();
+            file = new File(filePath);
+            Filename= file.getAbsolutePath();
+            filename=Filename.substring(Filename.lastIndexOf("/")+1);*/
+            multi_photo_bean=new Multi_Photo_Bean();
+            Filename="imageName";
+            multi_photo_bean.setName(Filename+imagesArray.get(i));
+            multi_photo_bean.setBase64(encodedImage);
+            multi_photo_bean.setLength(String.valueOf(encodedImage.length()));
+            encodeArray.add(multi_photo_bean);
+
+
+        }
+//        ed_attach.setText(multi_photo_bean.getName());
+        ed_attach.setText("imageName");
+        Filename=ed_attach.getText().toString();
+
     }
 
     private void onCaptureImageResult(Intent data) {
@@ -780,7 +840,7 @@ public class Update_Gateout extends CommonActivity {
 
 
 
-    public class PostInfo extends AsyncTask<Void, Void, Void> {
+    public class PostInfo_GateOut extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         String responseString;
         private JSONArray invite_jsonlist;
@@ -812,12 +872,13 @@ public class Update_Gateout extends CommonActivity {
                 invite_jsonlist = new JSONArray();
                 reqObj = new JSONObject();
                 try {
-
-                    invitejsonObject = new JSONObject();
-                    invitejsonObject.put("FileName", filename);
-                    invitejsonObject.put("ContentLength",encodedImage.length());
-                    invitejsonObject.put("base64imageString",encodedImage);
-                    invite_jsonlist.put(invitejsonObject);
+                    for(int i=0;i<encodeArray.size();i++) {
+                        invitejsonObject = new JSONObject();
+                        invitejsonObject.put("FileName", encodeArray.get(i).getName());
+                        invitejsonObject.put("ContentLength",encodeArray.get(i).getLength());
+                        invitejsonObject.put("base64imageString", encodeArray.get(i).getBase64());
+                        invite_jsonlist.put(invitejsonObject);
+                    }
                     reqObj.put("ArrayOfFileParams",invite_jsonlist);
 
 
@@ -919,9 +980,13 @@ public class Update_Gateout extends CommonActivity {
                     Toast.makeText(getApplicationContext(), "GateOut Updated Successfully.", Toast.LENGTH_SHORT).show();
 
                     finish();
-                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(i);
-
+                    if(GlobalConstants.from.equalsIgnoreCase("new")) {
+                        Intent i = new Intent(getApplicationContext(), GateOut.class);
+                        startActivity(i);
+                    }else{
+                        Intent i = new Intent(getApplicationContext(), GateOut_Mysubmit.class);
+                        startActivity(i);
+                    }
                 }else{
                     shortToast(getApplicationContext(),"GateOut Not Updated..!");
                 }

@@ -35,6 +35,7 @@ public class PendingBean implements Serializable {
 
     String GI_TRNSCTN_NO;
     String Attach_ID;
+    String customerID;
 
 
 
@@ -249,6 +250,14 @@ public class PendingBean implements Serializable {
 
     public void setAttach_ID(String attach_ID) {
         Attach_ID = attach_ID;
+    }
+
+    public String getCustomerID() {
+        return customerID;
+    }
+
+    public void setCustomerID(String customerID) {
+        this.customerID = customerID;
     }
 
     public void setFilename(String filename) {
