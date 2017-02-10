@@ -3,8 +3,10 @@ package com.i_tankdepo.Constants;
 public class ConstantValues {
 	public static final String FIRST_COLUMN="First";
 	public static final String SECOND_COLUMN="Second";
+
 //	public static final String Link="http://192.168.0.18/iTankMobileService/";
 	public static final String Link="http://trial.iinterchange.net/itankdepomobile/iTankDepoUI/iTankMobileService/";
+
 	public static String baseURLLogin=Link+"Login.asmx/Login";
 	public static String baseURLRoleBasedLogin=Link+"Login.asmx/RoleDetails";
 	public static String baseURLChangePwd=Link+"ChangePassword.asmx/ChangePassword";

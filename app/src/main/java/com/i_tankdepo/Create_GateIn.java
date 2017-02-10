@@ -196,7 +196,9 @@ public class Create_GateIn extends CommonActivity   {
 
         systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
+
         db = new DBAdapter(Create_GateIn.this);
+
 
 
         CaptureValue = GlobalConstants.fullname;
@@ -881,6 +883,7 @@ public class Create_GateIn extends CommonActivity   {
 
                     }
                 }
+
                 break;
 
             case R.id.ed_time:
