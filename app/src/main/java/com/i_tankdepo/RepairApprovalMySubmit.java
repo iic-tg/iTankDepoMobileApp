@@ -42,6 +42,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
+import com.i_tankdepo.Beanclass.Image_Bean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.RepairBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -62,6 +64,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -94,13 +97,23 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist = new ArrayList<>();
     private PendingAccordionBean pending_accordion_bean;
     private ViewHolder holder;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private String Date_in;
+    private String ActivityDate,LastStatusDate;
+
 
     private Spinner fieldSpinner, operatorSpinner;
     private String fieldItems, opratorItems;
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products ;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -132,24 +145,26 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
         searchView2 = (EditText) findViewById(R.id.searchView2);
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
-        no_data = (TextView)findViewById(R.id.no_data);
+        no_data = (TextView)findViewById(R.id.list_noData);
         repair_estimate_text = (TextView)findViewById(R.id.tv_heating);
         repair_estimate_text.setText("Repair Approval");
         no_data.setVisibility(View.GONE);
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
-
+        iv_changeOfStatus.setVisibility(View.GONE);
         no_data.setVisibility(View.GONE);
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
 
         RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_Repair.setOnClickListener(this);
         RL_heating.setVisibility(View.GONE);
 
         repair_estimate = (Button)findViewById(R.id.repair_estimate);
-        repair_estimate.setVisibility(View.GONE);
+        repair_estimate.setOnClickListener(this);
         repair_approval = (Button)findViewById(R.id.repair_approval);
+        repair_approval.setVisibility(View.GONE);
         repair_completion = (Button)findViewById(R.id.repair_completion);
         repair_completion.setVisibility(View.GONE);
         survey_completion = (Button)findViewById(R.id.survey_completion);
@@ -169,8 +184,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
 
-        LL_heat.setAlpha(0.5f);
-        LL_heat.setClickable(false);
+        LL_heat.setOnClickListener(this);
 
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
@@ -237,10 +251,16 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Repair_Approval_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Repair_Approval_Dropdown_details().execute();
+                        new Get_RepairApproval_MySubmit_Details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_RepairApproval_MySubmit_Details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +302,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_Repair_Approval_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check Your Internet Connection");
@@ -422,15 +442,23 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="AAR";
+                GlobalConstants.status_id="9";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
-
+            case R.id.RL_Repair:
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                break;
             case R.id.bt_pending:
                 finish();
                 startActivity(new Intent(getApplicationContext(),RepairApprovalPending.class));
                 break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                break;
+            case R.id.repair_estimate:
+                startActivity(new Intent(getApplicationContext(),Repair_MainActivity.class));
                 break;
             case R.id.heat_refresh:
                 finish();
@@ -440,6 +468,13 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
@@ -452,6 +487,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -582,12 +618,66 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
 
 
                             repair_bean.setCustomer(jsonObject.getString("Customer"));
+                            repair_bean.setCustomer_Id(jsonObject.getString("CSTMR_ID"));
                             repair_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            repair_bean.setInDate(jsonObject.getString("InDate"));
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            LastStatusDate=jsonObject.getString("LastStatusDate");
+                            ActivityDate=jsonObject.getString("ActivityDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] split_LastStatusDate=LastStatusDate.split(" ");
+                            Date_in=In_date[0];
+                            String[] split_ActivityDate=ActivityDate.split(" ");
+                            ActivityDate=split_ActivityDate[0];
+                            LastStatusDate=split_LastStatusDate[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (LastStatusDate.equals(null) || LastStatusDate.length() < 0) {
+
+                                    LastStatusDate = "";
+                                } else {
+
+                                    LastStatusDate = myFormat.format(fromUser.parse(LastStatusDate));
+
+
+
+
+                                }if (ActivityDate.equals(null) || ActivityDate.length() < 0) {
+
+                                    ActivityDate = "";
+                                } else {
+
+                                    ActivityDate = myFormat.format(fromUser.parse(ActivityDate));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+                            repair_bean.setActivityDate(ActivityDate);
+
+                            repair_bean.setInDate(Date_in);
+                            repair_bean.setLastStatusDate(LastStatusDate);
+
                             repair_bean.setPrevious_cargo(jsonObject.getString("PreviousCargo"));
-                            repair_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
                             repair_bean.setLoborRate(jsonObject.getString("LaborRate"));
                             repair_bean.setLastTestType(jsonObject.getString("LastTestType"));
+                            repair_bean.setType(jsonObject.getString("EquipmentType_Cd"));
                             repair_bean.setNextTestType(jsonObject.getString("NextTestType"));
                             repair_bean.setLastTestDate(jsonObject.getString("LastTestDate"));
                             repair_bean.setNextTestDate(jsonObject.getString("NextTestDate"));
@@ -610,6 +700,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                             repair_bean.setLineItems(jsonObject.getString("LineItems"));
                             repair_bean.setAttachment(jsonObject.getString("attchement"));
                             repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
+                            repair_bean.setCurencyCD(jsonObject.getString("CurencyCD"));
 
                             repair_arraylist.add(repair_bean);
 
@@ -694,7 +785,6 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
 
         int resource;
         private RepairBean userListBean;
-        int lastPosition = -1;
         public UserListAdapter(Context context, int resource, ArrayList<RepairBean> list) {
             this.context = context;
             this.list = list;
@@ -725,7 +815,6 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                 convertView = inflater.inflate(resource, null);
                 holder = new ViewHolder();
 
-                lastPosition = position;
 
                 holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
@@ -758,8 +847,9 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                 holder.party_appRef = (TextView) convertView.findViewById(R.id.tv_text16);
                 holder.surveyor_name = (TextView) convertView.findViewById(R.id.tv_text17);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
-
-
+                holder.currency = (TextView) convertView.findViewById(R.id.text_currency);
+                holder.type = (TextView) convertView.findViewById(R.id.tv_text20);
+                holder.tv_customer_id = (TextView) convertView.findViewById(R.id.tv_customer_id);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -773,7 +863,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
 
                 userListBean = list.get(position);
 
-
+                holder.type.setText(userListBean.getType());
 
                 holder.equip_no.setText(userListBean.getEquip_no());
 //                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
@@ -782,6 +872,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                 holder.previous_crg.setText(userListBean.getPrevious_cargo());
                 holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
 
+                holder.tv_customer_id.setText(userListBean.getCustomer_Id());
 
                 holder.loborRate.setText(userListBean.getLoborRate());
                 holder.lastStatusDate.setText(userListBean.getLastStatusDate());
@@ -809,6 +900,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                 holder.lineItems.setText(userListBean.getLineItems());
                 holder.attachment.setText(userListBean.getAttachment());
                 holder.repairEstimateNo.setText(userListBean.getRepairEstimateNo());
+                holder.currency.setText(userListBean.getCurencyCD());
 
 
 
@@ -845,9 +937,21 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                         GlobalConstants.Survey_CompletionDate= list.get(position).getSurvey_completionDate();
                         GlobalConstants.lineItems= list.get(position).getLineItems();
                         GlobalConstants.attchement= list.get(position).getAttachment();
+                        GlobalConstants.cust_Id= list.get(position).getCustomer_Id();
+                        GlobalConstants.currency= list.get(position).getCurencyCD();
                         GlobalConstants.repairEstimateNo= list.get(position).getRepairEstimateNo();
-
-
+                        GlobalConstants.type= list.get(position).getType();
+                        GlobalConstants.from="MySubmitRepair";
+                        GlobalConstants.InvoiceParty_name = "";
+                        GlobalConstants.InvoiceParty_Id = "";
+                        GlobalConstants.position = "";
+                        GlobalConstants.attach_count = "";
+                        GlobalConstants.Invoice_party=0;
+                        GlobalConstants.ActivityDate=list.get(position).getActivityDate();
+                        GlobalConstants.Line_item_Json="";
+                        ArrayList<Image_Bean> encodeArray=new ArrayList();
+                        GlobalConstants.multiple_encodeArray=encodeArray;
+                        startActivity(new Intent(getApplicationContext(),Repair_Estimation_Approvel_wizard_MySubmit.class));
 
                     }
                 });
@@ -879,7 +983,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
 
     }
     static class ViewHolder {
-        TextView username,equip_no,time,date,Cust_Name,previous_crg,loborRate,lastStatusDate,lastTestType,lastTestDate,nextTestType,nextTestDate,lastSurveyor,val_PrdForTest,
+        TextView type,tv_customer_id,currency,username,equip_no,time,date,Cust_Name,previous_crg,loborRate,lastStatusDate,lastTestType,lastTestDate,nextTestType,nextTestDate,lastSurveyor,val_PrdForTest,
                 repairTypeId,repairTypeCd,remark,invoicePartyCD,invoicePartyID,invoicePartyName,gi_transNo,repairEstimateID,revisionNo,
                 cust_appRef,approvalDate,party_appRef,surveyor_name,survey_completion_date,lineItems,attachment,repairEstimateNo;
         CheckBox checkBox;
@@ -888,6 +992,176 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
     }
 
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(RepairApprovalMySubmit.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(RepairApprovalMySubmit.this, products);
+                searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Get_Repair_Approval_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -1098,7 +1372,13 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
             cbBuy.setOnCheckedChangeListener(myCheckChangList);
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
             return view;
         }
@@ -1226,6 +1506,7 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
                     }else {
@@ -1272,18 +1553,29 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
                             repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
                             repair_arraylist.add(repair_bean);
 
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else{
                     runOnUiThread(new Runnable(){
 
                         @Override
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1306,20 +1598,21 @@ public class RepairApprovalMySubmit extends CommonActivity implements Navigation
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (repair_arraylist != null) {
+                    adapter = new UserListAdapter(RepairApprovalMySubmit.this, R.layout.list_item_row, repair_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(repair_arraylist!=null)
+                } else{
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
+
+                }
+            }else
             {
-                adapter = new UserListAdapter(RepairApprovalMySubmit.this, R.layout.list_item_row, repair_arraylist);
-                listview.setAdapter(adapter);
-
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
             }
-            else if(repair_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
-            }
-
             progressDialog.dismiss();
 
         }

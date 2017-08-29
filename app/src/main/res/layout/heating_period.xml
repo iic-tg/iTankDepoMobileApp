@@ -139,6 +139,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:visibility="invisible"
                             android:textStyle="bold"
                             android:textColor="@color/list_text"
                             android:text="Min.Rate"/>
@@ -147,6 +148,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:textStyle="bold"
+                            android:visibility="invisible"
                             android:textColor="@color/list_text"
                             android:text="Hourly Rate"/>
 
@@ -159,26 +161,28 @@
                         android:orientation="horizontal"
                         android:weightSum="3">
 
-                        <EditText
+                      <EditText
+                          android:focusable="false"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:focusable="false"
+                            android:layout_weight="3"
                             android:id="@+id/ed_totalPrd"
                             android:textColor="@color/list_text"
                             android:text="6 hours"/>
                         <EditText
+                            android:focusable="false"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:focusable="false"
                             android:id="@+id/ed_minRate"
+                            android:visibility="invisible"
                             android:text="0.00"/>
                         <EditText
+                            android:focusable="false"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:focusable="false"
+                            android:visibility="invisible"
                             android:id="@+id/ed_hourlyRate"
                             android:text="0.00"/>
 
@@ -189,6 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginTop="5dp"
+                        android:visibility="invisible"
                         android:orientation="horizontal"
                         android:weightSum="2">
 
@@ -647,7 +652,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:id="@+id/ed_temp"
-                            android:inputType="number"
+                            android:maxLength="7"
+                            android:inputType="number|textNoSuggestions"
                             android:textColor="@color/list_text"
                             android:layout_weight="1.13" />
 

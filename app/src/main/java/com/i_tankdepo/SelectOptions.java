@@ -190,6 +190,35 @@ public class SelectOptions extends CommonActivity {
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
             case R.id.status_refresh:
+
+                /*    public static List<String> selected_Stock_Cust_Id;
+            public static List<String> selected_Stock_Equp_Id;
+            public static List<String> selected_Stock_Prev_Crg_Id;
+            public static List<String> selected_Stock_Curnt_Status_Id;
+            public static List<String> selected_Stock_Nxt_Tst_Type_Id;
+            public static List<String> selected_Stock_Depot_Id;*/
+                if(selected_name.equalsIgnoreCase("Customer"))
+                {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+
+                }else if(selected_name.equalsIgnoreCase("Equipment Type"))
+                {
+                    GlobalConstants.selected_Stock_Equp_Id.removeAll( GlobalConstants.selected_Stock_Equp_Id);
+                }else if(selected_name.equalsIgnoreCase("Previous Cargo"))
+                {
+                    GlobalConstants.selected_Stock_Prev_Crg_Id.removeAll( GlobalConstants.selected_Stock_Prev_Crg_Id);
+
+                }else if(selected_name.equalsIgnoreCase("Current Status")) {
+                    GlobalConstants.selected_Stock_Curnt_Status_Id.removeAll( GlobalConstants.selected_Stock_Curnt_Status_Id);
+
+                }else if(selected_name.equalsIgnoreCase("Next Test Type"))
+                {
+                    GlobalConstants.selected_Stock_Nxt_Tst_Type_Id.removeAll( GlobalConstants.selected_Stock_Nxt_Tst_Type_Id);
+
+                }else {
+                    GlobalConstants.selected_Stock_Depot_Id.removeAll( GlobalConstants.selected_Stock_Depot_Id);
+
+                }
                 finish();
                 startActivity(getIntent());
                 break;
@@ -1031,17 +1060,71 @@ public class SelectOptions extends CommonActivity {
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
 
-
-
-
-          /*  for(int i=0;i<selected_member_arraylist.size();i++)
+            if(selected_name.equalsIgnoreCase("Customer"))
             {
-                if(p.memberId .equalsIgnoreCase(String.valueOf(selected_member_arraylist.get(i).getId())))
-                {
-                    cbBuy.setChecked(true);
+                if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
                 }
+
+            }else if(selected_name.equalsIgnoreCase("Equipment Type"))
+            {
+                if(GlobalConstants.selected_Stock_Equp_Id!=null)
+                {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Equp_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Equp_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
+                }
+            }else if(selected_name.equalsIgnoreCase("Previous Cargo"))
+            {
+                if(GlobalConstants.selected_Stock_Prev_Crg_Id!=null)
+                {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Prev_Crg_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Prev_Crg_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
+                }
+
+            }else if(selected_name.equalsIgnoreCase("Current Status")) {
+                if(GlobalConstants.selected_Stock_Curnt_Status_Id!=null)
+                {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Curnt_Status_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Curnt_Status_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
+                }
+
+            }else if(selected_name.equalsIgnoreCase("Next Test Type"))
+            {
+                if(GlobalConstants.selected_Stock_Nxt_Tst_Type_Id!=null)
+                {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Nxt_Tst_Type_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Nxt_Tst_Type_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
+
+                }
+            }else {
+                if(GlobalConstants.selected_Stock_Depot_Id!=null)
+                {
+                    for (int i = 0; i < GlobalConstants.selected_Stock_Depot_Id.size(); i++) {
+                        if (p.Id.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Depot_Id.get(i)))) {
+                            cbBuy.setChecked(true);
+                        }
+                    }
+
+                }
+
             }
-*/
+
             return view;
         }
 

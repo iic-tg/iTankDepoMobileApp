@@ -9,6 +9,7 @@
     <color name="Title">#015bab</color>
     <color name="Line">#a2a2a2</color>
     <color name="grey">#ffaaaaaa</color>
+    <color name="dark_grey">#B0B0B0</color>
     <color name="tv_color">#bbbbbb</color>
     <color name="image_capture">#025bab</color>
     <color name="list_text">#666666</color>

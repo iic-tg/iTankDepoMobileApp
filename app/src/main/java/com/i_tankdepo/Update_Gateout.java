@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,6 +29,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
@@ -35,6 +39,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -52,6 +58,7 @@ import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.EquipmentDropdownBean;
 import com.i_tankdepo.Beanclass.Equipment_Info_TypeDropdownBean;
 import com.i_tankdepo.Beanclass.Multi_Photo_Bean;
+import com.i_tankdepo.Beanclass.PendingBean;
 import com.i_tankdepo.Beanclass.Previous_CargoDropdownBean;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
@@ -76,12 +83,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.i_tankdepo.R.id.ed_type;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -91,17 +104,16 @@ public class Update_Gateout extends CommonActivity {
 
     ImageView up,more_up,equip_up,down,more_down,equip_down;
     LinearLayout LL_general_info;
-    private TextView tv_toolbarTitle,tv_add,tv_status,tv_date,tv_time,tv_heat_refresh,leakTest_text;
-
-    private ImageView menu,im_date,im_time,im_Attachment,iv_back;
+    private TextView tv_toolbarTitle, tv_add, tv_status, tv_date, tv_time, tv_heat_refresh, leakTest_text;
+    private int myear, mmonth, mday;
+    private ImageView menu, im_date, im_time, im_Attachment, iv_back;
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private Intent mServiceIntent;
     private String userChoosenTask;
     private static final int CustomGallerySelectId = 1;//Set Intent Id
-
-    private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
-    private EditText ed_time,ed_attach,ed_date,ed_status,ed_location,ed_eir_no,ed_vechicle,ed_transport,ed_remark;
+    private Button fotter_add, im_add, im_print, bt_home, bt_refresh, fotter_submit;
+    private EditText ed_time, ed_attach, ed_date, ed_status, ed_location, ed_eir_no, ed_vechicle, ed_transport, ed_remark, ed_code;
     static final int DATE_DIALOG_ID = 1999;
     private Calendar c;
     private int year,month,day,second;
@@ -131,7 +143,7 @@ public class Update_Gateout extends CommonActivity {
     List<String> Cargo_Description = new ArrayList<>();
     LinearLayout LL_Submit,LL_footer_delete;
     private int pendingsize;
-    String equip_no,From ,Cust_Name,previous_crg,attachmentstatus,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
+    String equip_no,From ,Cust_Name,previous_crg,gateIn_Id,code,location,cust_code,type_id,code_id,pre_code,pre_id,
             trans_no, vechicle,transport,Eir_no,heating_bt,rental_bt,remark,type,status,date,time,get_swt_info_rental,get_swt_info_active;
 
     Switch rental;
@@ -170,7 +182,21 @@ public class Update_Gateout extends CommonActivity {
     private Bitmap selectedImageBitmap;
     private Multi_Photo_Bean multi_photo_bean;
     private DBAdapter db;
-
+    private Calendar mcurrentTime;
+    private int hour, minute;
+    private TimePickerDialog mTimePicker;
+    private ImageView more_info,tv_view_remarks;
+    private JSONObject print_object;
+    private String get_equipment;
+    private String get_code;
+    private String current_date;
+    private Date date2,date1;
+    private String get_status_id;
+    private String get_previous_cargo;
+    private String Str = "";
+    private ArrayList<String> list;
+    private Date Activity_date1;
+    boolean new_attachment=false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -182,53 +208,65 @@ public class Update_Gateout extends CommonActivity {
         Cust_Name= GlobalConstants.customer_name;
         From= GlobalConstants.from;
         Gi_transaction_id = GlobalConstants.pre_adv_id;
-        attachmentstatus= GlobalConstants.attachmentStatus;
-        Log.i("transactionNO",attachmentstatus);
+        encodeArray= GlobalConstants.pending_attach_arraylist;
 
         db = new DBAdapter(Update_Gateout.this);
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        equip_no = GlobalConstants.equipment_no;
+        location = GlobalConstants.location;
+        type = GlobalConstants.type;
+        date = GlobalConstants.date;
+        try {
+            Activity_date1 = new SimpleDateFormat("dd-MM-yyyy").parse(date);
+        }catch (Exception e)
+        {
 
-        equip_no= GlobalConstants.equipment_no;
-        location= GlobalConstants.location;
-        type= GlobalConstants.type;
-        date= GlobalConstants.date;
-        time= GlobalConstants.time;
-        Eir_no= GlobalConstants.eir_no;
-        vechicle= GlobalConstants.vechicle_no;
-        transport= GlobalConstants.Transport_No;
-        rental_bt= GlobalConstants.rental_bt;
+        }
+        time = GlobalConstants.time;
+        code = GlobalConstants.code;
+        status = GlobalConstants.status;
+        Eir_no = GlobalConstants.eir_no;
+        vechicle = GlobalConstants.vechicle_no;
+        transport = GlobalConstants.Transport_No;
+        rental_bt = GlobalConstants.rental_bt;
         remark = GlobalConstants.remark;
         filename =GlobalConstants.attach_filename;
 
-
+        im_print = (Button)findViewById(R.id.bt_gateout);
+        im_print.setOnClickListener(this);
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
-
-
-        tv_status = (TextView)findViewById(R.id.tv_status);
-        tv_date = (TextView)findViewById(R.id.tv_date);
-        tv_time = (TextView)findViewById(R.id.tv_time);
-        ed_date = (EditText)findViewById(R.id.ed_date);
-        ed_time = (EditText)findViewById(R.id.ed_time);
-
-
-        heat_home = (Button)findViewById(R.id.heat_home);
-        heat_refresh = (Button)findViewById(R.id.heat_refresh);
-        bt_heating = (Button)findViewById(R.id.heating);
+        tv_status = (TextView) findViewById(R.id.tv_status);
+        tv_date = (TextView) findViewById(R.id.tv_date);
+        tv_time = (TextView) findViewById(R.id.tv_time);
+        ed_date = (EditText) findViewById(R.id.ed_date);
+        ed_time = (EditText) findViewById(R.id.ed_time);
+        ed_status = (EditText) findViewById(R.id.ed_status);
+        ed_code = (EditText) findViewById(R.id.ed_code);
+        heat_home = (Button) findViewById(R.id.heat_home);
+        heat_refresh = (Button) findViewById(R.id.heat_refresh);
+        bt_heating = (Button) findViewById(R.id.heating);
+        RL_Repair = (RelativeLayout) findViewById(R.id.RL_Repair);
         bt_heating.setVisibility(View.GONE);
+
+        tv_view_remarks = (ImageView)findViewById(R.id.tv_view_remarks);
+        more_info = (ImageView)findViewById(R.id.more_info);
+        more_info.setOnClickListener(this);
+        tv_view_remarks.setOnClickListener(this);
         cleaning = (Button)findViewById(R.id.cleaning);
         inspection = (Button)findViewById(R.id.inspection);
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
         inspection.setVisibility(View.GONE);
         cleaning.setVisibility(View.GONE);
-        LL_heat.setAlpha(0.5f);
+
         LL_heat.setClickable(false);
         Leaktest = (Button)findViewById(R.id.leakTest);
         bt_gateout = (Button)findViewById(R.id.bt_gateout);
         Leaktest.setVisibility(View.GONE);
         leakTest_text = (TextView)findViewById(R.id.tv_heating);
+        leakTest_text.setGravity(Gravity.CENTER_HORIZONTAL);
         leakTest_text.setText("Print");
         LL_heat_submit = (LinearLayout)findViewById(R.id.LL_heat_submit);
         heat_submit = (Button) findViewById(R.id.heat_submit);
@@ -241,7 +279,6 @@ public class Update_Gateout extends CommonActivity {
         RL_Repair.setVisibility(View.GONE);
 
 
-
       //  ed_previous = (EditText)findViewById(R.id.ed_previous);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
         rental=(Switch)findViewById(R.id.switch_rental);
@@ -251,6 +288,16 @@ public class Update_Gateout extends CommonActivity {
         text1 = (TextView)findViewById(R.id.text1);
       //  text2 = (TextView)findViewById(R.id.text2);
         ed_eir_no = (EditText)findViewById(R.id.ed_eir_no);
+
+        ed_eir_no.setFilters(new InputFilter[] {
+                new InputFilter.AllCaps() {
+                    @Override
+                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                        return String.valueOf(source).toUpperCase();
+                    }
+                },
+                new InputFilter.LengthFilter(50)
+        });
         ed_location = (EditText)findViewById(R.id.ed_location);
         ed_vechicle = (EditText)findViewById(R.id.ed_vechicle);
         ed_transport = (EditText)findViewById(R.id.ed_transport);
@@ -259,14 +306,57 @@ public class Update_Gateout extends CommonActivity {
         im_Attachment =(ImageView)findViewById(R.id.im_Attachment);
         im_time =(ImageView)findViewById(R.id.im_time);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
+        try {
+            boolean attach_disable=false;
+            if (encodeArray.size()>0) {
+                for(int i=0;i<encodeArray.size();i++)
+                {
+                    if(equip_no.equals(encodeArray.get(i).getEquipmentNo())) {
+                        Str += " " + encodeArray.get(i).getName() + ",";
+                        if(encodeArray.get(i).getName().equals(""))
+                        {
+                            attach_disable=true;
+                        }
 
+                    }else {
+                    }
+                }
+                if (Str.endsWith(",")) {
+                    Str = Str.substring(0, Str.length() - 1);
+                    ed_attach.setText(Str);
+                }
+                if(Str.equals(""))
+                {
+
+                }
+               /* if(attach_disable)
+                {
+                }else {
+
+
+                }*/
+                ed_attach.setText(Str);
+
+            }else {
+
+
+
+            }
+        }catch (Exception e)
+        {
+        }
+//        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
         ed_date.setText(date);
+        Log.i("time",time);
         ed_time.setText(time);
-        ed_location.setText(location);
+        ed_location.setText(location.replaceAll("\\s+$", ""));
         ed_eir_no.setText(Eir_no);
         ed_remark.setText(remark);
+        ed_code.setText(code);
+        ed_status.setText(status);
 
-        ed_attach.setText(filename);
+
+
 
         if(vechicle.equals("")||vechicle.equalsIgnoreCase("null")||vechicle=="null")
         {
@@ -311,7 +401,17 @@ public class Update_Gateout extends CommonActivity {
                 }
             }
         });
+        if ((ed_attach.getText().length() < 0)|| Str.equals("")) {
+            //im_Attachment.setColorFilter(Color.CYAN,PorterDuff.Mode.LIGHTEN);
+            //   Toast.makeText(Update_Gateout.this,"greater",Toast.LENGTH_LONG).show();
+            Animation fade = AnimationUtils.loadAnimation(this, R.anim.img_fade);
+            im_Attachment.startAnimation(fade);
 
+        } else {
+            //im_Attachment.setColorFilter(Color.CYAN, PorterDuff.Mode.DARKEN);
+            //  Toast.makeText(Update_Gateout.this,"0",Toast.LENGTH_LONG).show();
+
+        }
         im_Attachment.setOnClickListener(this);
 
        
@@ -341,12 +441,12 @@ public class Update_Gateout extends CommonActivity {
         int hour = c.get(Calendar.HOUR);
         //24 hour format
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
-        SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat time = new SimpleDateFormat("HH:MM");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
-        ed_date.setText(systemDate);
-        ed_time.setText(curTime);
+        /*ed_date.setText(systemDate);
+        ed_time.setText(curTime);*/
 
 
 
@@ -402,10 +502,7 @@ public class Update_Gateout extends CommonActivity {
         }
     };
 
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
-    }
+
 
     @Override
     public void onBackPressed() {
@@ -456,9 +553,83 @@ public class Update_Gateout extends CommonActivity {
 
                 showDialog(DATE_DIALOG_ID);
                 break;
+            case R.id.tv_view_remarks:
+                get_remark=ed_remark.getText().toString();
+              popUp_remarks(get_remark);
+                break;
             case R.id.im_date:
 
                 showDialog(DATE_DIALOG_ID);
+
+                break;
+            case R.id.more_info:
+
+                get_status = GlobalConstants.status;
+                get_status_id = GlobalConstants.status_id;
+                get_previous_cargo = GlobalConstants.previous_cargo;
+
+                popUp_equipment_info(GlobalConstants.equipment_no, get_status, get_status_id, get_previous_cargo, "", "", "", "");
+
+
+                break;
+            case R.id.bt_gateout:
+
+
+                /*  equip_no = GlobalConstants.equipment_no;
+        location = GlobalConstants.location;
+        type = GlobalConstants.type;
+        date = GlobalConstants.date;
+        time = GlobalConstants.time;
+        code = GlobalConstants.code;
+        status = GlobalConstants.status;
+        Eir_no = GlobalConstants.eir_no;
+        vechicle = GlobalConstants.vechicle_no;
+        transport = GlobalConstants.Transport_No;
+        rental_bt = GlobalConstants.rental_bt;
+        remark = GlobalConstants.remark;
+        filename =GlobalConstants.attach_filename;*/
+                GlobalConstants.from="GateOut";
+                get_sp_previous = "";
+                get_sp_customer=Cust_Name;
+                get_sp_equipe=equip_no;
+                get_equipment=equip_no;
+                getType=type;
+                get_status=status;
+                get_code=code;
+                get_date=date;
+                get_time=time;
+                get_location=location;
+                get_eir_no=Eir_no;
+                get_vechicle=vechicle;
+                get_transport=transport;
+                get_remark=remark;
+
+                try {
+                    print_object = new JSONObject();
+
+                    print_object.put("get_sp_previous", get_sp_previous);
+                    print_object.put("get_sp_customer", get_sp_customer);
+                    print_object.put("get_sp_equipe", get_sp_equipe);
+                    print_object.put("get_equipment", get_equipment);
+                    print_object.put("getType", getType);
+                    print_object.put("get_status", get_status);
+                    print_object.put("get_code", get_code);
+                    print_object.put("get_date", get_date);
+                    print_object.put("get_time", get_time);
+                    print_object.put("get_location", get_location);
+                    print_object.put("get_eir_no", get_eir_no);
+                    print_object.put("get_vechicle", get_vechicle);
+                    print_object.put("get_transport", get_transport);
+                    print_object.put("get_remark", get_remark);
+                    print_object.put("get_createdBy", sp.getString(SP_USER_ID, "user_Id"));
+                    print_object.put("get_current_date", systemDate);
+
+                }catch (Exception e)
+                {
+
+                }
+                GlobalConstants.print_string= String.valueOf(print_object);
+                startActivity(new Intent(getApplicationContext(),CustomPrintActivity.class));
 
                 break;
 
@@ -483,24 +654,37 @@ public class Update_Gateout extends CommonActivity {
                 break;
             case R.id.heat_submit:
 
-                try {
-                    if (encodedImage.length() < 0) {
+                String attachment=ed_attach.getText().toString();
 
-                    } else {
+                try {
+
+                    if(!attachment.equals(""))
+                    {
                         IfAttchment = "True";
+
+                    }else {
+                        IfAttchment = "False";
+
                     }
+                  /*  if( (encodedImage.length() > 0) ) {
+                        IfAttchment = "True";
+                    } else if(pending_attach_arraylist.size()>0) {
+                        IfAttchment = "True";
+                    }else {
+                        IfAttchment = "False";
+                    }*/
                 }catch (Exception e)
                 {
-
-                    IfAttchment = "False";
+//                    IfAttchment = "False";
                 }
+
 
 
 
                 get_date=ed_date.getText().toString();
                 get_time=ed_time.getText().toString();
                 get_location=ed_location.getText().toString();
-                get_eir_no=ed_eir_no.getText().toString();
+                get_eir_no=ed_eir_no.getText().toString().toUpperCase();
                 get_vechicle=ed_vechicle.getText().toString();
                 get_transport=ed_transport.getText().toString();
                 get_remark=ed_remark.getText().toString();
@@ -511,68 +695,101 @@ public class Update_Gateout extends CommonActivity {
 
                 if ((get_time.trim().equals("") || get_time == null) ||
                         (get_date.trim().equals("") || get_date == null)) {
+
                     shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
-                } else {
 
+                }
+                else {
+                    Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
+                    try {
+                        current_date = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+                        date1 = sdf.parse(get_date);
+                        date2 = sdf.parse(current_date);
 
-                    if (cd.isConnectingToInternet()) {
+    /* historyDate <= todayDate <= futureDate */
 
-                        new PostInfo_GateOut().execute();
+                        if ((date1.compareTo(date2) > 0)) {
+                            shortToast(getApplicationContext(), "cannot select future date");
+                        } else {
+                            Matcher matcher = pattern.matcher(get_eir_no);
+                            if (!matcher.matches()) {
+                                shortToast(getApplicationContext(), "Special Character Not Allowed in EIR No");
+                            } else {
+                                if (cd.isConnectingToInternet()) {
 
-                    } else {
-                        shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                                    new PostInfo_GateOut().execute();
+
+                                } else {
+                                    shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                                }
+                            }
+
+                        }
+
+                    } catch (Exception e) {
+                       Log.i("e", String.valueOf(e));
+                        e.printStackTrace();
                     }
-
-
                 }
             }else{
                 if ((get_time.trim().equals("") || get_time == null) ||
                         (get_date.trim().equals("") || get_date == null)) {
                     shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                 } else {
-                    db.open();
-                    db.updateGateOut(sp.getString(SP_USER_ID,"user_Id"),equip_no,get_location,get_date,get_time,get_eir_no,get_vechicle,get_transport,
-                            get_remark,get_swt_rental,Gi_transaction_id,IfAttchment,From);
-                    db.close();
+
+
+                    Pattern pattern = Pattern.compile("[a-zA-Z0-9]*");
+
+                    Matcher matcher = pattern.matcher(get_eir_no);
+                    if (!matcher.matches()) {
+                        shortToast(getApplicationContext(), "Special Character Not Allowed in EIR No");
+                    } else {
+                        if (cd.isConnectingToInternet()) {
+
+                            db.open();
+                            db.updateGateOut(sp.getString(SP_USER_ID,"user_Id"),equip_no,get_location,get_date,get_time,get_eir_no,get_vechicle,get_transport,
+                                    get_remark,get_swt_rental,Gi_transaction_id,IfAttchment,From);
+                            db.close();
+
+                        } else {
+                            shortToast(getApplicationContext(), "Please Check Your Internet Connection");
+                        }
+                    }
+
                 }
             }
                 break;
 
             case R.id.ed_time:
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
+                mcurrentTime = Calendar.getInstance();
+                hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                minute = mcurrentTime.get(Calendar.MINUTE);
 
-                // Launch Time Picker Dialog
-                timePickerDialog = new TimePickerDialog(this,
-                        new TimePickerDialog.OnTimeSetListener() {
+                mTimePicker = new TimePickerDialog(Update_Gateout.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        ed_time.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                boolean isPM = (hourOfDay >= 12);
-                                ed_time.setText(String.format("%02d:%02d %s", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute, isPM ? "PM" : "AM"));
-                                //   from_time.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
-                timePickerDialog.show();
+                    }
+                }, hour, minute, true
+                );
+                mTimePicker.show();
                 break;
             case R.id.im_time:
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
+                mcurrentTime = Calendar.getInstance();
+                hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                minute = mcurrentTime.get(Calendar.MINUTE);
 
-                // Launch Time Picker Dialog
-                timePickerDialog = new TimePickerDialog(this,
-                        new TimePickerDialog.OnTimeSetListener() {
+                mTimePicker = new TimePickerDialog(Update_Gateout.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        ed_time.setText(String.format("%02d:%02d", selectedHour, selectedMinute));
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                boolean isPM = (hourOfDay >= 12);
-                                ed_time.setText(String.format("%02d:%02d %s", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute, isPM ? "PM" : "AM"));
-                                //   from_time.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
-                timePickerDialog.show();
+                    }
+                }, hour, minute, true
+                );
+                mTimePicker.show();
                 break;
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
@@ -583,7 +800,43 @@ public class Update_Gateout extends CommonActivity {
                 break;
             case R.id.im_Attachment:
 
-                selectImage();
+
+                final CharSequence[] items = { "Take Photo", "Choose from Library"};
+
+                isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Update_Gateout.this);
+                builder.setTitle("Add Photo!");
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        boolean result= Utility.checkPermission(Update_Gateout.this, isCamPermission);
+
+                        if (items[item].equals("Take Photo")) {
+                            userChoosenTask ="Take Photo";
+                            if(result) {
+                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                try {
+                                    startActivityForResult(intent, REQUEST_CAMERA);
+                                }catch (Exception e)
+                                {
+                                    isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
+
+                                    result = Utility.checkPermission(Update_Gateout.this, isCamPermission);
+
+
+                                }
+                            }
+
+                        } else if (items[item].equals("Choose from Library")) {
+                            userChoosenTask ="Choose from Library";
+                            if(result)
+                                startActivityForResult(new Intent(Update_Gateout.this, CustomGallery_Activity.class), CustomGallerySelectId);
+
+                        }
+                    }
+                });
+                builder.show();
+
 
                 break;
 
@@ -626,51 +879,50 @@ public class Update_Gateout extends CommonActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);//
         startActivityForResult(Intent.createChooser(intent, "Select File"),SELECT_FILE);
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        // put your code here...
+        if(encodeArray==null)
+        {
+            encodeArray=new ArrayList<Multi_Photo_Bean>();
+            list = new ArrayList<>();
 
+        }
+
+    }
     private void cameraIntent()
     {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(intent, REQUEST_CAMERA);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestcode, int resultcode,
+                                    Intent imagereturnintent) {
+        super.onActivityResult(requestcode, resultcode, imagereturnintent);
 
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE) {
-                String imagesArray = data.getStringExtra(CustomGalleryIntentKey);//get Intent data
+
+        if (resultcode == RESULT_OK) {
+
+            if (requestcode == SELECT_FILE) {
+                String imagesArray = imagereturnintent.getStringExtra(CustomGalleryIntentKey);//get Intent data
                 //Convert string array into List by splitting by ',' and substring after '[' and before ']'
                 List<String> selectedImages = Arrays.asList(imagesArray.substring(1, imagesArray.length() - 1).split(", "));
-                loadGridView(new ArrayList<String>(selectedImages), data);//call load gridview method by passing converted list into arrayList
-            }
-            /*else if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data);
-            else
-            {
-                Uri uri = data.getData();
-                Log.d(TAG, "File Uri: " + uri.toString());
-                // Get the path
-                String path = null;
-                path = getPath(this,uri);
-                filePath = data.getData().getPath();
-                file = new File(filePath);
-                Filename= file.getAbsolutePath();
-                imageName=filePath.substring(Filename.lastIndexOf("/")+1);
-                String basename = FilenameUtils.getBaseName(Filename);
-                String fileType = FilenameUtils.getExtension(Filename);
-                ed_attach.setText(basename+fileType);
-                Log.d(TAG, "File Path: " + path);
-            }
-        }*/
+                loadGridView(new ArrayList<String>(selectedImages), imagereturnintent);//call load gridview method by passing converted list into arrayList
+            } else if (requestcode == REQUEST_CAMERA)
+                onCaptureImageResult(imagereturnintent);
+
+
         }
+
+
+
     }
     private void loadGridView(ArrayList<String> imagesArray,Intent imagereturnintent) {
         GridView_Adapter adapter = new GridView_Adapter(Update_Gateout.this, imagesArray, false);
 
-        encodeArray=new ArrayList<Multi_Photo_Bean>();
 
-        for (int i=0;i<imagesArray.size();i++){
+        for (int i = 0; i < imagesArray.size(); i++) {
 //            imagesPathList.add(imagesArray(i));
             selectedImageBitmap = BitmapFactory.decodeFile(imagesArray.get(i));
 
@@ -685,16 +937,30 @@ public class Update_Gateout extends CommonActivity {
             Filename= file.getAbsolutePath();
             filename=Filename.substring(Filename.lastIndexOf("/")+1);*/
             multi_photo_bean=new Multi_Photo_Bean();
-            Filename="imageName";
+//            Filename="imageName";
             multi_photo_bean.setName(Filename+imagesArray.get(i));
             multi_photo_bean.setBase64(encodedImage);
             multi_photo_bean.setLength(String.valueOf(encodedImage.length()));
             encodeArray.add(multi_photo_bean);
-
-
+            String path = imagesArray.get(i);
+            String filename = path.substring(path.lastIndexOf("/") + 1);
+            Log.d("Last ", filename);
+            list.add(filename);
         }
-//        ed_attach.setText(multi_photo_bean.getName());
-        ed_attach.setText("imageName");
+        Log.d("Array", String.valueOf(list));
+//        ed_attach.setText((CharSequence) list);
+        String Str = "";
+        for (int ii = 0; ii < list.size(); ii++) {
+            Str += " " + list.get(ii) + ",";
+        }
+        if (Str.endsWith(",")) {
+            Str = Str.substring(0, Str.length() - 1);
+            ed_attach.setText(Str);
+        }
+
+
+        //   ed_attach.setText(multi_photo_bean.getName());
+//        ed_attach.setText("imageName");
         Filename=ed_attach.getText().toString();
 
     }
@@ -723,9 +989,21 @@ public class Update_Gateout extends CommonActivity {
         byte[] byteArrayImage = bytes.toByteArray();
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
         filename=filename.substring(filename.lastIndexOf("/")+1);
+        multi_photo_bean=new Multi_Photo_Bean();
+//            Filename="imageName";
+        multi_photo_bean.setName(filename);
+        multi_photo_bean.setBase64(encodedImage);
+        multi_photo_bean.setLength(String.valueOf(encodedImage.length()));
+        encodeArray.add(multi_photo_bean);
         ed_attach.setText(filename);
-
-
+        list.add(filename);
+        for (int ii = 0; ii < list.size(); ii++) {
+            Str += " " + list.get(ii) + ",";
+        }
+        if (Str.endsWith(",")) {
+            Str = Str.substring(0, Str.length() - 1);
+            ed_attach.setText(Str);
+        }
     }
     public String getPath(Context context, Uri uri) {
         String[] projection = { MediaStore.Images.Media.DATA };
@@ -782,31 +1060,52 @@ public class Update_Gateout extends CommonActivity {
         }
 
     }
+
     @Override
     protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
         switch (id) {
             case DATE_DIALOG_ID:
-
-                // open datepicker dialog.
-                // set date picker for current date
-                // add pickerListener listner to date picker
-                return new DatePickerDialog(this, pickerListener, year, month,day);
-
-
-
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMaxDate(new Date().getTime());
+                return dialog;
+            //end changes...
         }
         return null;
     }
+
+    /*  @Override
+    protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
+        switch (id) {
+            case DATE_DIALOG_ID:
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMinDate(new Date().getTime());
+                dialog.getDatePicker().setMaxDate(Activity_date1.getTime());
+                return dialog;
+            //end changes...
+        }
+        return null;
+    }*/
     private static String formatDate(int year, int month, int day) {
 
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
+
 
     private DatePickerDialog.OnDateSetListener pickerListener = new DatePickerDialog.OnDateSetListener() {
 
@@ -815,22 +1114,16 @@ public class Update_Gateout extends CommonActivity {
         public void onDateSet(DatePicker view, int selectedYear,
                               int selectedMonth, int selectedDay) {
 
-            year  = selectedYear;
+            year = selectedYear;
             month = selectedMonth;
-            day   = selectedDay;
-
-            view.setMinDate(System.currentTimeMillis() - 1000);
+            day = selectedDay;
 
 
-
-            ed_date.setText(formatDate(year, month, day));
-
-            //    System.out.println("am a new from date====>>" + str_From);
-
-            //  date.setText(formatDate(year, month, day));
+                ed_date.setText(formatDate(year, month, day));
 
         }
     };
+
 
 
     @Override
@@ -874,9 +1167,14 @@ public class Update_Gateout extends CommonActivity {
                 try {
                     for(int i=0;i<encodeArray.size();i++) {
                         invitejsonObject = new JSONObject();
-                        invitejsonObject.put("FileName", encodeArray.get(i).getName());
-                        invitejsonObject.put("ContentLength",encodeArray.get(i).getLength());
-                        invitejsonObject.put("base64imageString", encodeArray.get(i).getBase64());
+                        if(new_attachment) {
+                            invitejsonObject.put("FileName", encodeArray.get(i).getName());
+                            invitejsonObject.put("ContentLength", encodeArray.get(i).getLength());
+                            invitejsonObject.put("base64imageString", encodeArray.get(i).getBase64());
+                        }else {
+                            invitejsonObject.put("FileName", encodeArray.get(i).getName());
+                            invitejsonObject.put("base64imageString", encodeArray.get(i).getPathUrl());
+                        }
                         invite_jsonlist.put(invitejsonObject);
                     }
                     reqObj.put("ArrayOfFileParams",invite_jsonlist);
@@ -901,6 +1199,30 @@ public class Update_Gateout extends CommonActivity {
                     });
 
                 }
+                SimpleDateFormat fromUser = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+                SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+                String datePattern = "\\d{2}-\\d{2}-\\d{4}";
+                try {
+                    if (get_date.equals(null) || get_date.length() < 0) {
+                        get_date = "";
+                    } else {
+                        Boolean is_next_Date1 = get_date.matches(datePattern);
+                        if (is_next_Date1 == true) {
+                            get_date = myFormat.format(fromUser.parse(get_date));
+
+
+                        } else {
+                            get_date = get_date;
+
+                        }
+
+                    }
+
+                }catch (Exception e)
+                {
+                    get_date = "";
+                }
+
                 String numberAsString = Integer.toString( pendingsize+1);
                 jsonObject.put("EquipmentNo",equip_no);
                 jsonObject.put("YardLocation", get_location);
@@ -977,8 +1299,7 @@ public class Update_Gateout extends CommonActivity {
             super.onPostExecute(aVoid);
             if(responseString!=null) {
                 if (responseString.equalsIgnoreCase("Updated")) {
-                    Toast.makeText(getApplicationContext(), "GateOut Updated Successfully.", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(getApplicationContext(), "Gate Out : Equipment(s) Updated Successfully.", Toast.LENGTH_SHORT).show();
                     finish();
                     if(GlobalConstants.from.equalsIgnoreCase("new")) {
                         Intent i = new Intent(getApplicationContext(), GateOut.class);
@@ -999,6 +1320,5 @@ public class Update_Gateout extends CommonActivity {
 
         }
     }
-
 
 }

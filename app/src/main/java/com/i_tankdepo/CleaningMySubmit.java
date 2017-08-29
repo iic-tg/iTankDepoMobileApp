@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.CleaningBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -62,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -99,7 +101,7 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products ;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -111,7 +113,16 @@ public class CleaningMySubmit extends CommonActivity implements NavigationView.O
     private ImageView iv_back;
     private String getEditText;
     private ScrollView scrollbar;
-private ImageView iv_changeOfStatus;
+    private ImageView iv_changeOfStatus;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private String LastStatusDate,OriginalCleaningDate,Date_in;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +195,7 @@ private ImageView iv_changeOfStatus;
         cleaning_text = (TextView)findViewById(R.id.tv_heating);
         cleaning = (Button)findViewById(R.id.cleaning);
         cleaning_text.setText("Cleaning");
+        cleaning_text.setGravity(Gravity.CENTER_HORIZONTAL);
         list_noData = (TextView)findViewById(R.id.list_noData);
         list_noData.setVisibility(View.GONE);
 
@@ -232,10 +244,16 @@ private ImageView iv_changeOfStatus;
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Cleaning_Mysubmit_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Cleaning_Mysubmit_Dropdown_details().execute();
+                        new Get_Cleaning_Mysubmit_details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_Cleaning_Mysubmit_details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -277,7 +295,7 @@ private ImageView iv_changeOfStatus;
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()){
-                        new Get_Cleaning_Mysubmit_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection.!");
@@ -428,6 +446,9 @@ private ImageView iv_changeOfStatus;
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="ACN";
+                GlobalConstants.status_id="3";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.bt_pending:
@@ -445,6 +466,14 @@ private ImageView iv_changeOfStatus;
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
@@ -458,6 +487,7 @@ private ImageView iv_changeOfStatus;
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -596,19 +626,82 @@ private ImageView iv_changeOfStatus;
                             cleaning_bean.setEquipno(jsonObject.getString("EquipmentNo"));
                             cleaning_bean.setEquipStatus(jsonObject.getString("EquipmentStatus"));
                             cleaning_bean.setEquipStatusType(jsonObject.getString("EquipmentStatusType"));
-                            cleaning_bean.setInDate(jsonObject.getString("InDate"));
+
+
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            OriginalCleaningDate=jsonObject.getString("OriginalCleaningDate");
+                            LastStatusDate=jsonObject.getString("LastStatusDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] Original_CleaningDate=OriginalCleaningDate.split(" ");
+                            String[] LastStatus_Date=LastStatusDate.split(" ");
+                            Date_in=In_date[0];
+                            OriginalCleaningDate=Original_CleaningDate[0];
+                            LastStatusDate=LastStatus_Date[0];
+
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0
+                                        ||Date_in.equals("") ) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (OriginalCleaningDate.equals(null) || OriginalCleaningDate.length() < 0
+                                        ||OriginalCleaningDate.equals("")||OriginalCleaningDate.equals("null") ) {
+
+                                    OriginalCleaningDate = "";
+                                } else {
+
+                                    OriginalCleaningDate = myFormat.format(fromUser.parse(OriginalCleaningDate));
+
+
+
+
+                                }if (LastStatusDate.equals(null) || LastStatusDate.length() < 0
+                                        ||LastStatusDate.equals("") ) {
+
+                                    LastStatusDate = "";
+                                } else {
+
+                                    LastStatusDate = myFormat.format(fromUser.parse(LastStatusDate));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+
+                            cleaning_bean.setInDate(Date_in);
+                            cleaning_bean.setOriginalCleaningDate(OriginalCleaningDate);
+                            cleaning_bean.setLastStatusDate(LastStatusDate);
+
+
+//                            cleaning_bean.setInDate(jsonObject.getString("InDate"));
                             cleaning_bean.setPrevoiusCargo(jsonObject.getString("PrevoiusCargo"));
-                            cleaning_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
+//                            cleaning_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
                             cleaning_bean.setAdditionalCleaningBit(jsonObject.getString("AdditionalCleaningBit"));
                             cleaning_bean.setCleaningId(jsonObject.getString("CleaningId"));
                             cleaning_bean.setCleaningReferenceNo(jsonObject.getString("CleaningReferenceNo"));
                             cleaning_bean.setRemarks(jsonObject.getString("Remarks"));
-                            cleaning_bean.setOriginalCleaningDate(jsonObject.getString("OriginalCleaningDate"));
+//                            cleaning_bean.setOriginalCleaningDate(jsonObject.getString("OriginalCleaningDate"));
                             cleaning_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
                             cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
                             cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
                             cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
-
+                            cleaning_bean.setChemicalName(jsonObject.getString("ChemicalName"));
 
                            /* if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -659,7 +752,7 @@ private ImageView iv_changeOfStatus;
             }
             if(cleaning_arraylist!=null)
             {
-                adapter = new UserListAdapter(CleaningMySubmit.this, R.layout.list_item_row, cleaning_arraylist);
+                adapter = new UserListAdapter(CleaningMySubmit.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
                 listview.setAdapter(adapter);
 
                 searchView2.addTextChangedListener(new TextWatcher() {
@@ -761,7 +854,7 @@ private ImageView iv_changeOfStatus;
                 holder.cleaningMethod = (TextView) convertView.findViewById(R.id.tv_cleaning_method);
                 holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
-
+                holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -779,11 +872,21 @@ private ImageView iv_changeOfStatus;
                 String part1_time = parts[1];
                 System.out.println("from date after split" + part1_date);
 */
-                holder.equip_no.setText(userListBean.getEquipno() + "," + userListBean.getEquipStatusType());
+                holder.equip_no.setText(userListBean.getEquipno() );
                 holder.Cust_Name.setText(userListBean.getCustomerName());
                 holder.time.setText(userListBean.getInDate());
                 holder.previous_crg.setText(userListBean.getPrevoiusCargo());
-                holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
+//                holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
+
+                String additional_cleaning=list.get(position).getAdditionalCleaningBit();
+                if(additional_cleaning.equals("False"))
+                {
+                    holder.add_Cleaning .setText("No");
+                }else {
+                    holder.add_Cleaning .setText("Yes");
+
+
+                }
 
 
 /*
@@ -813,7 +916,7 @@ private ImageView iv_changeOfStatus;
                     @Override
                     public void onClick(View v) {
 
-                        Intent i = new Intent(getApplicationContext(), CleaningInstruction.class);
+                        Intent i = new Intent(getApplicationContext(), CleaningInstruction_MySubmit.class);
                         GlobalConstants.equipment_no = list.get(position).getEquipno();
                         GlobalConstants.customer_name = list.get(position).getCustomerName();
                         GlobalConstants.customer_Id = list.get(position).getCustomerId();
@@ -831,6 +934,10 @@ private ImageView iv_changeOfStatus;
                         GlobalConstants.cleaning_method = list.get(position).getCleaningmethod();
                         GlobalConstants.slab_rate = list.get(position).getSlabRate();
                         GlobalConstants.gi_trans_no = list.get(position).getGiTransactionNo();
+                        GlobalConstants.status = "CLN";
+                        GlobalConstants.equip_status = "CLN";
+                        GlobalConstants.equip_status_id = "5";
+                        GlobalConstants.ChemicalName =  list.get(position).getChemicalName();
                         startActivity(i);
 
 
@@ -878,6 +985,178 @@ private ImageView iv_changeOfStatus;
         LinearLayout whole;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(CleaningMySubmit.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid) {
+
+
+            if (jsonarray != null)
+            {
+
+                if (dropdown_customer_list != null) {
+                    boxAdapter = new ListAdapter(CleaningMySubmit.this, products);
+                    searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                    searchView1.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void afterTextChanged(Editable arg0) {
+                            // TODO Auto-generated method stub
+                            String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                            boxAdapter.filter(text);
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                      int arg2, int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+
+
+                } else {
+                    shortToast(getApplicationContext(), "Data Not Found");
+
+                }
+        }else {
+//                shortToast(getApplicationContext(), "Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
 
     public class Get_Cleaning_Mysubmit_Dropdown_details extends AsyncTask<Void, Void, Void> {
@@ -1093,14 +1372,13 @@ private ImageView iv_changeOfStatus;
 
 
 
-          /*  for(int i=0;i<selected_member_arraylist.size();i++)
-            {
-                if(p.memberId .equalsIgnoreCase(String.valueOf(selected_member_arraylist.get(i).getId())))
-                {
-                    cbBuy.setChecked(true);
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
                 }
             }
-*/
             return view;
         }
 
@@ -1303,6 +1581,7 @@ private ImageView iv_changeOfStatus;
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
                     }else {
@@ -1335,14 +1614,24 @@ private ImageView iv_changeOfStatus;
                             cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
                             cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
                             cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
-
+                            cleaning_bean.setChemicalName(jsonObject.getString("ChemicalName"));
                             cleaning_arraylist.add(cleaning_bean);
 
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -1350,7 +1639,7 @@ private ImageView iv_changeOfStatus;
                             //update ui here
                             // display toast here
                             shortToast(getApplicationContext(),"No Records Found");
-
+                            listview.setVisibility(View.GONE);
 
                         }
                     });
@@ -1372,20 +1661,22 @@ private ImageView iv_changeOfStatus;
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (cleaning_arraylist != null) {
+                    adapter = new UserListAdapter(CleaningMySubmit.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(cleaning_arraylist!=null)
+                } else {
+                    shortToast(getApplicationContext(),"No Records Found");
+                    listview.setVisibility(View.GONE);
+
+
+                }
+            }else
             {
-                adapter = new UserListAdapter(CleaningMySubmit.this, R.layout.list_item_row, cleaning_arraylist);
-                listview.setAdapter(adapter);
-
+                shortToast(getApplicationContext(),"No Records Found");
+                listview.setVisibility(View.GONE);
             }
-            else if(cleaning_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
-            }
-
             progressDialog.dismiss();
 
         }

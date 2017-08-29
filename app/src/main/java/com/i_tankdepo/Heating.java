@@ -45,6 +45,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.HeatingAccordionBean;
 import com.i_tankdepo.Beanclass.HeatingBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
@@ -67,6 +68,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -100,7 +102,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private ViewHolder holder;
     private ArrayList<HeatingAccordionBean> heating_accordion_arraylist = new ArrayList<>();
     private HeatingAccordionBean heating_accordion_bean;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products ;
     private ArrayList<Product> box;
     private Heating.ListAdapter boxAdapter;
     private UserListAdapter adapter;
@@ -114,6 +116,16 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     private String getEditText;
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private TextView tv_heating;
+    private String HTNG_STRT_DT,HTNG_END_DT;
+    private String Date_in;
 
 
     @Override
@@ -138,6 +150,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LL_heat = (LinearLayout)findViewById(R.id.LL_heat);
         LL_heat.setAlpha(0.5f);
         LL_heat.setClickable(false);
+        tv_heating=(TextView)findViewById(R.id.tv_heating);
+        tv_heating.setText("Heating");
         bt_gateout = (Button)findViewById(R.id.bt_gateout);
         bt_gateout.setVisibility(View.GONE);
         search_heat_list = (ListView) findViewById(R.id.search_heat_list);
@@ -220,11 +234,17 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                 if(cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Heating_filter().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Heating_filter().execute();
+                    }
                 }else
                 {
                     shortToast(getApplicationContext(),"Please check Your Internet Connection");
                 }
+                new Get_Heating_details().execute();
+
 
             }
         });
@@ -266,7 +286,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_Heating_filter().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
@@ -404,6 +424,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.heat_home:
@@ -417,6 +439,13 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_heat_ok:
                 if(boxAdapter.getBox().size()==0) {
@@ -430,6 +459,8 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -564,18 +595,75 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                             heating_bean = new HeatingBean();
                             jsonObject = jsonarray.getJSONObject(i);
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+
+                            HTNG_STRT_DT=jsonObject.getString("HTNG_STRT_DT");
+                            HTNG_END_DT=jsonObject.getString("HTNG_END_DT");
+                            String[] In_date=HTNG_STRT_DT.split(" ");
+                            String[] split_LastStatusDate=HTNG_END_DT.split(" ");
+                            HTNG_STRT_DT=In_date[0];
+                            HTNG_END_DT=split_LastStatusDate[0];
+                            try {
+                                if (HTNG_STRT_DT.equals(null) || HTNG_STRT_DT.length() < 0) {
+
+                                    HTNG_STRT_DT = "";
+                                } else {
+
+                                    HTNG_STRT_DT = myFormat.format(fromUser.parse(HTNG_STRT_DT));
 
 
+
+
+                                } if (HTNG_END_DT.equals(null) || HTNG_END_DT.length() < 0) {
+
+                                    HTNG_END_DT = "";
+                                } else {
+
+                                    HTNG_END_DT = myFormat.format(fromUser.parse(HTNG_END_DT));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                            heating_bean.setHTNG_STRT_DT(HTNG_STRT_DT);
+                            heating_bean.setHTNG_END_DT(HTNG_END_DT);
                             heating_bean.setEQPMNT_NO(jsonObject.getString("EQPMNT_NO"));
                             heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
                             heating_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
                             heating_bean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
-                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
+
+
+
+                            Date_in=jsonObject.getString("GTN_DT");
+
+                            String[] GTN_DT=Date_in.split(" ");
+                            Date_in=GTN_DT[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+                                }
+                            }catch (Exception e)
+                            {
+
+                            }
+                            heating_bean.setGTN_DT(Date_in);
+//                            repair_bean.setInDate(Date_in);
+
                             heating_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
                             heating_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-                            heating_bean.setHTNG_STRT_DT(jsonObject.getString("HTNG_STRT_DT"));
                             heating_bean.setHTNG_STRT_TM(jsonObject.getString("HTNG_STRT_TM"));
-                            heating_bean.setHTNG_END_DT(jsonObject.getString("HTNG_END_DT"));
                             heating_bean.setHTNG_END_TM(jsonObject.getString("HTNG_END_TM"));
                             heating_bean.setHTNG_TMPRTR(jsonObject.getString("HTNG_TMPRTR"));
                             heating_bean.setTTL_HTN_PRD(jsonObject.getString("TTL_HTN_PRD"));
@@ -765,6 +853,9 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                     @Override
                     public void onClick(View v) {
 
+                        Log.i("heat_startDate",list.get(position).getHTNG_STRT_DT());
+                        Log.i("heat_endDate",list.get(position).getHTNG_END_DT());
+                        Log.i("heat_inDate",list.get(position).getGTN_DT());
                         Intent i = new Intent(getApplicationContext(), HeatingPeriod.class);
                         GlobalConstants.equipment_no = list.get(position).getEQPMNT_NO();
                         GlobalConstants.customer_name = list.get(position).getCSTMR_CD();
@@ -831,6 +922,176 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         LinearLayout whole,LL_username;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Heating.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(Heating.this, products);
+                search_heat_list.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Get_Heating_filter extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -952,7 +1213,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
             if (heating_accordion_arraylist != null) {
 
-                boxAdapter = new Heating.ListAdapter(Heating.this, products);
+                boxAdapter = new ListAdapter(Heating.this, products);
                 search_heat_list.setAdapter(boxAdapter);
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
                 searchlist.setAdapter(adapter);*/
@@ -1046,15 +1307,14 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
 
 
-
-          /*  for(int i=0;i<selected_member_arraylist.size();i++)
-            {
-                if(p.memberId .equalsIgnoreCase(String.valueOf(selected_member_arraylist.get(i).getId())))
-                {
-                    cbBuy.setChecked(true);
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
                 }
             }
-*/
+
             return view;
         }
 
@@ -1197,7 +1457,26 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             heating_bean.setCSTMR_CD(jsonObject.getString("CSTMR_CD"));
                             heating_bean.setEQPMNT_TYP_CD(jsonObject.getString("EQPMNT_TYP_CD"));
                             heating_bean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
-                            heating_bean.setGTN_DT(jsonObject.getString("GTN_DT"));
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+                            Date_in=jsonObject.getString("GTN_DT");
+
+                            String[] GTN_DT=Date_in.split(" ");
+                            Date_in=GTN_DT[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+                                }
+                            }catch (Exception e)
+                            {
+
+                            }
+                            heating_bean.setGTN_DT(Date_in);
                             heating_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
                             heating_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
                             heating_bean.setHTNG_STRT_DT(jsonObject.getString("HTNG_STRT_DT"));
@@ -1215,7 +1494,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -1223,6 +1502,7 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
                             //update ui here
                             // display toast here
                             shortToast(getApplicationContext(),"No Records Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1245,18 +1525,22 @@ public class Heating extends CommonActivity implements NavigationView.OnNavigati
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (heating_arraylist != null) {
+                    adapter = new UserListAdapter(Heating.this, R.layout.list_item_row, heating_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(heating_arraylist!=null)
+                } else
+                {
+                    shortToast(getApplicationContext(),"No Records Found");
+                    listview.setVisibility(View.GONE);
+
+
+                }
+            }else
             {
-                adapter = new Heating.UserListAdapter(Heating.this, R.layout.list_item_row, heating_arraylist);
-                listview.setAdapter(adapter);
-
-            }
-            else if(heating_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
+                shortToast(getApplicationContext(),"No Records Found");
+                listview.setVisibility(View.GONE);
             }
 
             progressDialog.dismiss();

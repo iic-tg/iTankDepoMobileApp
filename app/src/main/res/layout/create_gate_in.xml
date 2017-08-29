@@ -85,25 +85,26 @@
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:visibility="gone"
-                                android:id="@+id/successmessage"/>
-                            <Spinner
+
+
+                            <com.i_tankdepo.customcomponents.CustomSpinner
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:id="@+id/sp_customer"
+                                android:visibility="invisible"
                                 android:textColor="@color/list_text"
-                                style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                           <!-- <EditText
+                                style="@style/Widget.AppCompat.Spinner.Underlined"></com.i_tankdepo.customcomponents.CustomSpinner>
+
+
+                            <EditText
                                 android:layout_width="match_parent"
                                 android:id="@+id/ed_customer"
-                                android:layout_height="match_parent"
+                                android:layout_height="45dp"
                                 android:padding="5dp"
                                 android:lines="1"
+                                android:focusable="false"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
@@ -114,23 +115,20 @@
                                 android:layout_height="20dp"
                                 android:layout_marginTop="5dp"
                                 android:src="@mipmap/ic_down_dark"
-                                android:layout_alignParentRight="true"/>-->
+                                android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
-                        <RelativeLayout
+
+                        <EditText
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
-                            android:layout_height="match_parent">
-                        <EditText
-                            android:layout_width="match_parent"
                             android:id="@+id/ed_equip_no"
                             android:maxLength="11"
                             android:inputType="textCapCharacters|textNoSuggestions"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:textColor="@color/list_text"
                             />
-                    </RelativeLayout>
 
                     </LinearLayout>
                     <LinearLayout
@@ -178,23 +176,16 @@
                                 android:id="@+id/sp_type"
                                 android:textColor="@color/list_text"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                          <!--  <EditText
+                            <!--<AutoCompleteTextView
+                                android:id="@+id/autoCompleteTextView1"
                                 android:layout_width="match_parent"
-                                android:id="@+id/ed_type"
-                                android:layout_height="match_parent"
-                                android:padding="5dp"
-                                android:lines="1"
-                                android:singleLine="true"
-                                android:paddingRight="10dp"
-                                android:layout_marginRight="4dp"
-                                android:hint=""
-                                />
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginTop="5dp"
-                                android:src="@mipmap/ic_down_dark"
-                                android:layout_alignParentRight="true"/>-->
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:ems="10"
+                                android:text="">
+
+                                <requestFocus />
+                            </AutoCompleteTextView>-->
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -287,9 +278,12 @@
                                 android:lines="1"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
+                                android:maxLength="50"
+                                android:inputType="text|textNoSuggestions"
                                 android:layout_marginRight="4dp"
                                 android:id="@+id/ed_location"
                                 android:hint=""
+                                android:text="JUB"
                                 android:textColor="@color/list_text"
                                 />
                             <ImageView
@@ -381,6 +375,7 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
+                                android:text="00.00"
                                 android:id="@+id/ed_time"
                                 android:textColor="@color/list_text"
                                 />
@@ -436,17 +431,20 @@
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
                             android:layout_height="match_parent">
-                            <Spinner
+                            <com.i_tankdepo.customcomponents.CustomSpinner
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:id="@+id/sp_previ_cargo"
                                 android:textColor="@color/list_text"
-                                style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                          <!--  <EditText
+                                android:visibility="invisible"
+                                style="@style/Widget.AppCompat.Spinner.Underlined"></com.i_tankdepo.customcomponents.CustomSpinner>
+                            <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="45dp"
                                 android:padding="5dp"
                                 android:lines="1"
+                                android:focusable="false"
+                                android:id="@id/ed_preCargo"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
@@ -458,7 +456,7 @@
                                 android:layout_height="20dp"
                                 android:layout_marginTop="5dp"
                                 android:src="@mipmap/ic_down_dark"
-                                android:layout_alignParentRight="true"/>-->
+                                android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -468,11 +466,12 @@
                             android:layout_height="match_parent">
                         <EditText
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:textColor="@color/list_text"
                             android:id="@+id/ed_eir_no"
-                            android:maxLength="50"
-                            android:digits="0123456789,qwertzuiopasdfghjklyxcvbnm"
+                            android:textAllCaps="true"
+                            android:maxLength="17"
+                            android:inputType="textCapCharacters|textNoSuggestions"
                             />
                     </RelativeLayout>
 
@@ -529,6 +528,7 @@
                                 android:layout_marginRight="4dp"
                                 android:hint=""
                                 android:maxLength="70"
+                                android:inputType="text|textNoSuggestions"
                                 android:id="@+id/ed_vechicle"
                                 android:textColor="@color/list_text"
                                 />
@@ -551,6 +551,7 @@
                             android:layout_height="match_parent"
                             android:textColor="@color/list_text"
                             android:id="@+id/ed_transport"
+                            android:inputType="text|textNoSuggestions"
                             android:maxLength="70"
                             />
                         </RelativeLayout>
@@ -638,6 +639,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="2dp"
                             android:id="@+id/ed_remarks"
+                            android:inputType="textNoSuggestions"
+                            android:maxLength="255"
                             android:textColor="@color/list_text"/>
 
 
@@ -650,31 +653,58 @@
                         android:textColor="@color/tv_color"
                         android:text="Attach files"/>
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
+                        android:layout_height="wrap_content">
 
-
-                        <EditText
-                            android:layout_width="0dp"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.8"
-                            android:focusable="false"
-                            android:longClickable="false"
-                            android:id="@+id/ed_attach"
-                            android:textColor="@color/list_text"/>
-                        <ImageView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/im_Attachment"
-                            android:layout_weight=".2"
-                            android:layout_toLeftOf="@+id/Attachment"
-                            android:src="@mipmap/ic_attach_camera"
-                            android:text="Attach files"/>
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+                            <ImageView
+                                android:id="@+id/im_Attachment"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_toLeftOf="@+id/Attachment"
+                                android:layout_weight=".3"
+                                android:padding="7dp"
+                                android:src="@mipmap/ic_attach_camera"
+                                android:text="Attach files" />
+                            <RelativeLayout
+                                android:layout_width="0dp"
+                                android:layout_height="100dp"
+                                android:layout_weight="1.7">
 
-                    </LinearLayout>
+
+
+                                <android.support.v7.widget.RecyclerView
+
+                                    android:id="@+id/list_item"
+                                    android:layout_weight="1.5"
+                                    android:scrollbars="vertical"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"/>
+                                <EditText
+                                    android:id="@+id/ed_attach"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="0"
+                                    android:visibility="gone"
+                                    android:focusable="false"
+                                    android:longClickable="false"
+                                    android:textColor="@color/list_text" />
+
+
+
+                            </RelativeLayout>
+
+
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -800,8 +830,8 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
-                                android:maxLength="14"
-                                android:inputType="number|textNoSuggestions"
+                                android:maxLength="11"
+                                android:inputType="numberDecimal|textNoSuggestions"
                                 android:digits="0123456789"
                                 android:id="@+id/ed_tare_weight"
                                 android:textColor="@color/list_text"
@@ -866,7 +896,8 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
-                                android:inputType="number|textNoSuggestions"
+                                android:maxLength="11"
+                                android:inputType="numberDecimal|textNoSuggestions"
                                 android:digits="0123456789"
                                 android:id="@+id/ed_gross_weight"
                                 android:textColor="@color/list_text"
@@ -895,8 +926,9 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:id="@+id/ed_capacity"
-                                android:inputType="number|textNoSuggestions"
+                                android:inputType="numberDecimal|textNoSuggestions"
                                 android:digits="0123456789"
+                                android:maxLength="11"
                                 android:hint=""
                                 android:textColor="@color/list_text"
                                 />
@@ -959,6 +991,8 @@
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
                                 android:id="@+id/ed_Last_survay"
+                                android:maxLength="9"
+                                android:inputType="text|textNoSuggestions"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
                                 android:textColor="@color/list_text"
@@ -1043,20 +1077,22 @@
                             android:layout_weight="1"
                             android:layout_marginRight="2dp"
                             android:layout_height="match_parent">
-                           <Spinner
+                           <com.i_tankdepo.customcomponents.CustomSpinner
                                android:layout_width="match_parent"
-                               android:layout_height="match_parent"
+                               android:layout_height="wrap_content"
                                android:id="@+id/sp_last_testtype"
+                               android:visibility="invisible"
                                android:textColor="@color/list_text"
-                               style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                            <!-- <EditText
+                               style="@style/Widget.AppCompat.Spinner.Underlined"></com.i_tankdepo.customcomponents.CustomSpinner>
+                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:lines="1"
                                 android:singleLine="true"
                                 android:paddingRight="10dp"
-                                android:id="@+id/ed_test_date"
+                                 android:focusable="false"
+                                android:id="@+id/ed_last_testtype"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
                                 android:textColor="@color/list_text"
@@ -1065,9 +1101,9 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="2dp"
-                                android:src="@mipmap/ic_calender"
-                                android:visibility="gone"
-                                android:layout_alignParentRight="true"/>-->
+                                android:src="@mipmap/ic_down"
+                                android:tint="@color/black"
+                                android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -1077,7 +1113,7 @@
                             android:layout_height="match_parent">
                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:padding="5dp"
                                 android:lines="1"
                                 android:id="@+id/ed_next_date"
@@ -1251,6 +1287,7 @@
                                 android:paddingRight="10dp"
                                 android:layout_marginRight="4dp"
                                 android:hint=""
+                                android:maxLength="255"
                                 android:textColor="@color/list_text"
                                 />
                             <ImageView

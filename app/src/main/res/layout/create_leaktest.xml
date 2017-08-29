@@ -502,6 +502,8 @@
                                 android:layout_weight="1"
                                 android:layout_height="match_parent"
                                 android:text="Remarks "
+                                android:maxLength="500"
+                                android:inputType="text|textNoSuggestions"
                                 android:textColor="@color/tv_color"
                                 />
 
@@ -522,9 +524,11 @@
                             android:orientation="vertical">
                             <EditText
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:inputType="textCapCharacters|textNoSuggestions"
                                 android:id="@+id/ed_remarks"
+                                android:singleLine="false"
+                                android:maxLength="500"
                                 android:textColor="@color/list_text"
                                 />
                         </LinearLayout>

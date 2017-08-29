@@ -221,6 +221,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
                 String resp = EntityUtils.toString(httpEntity);
 
                 Log.d("responce", resp);
+                Log.d("req", String.valueOf(jsonObject1));
                  jsonResp = new JSONObject(resp);
 
 
@@ -244,6 +245,7 @@ public class Login_Activity extends CommonActivity implements AsyncResponseListe
                  editor.putString(SP_USER_ID, getusername);
                  editor.putString(SP_AUTHR_PASSWORD, getpassword);
                  editor.putString(SP_ID, userId);
+                 editor.putString(SP_ROLE_ID, responseStringId);
                  editor.putString(SP_TOKEN, token);
 //                editor.putString(SP_HS_ID, hsId);
 //                editor.putString(SP_USER_REMEMBER,remember );

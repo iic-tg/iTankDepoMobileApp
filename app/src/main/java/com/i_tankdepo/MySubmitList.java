@@ -40,6 +40,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
+import com.i_tankdepo.Beanclass.Multi_Photo_Bean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.PendingBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -60,6 +62,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -94,12 +98,11 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private PendingAccordionBean pending_accordion_bean;
     private Spinner fieldSpinner, operatorSpinner;
     private String fieldItems, opratorItems;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products ;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
     private UserListAdapter adapter;
-
     private EditText searchView2,searchView1,ed_text;
     private ProgressDialog progressDialog;
     private String filename,attachID;
@@ -107,8 +110,17 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
     private String getEditText;
     private ImageView iv_changeOfStatus;
     private JSONObject filenamejson;
-
-
+    private ArrayList<Multi_Photo_Bean> pending_attach_arraylist;
+    private Multi_Photo_Bean attach_pending_bean;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private String Date_in;
+    private ArrayList<Multi_Photo_Bean> new_pending_attach_arraylist;
 
 
     @Override
@@ -221,11 +233,19 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                 if(cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_GateIn_Dropdown_details().execute();
+                        new Get_GateIn_MySubmit_details().execute();
+
+                    }
                 }else
                 {
                     shortToast(getApplicationContext(),"Please check Your Internet Connection");
                 }
+                new Get_GateIn_MySubmit_details().execute();
+
 
             }
         });
@@ -265,7 +285,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_GateIn_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
@@ -406,6 +426,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="IND";
+                GlobalConstants.status_id="1";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.add:
@@ -441,6 +464,14 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
 
@@ -455,6 +486,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
+
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -468,15 +502,16 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
                                 //shortToast(getApplicationContext(),p.name);
 
-                                if (cd.isConnectingToInternet()) {
-                                    new Get_GateIn_SearchList_details().execute();
-                                } else {
-                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
-                                }
+
                             } else {
                                 shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
                         }
+                    }
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_SearchList_details().execute();
+                    } else {
+                        shortToast(getApplicationContext(), "Please check Your Internet Connection");
                     }
                 }
                 break;
@@ -582,6 +617,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     }else {
 
                         pending_arraylist = new ArrayList<>();
+                        pending_attach_arraylist = new ArrayList<Multi_Photo_Bean>();
 
 
                         for (int i = 0; i < jsonarray.length(); i++) {
@@ -590,17 +626,20 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             jsonObject = jsonarray.getJSONObject(i);
 
                             JSONArray attachmentjson=jsonObject.getJSONArray("attchement");
-
                             for(int j=0;j<attachmentjson.length();j++)
                             {
+                                attach_pending_bean = new Multi_Photo_Bean();
                                 filenamejson=attachmentjson.getJSONObject(j);
 //                                filename=filenamejson.getString("fileName");
-                                pending_bean.setFilename(filenamejson.getString("fileName"));
-                                pending_bean.setAttach_ID(filenamejson.getString("attchId"));
-                             //   Log.d("attachment",filename);
+                                attach_pending_bean.setName(filenamejson.getString("fileName"));
+                                attach_pending_bean.setAttachment_Id(filenamejson.getString("attchId"));
+                                attach_pending_bean.setPathUrl(filenamejson.getString("imageUrl"));
+                                attach_pending_bean.setAttchPath(filenamejson.getString("attchPath"));
+                                attach_pending_bean.setBase64(filenamejson.getString("imageUrl"));
+                                attach_pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
+                                pending_attach_arraylist.add(attach_pending_bean);
 
                             }
-
                             pending_bean.setCustomerName(jsonObject.getString("CSTMR_CD"));
                             pending_bean.setEquipmentNo(jsonObject.getString("EQPMNT_NO"));
                             pending_bean.setType(jsonObject.getString("EQPMNT_TYP_CD"));
@@ -613,7 +652,31 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                             pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                             pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
-                            pending_bean.setDate(jsonObject.getString("GTN_DT"));
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("GTN_DT");
+                            String[] In_date=Date_in.split(" ");
+                            Date_in=In_date[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                            pending_bean.setDate(Date_in);
                             pending_bean.setGateIn_Id(jsonObject.getString("GTN_ID"));
                             pending_bean.setTime(jsonObject.getString("GTN_TM"));
                             pending_bean.setCust_code(jsonObject.getString("CSTMR_ID"));
@@ -624,7 +687,17 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
                             pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
                             pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-
+                          /*  String EIMNFCTR_DT;
+                            String     EITR_WGHT_NC;
+                            String      EIGRSS_WGHT_NC;
+                            String      EICPCTY_NC;
+                            String      EILST_SRVYR_NM;
+                            String      EILST_TST_DT;
+                            String      EILST_TST_TYP_ID;
+                            String      EINXT_TST_DT;
+                            String     EINXT_TST_TYP_ID;
+                            String      EIRMRKS_VC;
+*/
 
                             if((attachmentjson.length()==0)|| (attachmentjson.equals("")))
                             {
@@ -791,20 +864,33 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                 Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
             }else {
                 userListBean = list.get(position);
-                String[] parts = userListBean.getDate().split(" ");
+               /* String[] parts = userListBean.getDate().split(" ");
                 String part1_date = parts[0];
                 String part1_time = parts[1];
                 System.out.println("from date after split" + part1_date);
-                holder.equip_no.setText(userListBean.getEquipmentNo()+","+ userListBean.getType());
+
+
+                SimpleDateFormat fromUser = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+                SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+                String createddate = null;
+                try {
+                    createddate = myFormat.format(fromUser.parse(part1_date));
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+*/
+
+                holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date+ " & " +userListBean.getTime());
+                holder.time.setText(userListBean.getDate() + " & " + userListBean.getTime());
                 holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());
                 holder.location.setText(userListBean.getLocation());
                 holder.vechicle.setText("");
                 holder.gatin_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
-                holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
+                holder.username.setText("Submited by: "+sp.getString(SP_USER_ID, "user_Id"));
 
 /*
                 if(userListBean.getVechicle().equals("")||userListBean.getVechicle()==null)
@@ -868,6 +954,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                         pre_adv_id= list.get(position).getPR_ADVC_CD();
                         filename = list.get(position).getFilename();
                         attachID = list.get(position).getAttach_ID();
+
+
+                        GlobalConstants.pending_attach_arraylist=pending_attach_arraylist;
                         new Get_GateIn_Lock_Check().execute();
                     }
                 });
@@ -1019,7 +1108,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             {
                 if(Lock_return_Message.equalsIgnoreCase("Success"))
                 {
-                    Intent i=new Intent(getApplicationContext(),Update_GateIn.class);
+                    Intent intent=new Intent(getApplicationContext(),Update_GateIn.class);
 
                     GlobalConstants.GateInId=Gate_In;
                     GlobalConstants.equipment_no= equipment_no;
@@ -1048,8 +1137,26 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     GlobalConstants.attach_filename = filename;
                     GlobalConstants.attach_ID = attachID;
+                    pending_attach_arraylist= GlobalConstants.pending_attach_arraylist;
+                    new_pending_attach_arraylist =new ArrayList<Multi_Photo_Bean>();
+                    for (int i = 0; i < pending_attach_arraylist.size(); i++) {
+                        if (equipment_no.equals(pending_attach_arraylist.get(i).getEquipmentNo())) {
 
-                    startActivity(i);
+                            attach_pending_bean = new Multi_Photo_Bean();
+                            attach_pending_bean.setName(pending_attach_arraylist.get(i).getName());
+                            attach_pending_bean.setAttachment_Id(pending_attach_arraylist.get(i).getAttachment_Id());
+                            attach_pending_bean.setPathUrl(pending_attach_arraylist.get(i).getPathUrl());
+                            attach_pending_bean.setAttchPath(pending_attach_arraylist.get(i).getAttchPath());
+                            attach_pending_bean.setBase64(pending_attach_arraylist.get(i).getBase64());
+                            new_pending_attach_arraylist.add(attach_pending_bean);
+
+                        } else {
+                        }
+                    }
+
+                    GlobalConstants.pending_attach_arraylist=new_pending_attach_arraylist;
+
+                    startActivity(intent);
 
                 }else {
                     shortToast(getApplicationContext(),Lock_return_Message);
@@ -1067,6 +1174,176 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(MySubmitList.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(MySubmitList.this, products);
+                searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
 
     public class Get_GateIn_Dropdown_details extends AsyncTask<Void, Void, Void> {
@@ -1136,6 +1413,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 //                                shortToast(getApplicationContext(), "No Records Found");
                                 products.clear();
                                 no_data.setVisibility(View.VISIBLE);
+                                listview.setVisibility(View.GONE);
 
 
                             }
@@ -1296,6 +1574,13 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
 
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
 
 
@@ -1450,7 +1735,7 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
-//            progressDialog.show();
+            progressDialog.show();
         }
 
         @Override
@@ -1516,8 +1801,9 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
 //                        longToast("This takes longer than usual time. Connection Timeout !");
 
 //                                shortToast(getApplicationContext(), "No Records Found");
-                                products.clear();
-
+//                                products.clear();
+                                shortToast(getApplicationContext(), "Data Not Found");
+                                listview.setVisibility(View.GONE);
 
                             }
                         });
@@ -1566,16 +1852,23 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             pending_bean.setPR_ADVC_CD(jsonObject.getString("PR_ADVC_CD"));
                             pending_bean.setPreviousCargo(jsonObject.getString("PRDCT_DSCRPTN_VC"));
                             pending_bean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
-
-
-
                             pending_arraylist.add(pending_bean);
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -1584,8 +1877,8 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
                             // display toast here
 
 //                            shortToast(getApplicationContext(),"No Records Found");
-                            products.clear();
-
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1608,19 +1901,21 @@ public class MySubmitList extends CommonActivity implements NavigationView.OnNav
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (pending_arraylist != null) {
 
-            if(pending_arraylist!=null)
+                    adapter = new UserListAdapter(MySubmitList.this, R.layout.list_item_row, pending_arraylist);
+                    listview.setAdapter(adapter);
+
+                } else {
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
+
+                }
+            }else
             {
-
-                adapter = new UserListAdapter(MySubmitList.this, R.layout.list_item_row, pending_arraylist);
-                listview.setAdapter(adapter);
-
-            }
-            else if(pending_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
             }
 
             progressDialog.dismiss();

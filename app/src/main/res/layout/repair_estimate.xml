@@ -9,26 +9,30 @@
     tools:openDrawer="start">
 
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include layout="@layout/common_toolbar"
-            android:id="@+id/toolbar"></include>
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/common_toolbar"></include>
+
         <RelativeLayout
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true">
+
             <include layout="@layout/heating_footer" />
         </RelativeLayout>
+
         <ScrollView
+            android:id="@+id/scrollbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            android:id="@+id/scrollbar"
             android:layout_above="@+id/footer"
+            android:layout_below="@+id/toolbar"
             android:fillViewport="true">
 
             <LinearLayout
@@ -37,197 +41,197 @@
                 android:orientation="vertical">
 
 
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
-                        android:orientation="horizontal"
-                        android:weightSum="4"
                         android:background="@color/tab_background"
-                        >
+                        android:orientation="horizontal"
+                        android:weightSum="4">
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
                             android:layout_weight="1"
-                            android:background="@drawable/field_border_grey">
+                            android:background="@drawable/field_border_grey"
+                            android:orientation="vertical">
+
                             <Spinner
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
                                 android:id="@+id/sp_fields"
-                                android:textColor="@color/list_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
                                 android:gravity="center"
-                                ></Spinner>
+                                android:textColor="@color/list_text"></Spinner>
                         </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
                             android:layout_weight="1"
-                            android:background="@drawable/field_border_grey">
+                            android:background="@drawable/field_border_grey"
+                            android:orientation="vertical">
+
                             <Spinner
+                                android:id="@+id/sp_operators"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:id="@+id/sp_operators"
-                                android:textColor="@color/list_text"
                                 android:gravity="center"
-                                ></Spinner>
+                                android:textColor="@color/list_text"></Spinner>
                         </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
+                            android:layout_gravity="center"
                             android:layout_weight="1.5"
                             android:background="@drawable/field_border_grey"
-                            android:layout_gravity="center"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:orientation="vertical">
 
                             <EditText
+                                android:id="@+id/editText2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:padding="3dp"
-                                android:background="@color/white"
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="5dp"
                                 android:layout_marginRight="5dp"
-                                android:id="@+id/editText2"
+                                android:background="@color/white"
+                                android:padding="3dp"
                                 android:singleLine="true"></EditText>
                         </LinearLayout>
 
                         <RelativeLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
                             android:layout_weight=".5"
-                            android:background="@drawable/field_border_grey">
+                            android:background="@drawable/field_border_grey"
+                            android:orientation="vertical">
+
                             <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@mipmap/ic_down"
                                 android:id="@+id/im_down"
-                                ></ImageView>
-                            <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:src="@mipmap/ic_up"
+                                android:src="@mipmap/ic_down"></ImageView>
+
+                            <ImageView
                                 android:id="@+id/im_up"
-                                ></ImageView>
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@mipmap/ic_up"></ImageView>
 
                         </RelativeLayout>
 
 
-
                     </LinearLayout>
 
 
                     <LinearLayout
+                        android:id="@+id/LL_search_Value"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:id="@+id/LL_search_Value"
-                        >
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_marginTop="2dp"
                             android:text="Values: "
-                            android:textColor="@color/toolbar_right"
-                            android:layout_marginLeft="5dp"/>
+                            android:textColor="@color/toolbar_right" />
+
                         <TextView
+                            android:id="@+id/tv_search_options"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
                             android:layout_marginTop="2dp"
-                            android:id="@+id/tv_search_options"
-                            android:textColor="@color/toolbar_right"
-                            android:layout_marginLeft="5dp"/>
+                            android:textColor="@color/toolbar_right" />
 
 
                     </LinearLayout>
 
 
-
                     <LinearLayout
+                        android:id="@+id/LL_hole"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
                         android:background="@color/tab_background"
-                        android:id="@+id/LL_hole">
+                        android:orientation="vertical">
 
 
                         <EditText
                             android:id="@+id/searchView1"
                             android:layout_width="match_parent"
                             android:layout_height="38dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_centerHorizontal="true"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="2dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentRight="true"
-                            android:hint="Find"
-                            android:textSize="14dp"
                             android:drawableRight="@mipmap/ic_search"
-                            android:layout_alignParentTop="true"
-                            >
-                        </EditText>
+                            android:hint="Find"
+                            android:textSize="14dp"></EditText>
 
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="150dp"
-                            android:weightSum="2"
                             android:layout_marginLeft="5dp"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:weightSum="2">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5dp"
                                 android:orientation="horizontal">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textSize="12sp"
-                                    android:text="Select"/>
+                                    android:text="Select"
+                                    android:textSize="12sp" />
+
                                 <RelativeLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent">
+
                                     <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginLeft="10dp"
                                         android:id="@+id/tv_cust_name"
-                                        android:textSize="12sp"
-                                        android:text="Customer Name"/>
-                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="10dp"
+                                        android:text="Customer Name"
+                                        android:textSize="12sp" />
+
+                                    <TextView
                                         android:id="@+id/tv_equip_no"
-                                        android:textSize="12sp"
-                                        android:text="Equipment Number"/>
-                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="10dp"
+                                        android:text="Equipment Number"
+                                        android:textSize="12sp" />
+
+                                    <TextView
                                         android:id="@+id/tv_type"
-                                        android:textSize="12sp"
-                                        android:text="Type"/>
-                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="10dp"
+                                        android:text="Type"
+                                        android:textSize="12sp" />
+
+                                    <TextView
                                         android:id="@+id/tv_cargo"
-                                        android:textSize="12sp"
-                                        android:text="Previous Cargo"/>
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="10dp"
+                                        android:text="Previous Cargo"
+                                        android:textSize="12sp" />
                                 </RelativeLayout>
 
 
@@ -236,53 +240,51 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:layout_weight="1.5"
-                                android:layout_gravity="center">
+                                android:layout_gravity="center"
+                                android:layout_weight="1.5">
+
                                 <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:text="No Records Found"
-                                    android:gravity="center"
-                                    android:visibility="gone"
                                     android:id="@+id/no_data"
-                                    />
-                                <ListView
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:divider="@null"
+                                    android:gravity="center"
+                                    android:text="No Records Found"
+                                    android:visibility="gone" />
+
+                                <ListView
+                                    android:id="@+id/search_list"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
                                     android:layout_marginLeft="2dp"
-                                    android:id="@+id/search_list">
-                                </ListView>
+                                    android:divider="@null"></ListView>
 
                             </RelativeLayout>
 
 
-
-
-
-                            <View style="@style/View_horizontal_line_two"
-                                android:layout_marginRight="5dp"
+                            <View
+                                style="@style/View_horizontal_line_two"
                                 android:layout_marginLeft="5dp"
-                                ></View>
+                                android:layout_marginRight="5dp"></View>
+
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:orientation="horizontal"
-                                android:layout_weight=".5">
+                                android:layout_weight=".5"
+                                android:orientation="horizontal">
 
                                 <ImageView
+                                    android:id="@+id/im_close"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:src="@mipmap/ic_cancel"
-                                    android:id="@+id/im_close"
-                                    />
+                                    android:src="@mipmap/ic_cancel" />
+
                                 <ImageView
+                                    android:id="@+id/im_ok"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_toLeftOf="@+id/im_close"
-                                    android:id="@+id/im_ok"
-                                    android:src="@mipmap/ic_tick"/>
+                                    android:src="@mipmap/ic_tick" />
 
 
                             </RelativeLayout>
@@ -291,88 +293,88 @@
                     </LinearLayout>
 
 
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:orientation="horizontal"
                         android:weightSum="2">
+
                         <RelativeLayout
+                            android:id="@+id/RL_pending"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:id="@+id/RL_pending"
                             android:background="@color/submit">
 
                             <Button
+                                android:id="@+id/bt_pending"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:background="@color/white"
-                                android:text="Pending"
-                                android:textColor="@color/list_text"
                                 android:layout_marginBottom="3dp"
-                                android:id="@+id/bt_pending"
-                                android:textAllCaps="false"
+                                android:background="@color/white"
                                 android:gravity="center"
-                                />
+                                android:text="Pending"
+                                android:textAllCaps="false"
+                                android:textColor="@color/list_text" />
                         </RelativeLayout>
 
                         <RelativeLayout
+                            android:id="@+id/RL_mysubmit"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:id="@+id/RL_mysubmit"
                             android:background="@color/submit">
 
                             <Button
+                                android:id="@+id/bt_mysubmit"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:background="@color/white"
-                                android:text="My Submits"
-                                android:textColor="@color/list_text"
-                                android:id="@+id/bt_mysubmit"
                                 android:layout_marginBottom="3dp"
+                                android:background="@color/white"
+                                android:gravity="center"
+                                android:text="My Submits"
                                 android:textAllCaps="false"
-                                android:gravity="center"/>
+                                android:textColor="@color/list_text" />
                         </RelativeLayout>
 
                     </LinearLayout>
+
                     <EditText
                         android:id="@+id/searchView2"
                         android:layout_width="match_parent"
                         android:layout_height="38dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="2dp"
                         android:background="@drawable/bottom_field_border_search"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignParentRight="true"
-                        android:hint="Find"
-                        android:textSize="14dp"
                         android:drawableRight="@mipmap/ic_search"
-                        android:layout_alignParentTop="true"
-                        >
-                    </EditText>
+                        android:hint="Find"
+                        android:textSize="14dp"></EditText>
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1.5"
-                        android:layout_gravity="center">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="No Records Found"
-                        android:gravity="center"
-                        android:id="@+id/list_noData"
-                        />
-                    <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/list_view">
+                        android:layout_gravity="center"
+                        android:layout_weight="1.5">
 
-                    </ListView>
-</RelativeLayout>
+                        <TextView
+                            android:id="@+id/list_noData"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="No Records Found" />
+
+                        <ListView
+                            android:id="@+id/list_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                        </ListView>
+                    </RelativeLayout>
 
                 </LinearLayout>
                 <!--  <android.support.design.widget.TabLayout
@@ -392,8 +394,6 @@
 
 
         </ScrollView>
-
-
 
 
     </RelativeLayout>

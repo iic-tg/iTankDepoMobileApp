@@ -7,6 +7,7 @@ package com.i_tankdepo.Beanclass;
 public class RepairBean {
     String Equip_no;
     String customer;
+    String customer_Id;
     String inDate;
     String previous_cargo;
     String lastStatusDate;
@@ -34,6 +35,59 @@ public class RepairBean {
     String lineItems;
     String attachment;
     String repairEstimateNo;
+    String status;
+    String status_Id;
+    String CurencyCD;
+    String Type;
+    String ActivityDate;
+
+    public String getActivityDate() {
+        return ActivityDate;
+    }
+
+    public void setActivityDate(String activityDate) {
+        ActivityDate = activityDate;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+
+    public String getCurencyCD() {
+        return CurencyCD;
+    }
+
+    public void setCurencyCD(String curencyCD) {
+        CurencyCD = curencyCD;
+    }
+
+    public String getCustomer_Id() {
+        return customer_Id;
+    }
+
+    public void setCustomer_Id(String customer_Id) {
+        this.customer_Id = customer_Id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus_Id() {
+        return status_Id;
+    }
+
+    public void setStatus_Id(String status_Id) {
+        this.status_Id = status_Id;
+    }
 
     public String getEquip_no() {
         return Equip_no;

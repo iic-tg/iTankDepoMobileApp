@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.i_tankdepo.Beanclass.Equipment_HistoryBean;
 import com.i_tankdepo.Beanclass.PendingBean;
 import com.i_tankdepo.Constants.ConstantValues;
+import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.helper.ServiceHandler;
 
 import org.apache.http.HttpEntity;
@@ -56,7 +57,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import static com.i_tankdepo.Constants.GlobalConstants.code;
@@ -92,6 +96,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     private ImageView delete;
     private String get_remark;
     private ImageView iv_changeOfStatus;
+    private String CRTD_DT,ACTVTY_DT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,11 +183,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 // TODO Auto-generated method stub
             }
         });
-
-
-
     }
-
 
 
 
@@ -190,6 +191,9 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
+                GlobalConstants.status_id="";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.equip_home:
@@ -201,9 +205,6 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                 break;
             case R.id.im_searchview:
                 getEquipNo = ed_searchview.getText().toString();
-
-
-
 
                 if(getEquipNo == "" || getEquipNo.length()<11){
 
@@ -353,7 +354,47 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                             equipment_Historybean.setEQPMNT_STTS_ID(jsonObject.getString("EQPMNT_STTS_ID"));
                             equipment_Historybean.setEQPMNT_STTS_CD(jsonObject.getString("EQPMNT_STTS_CD"));
                             equipment_Historybean.setACTVTY_NO(jsonObject.getString("ACTVTY_NO"));
-                            equipment_Historybean.setACTVTY_DT(jsonObject.getString("ACTVTY_DT"));
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+
+                            ACTVTY_DT=jsonObject.getString("ACTVTY_DT");
+                            CRTD_DT=jsonObject.getString("CRTD_DT");
+                            String[] In_date=ACTVTY_DT.split(" ");
+                            String[] split_LastStatusDate=CRTD_DT.split(" ");
+                            ACTVTY_DT=In_date[0];
+                            CRTD_DT=split_LastStatusDate[0];
+                            try {
+                                if (ACTVTY_DT.equals(null) || ACTVTY_DT.length() < 0) {
+
+                                    ACTVTY_DT = "";
+                                } else {
+
+                                    ACTVTY_DT = myFormat.format(fromUser.parse(ACTVTY_DT));
+
+
+
+
+                                } if (CRTD_DT.equals(null) || CRTD_DT.length() < 0) {
+
+                                    CRTD_DT = "";
+                                } else {
+
+                                    CRTD_DT = myFormat.format(fromUser.parse(CRTD_DT));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                            equipment_Historybean.setCRTD_DT(CRTD_DT);
+
+                            equipment_Historybean.setACTVTY_DT(ACTVTY_DT);
                             equipment_Historybean.setACTVTY_RMRKS(jsonObject.getString("ACTVTY_RMRKS"));
                             equipment_Historybean.setGI_TRNSCTN_NO(jsonObject.getString("GI_TRNSCTN_NO"));
                             equipment_Historybean.setINVCNG_PRTY_ID(jsonObject.getString("INVCNG_PRTY_ID"));
@@ -364,7 +405,6 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
                             equipment_Historybean.setPRDCT_DSCRPTN_VC(jsonObject.getString("PRDCT_DSCRPTN_VC"));
                             equipment_Historybean.setINVC_GNRTN(jsonObject.getString("INVC_GNRTN"));
                             equipment_Historybean.setCRTD_BY(jsonObject.getString("CRTD_BY"));
-                            equipment_Historybean.setCRTD_DT(jsonObject.getString("CRTD_DT"));
                             equipment_Historybean.setCNCLD_BY(jsonObject.getString("CNCLD_BY"));
                             equipment_Historybean.setCNCLD_DT(jsonObject.getString("CNCLD_DT"));
                             equipment_Historybean.setADT_RMRKS(jsonObject.getString("ADT_RMRKS"));
@@ -430,6 +470,7 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             if(jsonarray!=null) {
                 if (equip_history_arraylist.size()>0)
                 {
+                    LL_Equipment_Info.setVisibility(View.VISIBLE);
                     tv_Cust_Name.setText(CustomerName);
                     tv_eir_no.setText(eir_no);
                     tv_equip_no.setText(EquipmentNo + "," + Type + "," + code);
@@ -515,14 +556,25 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
 
                 userListBean = list.get(position);
 
+                String[] parts = userListBean.getACTVTY_DT().split(" ");
 
                 holder.tv_activityName.setText(userListBean.getACTVTY_NAM());
-                holder.tv_activity.setText(userListBean.getEQPMNT_STTS_CD()+","+userListBean.getACTVTY_DT());
+
+                if(userListBean.getEQPMNT_STTS_CD().equals(""))
+                {
+                    holder.tv_activity.setText(userListBean.getACTVTY_DT());
+
+                }else
+                {
+                    holder.tv_activity.setText(userListBean.getEQPMNT_STTS_CD() + "," + userListBean.getACTVTY_DT());
+
+                }
+
                 holder.tv_RefNo.setText(userListBean.getRF_NO());
 
                 holder.tv_modifiedBy.setText(userListBean.getCRTD_BY());
                 holder.tv_Invoice_Party.setText(userListBean.getINVCNG_PRTY_CD());
-                holder.tv_modifiedDate.setText(userListBean.getACTVTY_DT());
+                holder.tv_modifiedDate.setText(userListBean.getCRTD_DT());
                 holder.tv_remark.setText(userListBean.getRMRKS_VC());
 
                 holder.Gi_trans_no.setText(userListBean.getGI_TRNSCTN_NO());
@@ -635,58 +687,56 @@ public class EquipmentHistory extends CommonActivity implements NavigationView.O
             super.onPostExecute(aVoid);
 
 
-            if(jsonobject!=null)
-            {
-               if(validation.equals("Success")){
+            if (jsonobject != null) {
+                if (validation.equals("Success")) {
 
-                   if(cd.isConnectingToInternet()){
-                       dialog = new Dialog(EquipmentHistory.this);
-                       dialog.setContentView(R.layout.delete_popup);
-                       dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                       Button btn_close=(Button)dialog.findViewById(R.id.cancel);
-                       final EditText tv_forgot_edit=(EditText)dialog.findViewById(R.id.tv_forgot_edit);
-                       final Button submit=(Button)dialog.findViewById(R.id.yes) ;
-                       final Button Ok=(Button)dialog.findViewById(R.id.Ok) ;
-                       Ok.setVisibility(View.GONE);
-                       btn_close.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View v) {
-                               dialog.dismiss();
-                           }
-                       });
-
-                       submit.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View v) {
-                               Ok.setVisibility(View.VISIBLE);
-                               submit.setVisibility(View.GONE);
-                               tv_forgot_edit.setVisibility(View.VISIBLE);
-                           }
-                       });
-                       Ok.setOnClickListener(new View.OnClickListener() {
-                           @Override
-                           public void onClick(View v) {
-                               get_remark=tv_forgot_edit.getText().toString();
-                               if(get_remark.length() > 0)
-                               {
-                                   new Post_Delete_Activity().execute();
-                                   dialog.dismiss();
-                               }else
-                               {
-                                   shortToast(getApplicationContext(),"Please enter the Remarks..!");
-                               }
-                           }
-                       });
-                       dialog.show();
+                    if (cd.isConnectingToInternet()) {
+                        dialog = new Dialog(EquipmentHistory.this);
+                        dialog.setContentView(R.layout.delete_popup);
+                        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        Button btn_close = (Button) dialog.findViewById(R.id.cancel);
+                        final EditText tv_forgot_edit = (EditText) dialog.findViewById(R.id.tv_forgot_edit);
+                        final Button submit = (Button) dialog.findViewById(R.id.yes);
+                        final Button Ok = (Button) dialog.findViewById(R.id.Ok);
+                        Ok.setVisibility(View.GONE);
+                        btn_close.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                finishActivity(1);
+                                //  finish();
+                                dialog.dismiss();
+                            }
+                        });
+                        submit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Ok.setVisibility(View.VISIBLE);
+                                submit.setVisibility(View.GONE);
+                                tv_forgot_edit.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        Ok.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                get_remark = tv_forgot_edit.getText().toString();
+                                if (get_remark.length() > 0) {
+                                    new Post_Delete_Activity().execute();
+                                    dialog.setCancelable(true);
+                                    //  finishActivity(1);
+                                    dialog.dismiss();
+                                } else {
+                                    shortToast(getApplicationContext(), "Please enter the Remarks..!");
+                                }
+                            }
+                        });
+                        dialog.show();
 
                    }else{
                        shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
                    }
                 }
-            }
-            else
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
+            } else {
+                shortToast(getApplicationContext(), "Data Not Found");
             }
 
             progressDialog.dismiss();

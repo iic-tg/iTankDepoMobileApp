@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,24 +23,40 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -55,6 +72,10 @@ import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.SQLite.DBAdapter;
 import com.i_tankdepo.Util.Utility;
+import com.i_tankdepo.adapter.SpinnerCustomAdapter;
+import com.i_tankdepo.adapter.SpinnerCustomAdapter_Cargo;
+import com.i_tankdepo.adapter.SpinnerCustomAdapter_last_type;
+import com.i_tankdepo.customcomponents.CustomSpinner;
 import com.i_tankdepo.helper.ServiceHandler;
 
 import org.apache.commons.io.FilenameUtils;
@@ -77,12 +98,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
+
+import static android.inputmethodservice.Keyboard.KEYCODE_DELETE;
 
 /**
  * Created by Metaplore on 10/18/2016.
@@ -97,11 +123,12 @@ public class Create_GateIn extends CommonActivity   {
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private Intent mServiceIntent;
-    private String userChoosenTask;
-    private boolean imV_manuf_date=false,manuf_date=false,last_test_date=false;
+    private String ed_last_type_id="",ed_next_type_id="",userChoosenTask;
+    private boolean imV_manuf_date=false,manuf_date=false,last_test_date=false,last_test_date_im=false,in_date=false,im_in_date=false;
     private Button fotter_add,im_add,im_print,bt_home,bt_refresh,fotter_submit;
-    private Spinner sp_equip_type,sp_customer,sp_previous_cargo,sp_last_test_type;
-    private EditText ed_time,ed_attach,ed_date,ed_equipement,ed_code,ed_status,ed_location,
+    private Spinner sp_equip_type;
+    private CustomSpinner sp_last_test_type;
+    private EditText ed_customer,ed_last_testtype,ed_time,ed_attach,ed_date,ed_equipement,ed_code,ed_status,ed_preCargo,ed_location,
             ed_eir_no,ed_vechicle,ed_transport,ed_remark;
     private EditText ed_manuf_date,ed_tare_weight,ed_Gross_weight,ed_capacity,ed_last_survey,ed_last_test_date,
             ed_next_date,ed_info_remark,switch_active,switch_remtal,ed_next_type;
@@ -113,7 +140,7 @@ public class Create_GateIn extends CommonActivity   {
     private String curTime,get_swt_heating,get_swt_rental,get_swt_info_active,get_swt_info_rental;
     int mHour,mMinute;
     TimePickerDialog timePickerDialog;
-    String get_manu_date,get_tare_weight,get_gross, get_capacity,get_last_survy,get_last_test_date,get_last_test_type,get_next_date,get_next_type,
+    String get_manu_date,get_tare_weight,get_gross, get_capacity,get_last_survy,get_last_test_date,get_last_test_type="",get_next_date,get_next_type="",
             get_info_remark;
     String EIEQPMNT_TYP_CD,EIMNFCTR_DT,EITR_WGHT_NC,EIGRSS_WGHT_NC,EICPCTY_NC,
             EILST_SRVYR_NM,EILST_TST_DT,EILST_TST_TYP_ID,EINXT_TST_DT,EINXT_TST_TYP_ID,EIRMRKS_VC,EIACTV_BT,EIRNTL_BT;
@@ -141,7 +168,7 @@ public class Create_GateIn extends CommonActivity   {
     LinearLayout LL_Equipment_Info,LL_Submit,LL_footer_delete,footer_add_btn;
     private int pendingsize;
     Switch heating,rental,info_rental,info_active;
-    private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_id;
+    private String get_sp_customer,get_sp_equipe,get_sp_previous,get_sp_previous_dec,get_sp_previous_id;
     private CustomerDropdownBean customer_DropdownBean;
     ArrayList<CustomerDropdownBean> CustomerDropdownArrayList = new ArrayList<>();
     private ArrayList<String> worldlist;
@@ -153,7 +180,7 @@ public class Create_GateIn extends CommonActivity   {
     public static boolean isCamPermission;
     private int REQUEST_CAMERA = 0, SELECT_FILE = 1;
     private String TAG="Create_GateIn";
-    private String encodedImage,selectedImagePath,filename,IfAttchment;
+    private String encodedImage,selectedImagePath,filename,IfAttchment="False";
     private File file;
     private String validationStatus;
     private JSONObject reqObj;
@@ -180,7 +207,18 @@ public class Create_GateIn extends CommonActivity   {
     private Bitmap selectedImageBitmap;
     private String Filename;
     private Multi_Photo_Bean photo_attach_bean;
-
+    private ArrayList<String> list;
+    private String Str="";
+    private int count=0;
+    private int pre_count=0;
+    private int last_test_type_count=0;
+    private CustomSpinner sp_previous_cargo,sp_customer;
+    private SpinnerCustomAdapter customAdapter;
+    private SpinnerCustomAdapter_Cargo customAdapter_cargo;
+    private SpinnerCustomAdapter_last_type customAdapter_last_test_type;
+    private RecyclerView list_item;
+    private ViewHolder holder;
+    private VerticalAdapter verticalAdapter;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -209,6 +247,30 @@ public class Create_GateIn extends CommonActivity   {
         tv_code = (TextView)findViewById(R.id.tv_code);
         tv_status = (TextView)findViewById(R.id.tv_status);
         tv_date = (TextView)findViewById(R.id.tv_date);
+        list_item = (RecyclerView)findViewById(R.id.list_item);
+        list_item.setVerticalScrollBarEnabled(true);
+        list_item.setOnTouchListener(new ListView.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
+            }
+        });
+
         LL_footer_delete = (LinearLayout) findViewById(R.id.LL_footer_delete);
         footer_add_btn = (LinearLayout) findViewById(R.id.footer_add_btn);
         LL_footer_delete.setAlpha(0.5f);
@@ -219,22 +281,48 @@ public class Create_GateIn extends CommonActivity   {
         tv_cargo = (TextView)findViewById(R.id.tv_cargo);
         ed_date = (EditText)findViewById(R.id.ed_date);
         ed_time = (EditText)findViewById(R.id.ed_time);
+        ed_last_testtype = (EditText)findViewById(R.id.ed_last_testtype);
+        ed_last_testtype.setOnClickListener(this);
+        ed_customer = (EditText)findViewById(R.id.ed_customer);
+        ed_customer.setOnClickListener(this);
         ed_attach = (EditText)findViewById(R.id.ed_attach);
         heating=(Switch)findViewById(R.id.switch_heating);
         rental=(Switch)findViewById(R.id.switch_rental);
         info_active=(Switch)findViewById(R.id.swt_moreinfo_Active);
         info_rental=(Switch)findViewById(R.id.swt_moreinfo_remtal);
         ed_equipement = (EditText)findViewById(R.id.ed_equip_no);
+        ed_equipement.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //You can identify which key pressed buy checking keyCode value with KeyEvent.KEYCODE_
+                if(keyCode == KeyEvent.KEYCODE_DEL) {
+                    //this is for backspace
+                }
+                return false;
+            }
+        });
+        if(GlobalConstants.from.equalsIgnoreCase("ocr")) {
+            ed_equipement.setText(GlobalConstants.blocks_numbers.replaceAll(" ",""));
+
+            Log.i("blocks_numbers",GlobalConstants.blocks_numbers.replaceAll(" ",""));
+        }else if(GlobalConstants.from.equalsIgnoreCase("skip"))
+        {
+            ed_equipement.setText("");
+        }
         ed_equipement.addTextChangedListener(mTextEditorWatcher);
+
         ed_code = (EditText)findViewById(R.id.ed_code);
 
         ed_manuf_date=(EditText)findViewById(R.id.ed_manfu);
         ed_tare_weight=(EditText)findViewById(R.id.ed_tare_weight);
+        ed_tare_weight.setKeyListener(DigitsKeyListener.getInstance(true,true));
         ed_Gross_weight=(EditText)findViewById(R.id.ed_gross_weight);
+        ed_Gross_weight.setKeyListener(DigitsKeyListener.getInstance(true,true));
         ed_capacity=(EditText)findViewById(R.id.ed_capacity);
+        ed_capacity.setKeyListener(DigitsKeyListener.getInstance(true,true));
         ed_last_survey=(EditText)findViewById(R.id.ed_Last_survay);
         ed_last_test_date=(EditText)findViewById(R.id.ed_test_date);
-        sp_last_test_type=(Spinner)findViewById(R.id.sp_last_testtype);
+        sp_last_test_type=(CustomSpinner) findViewById(R.id.sp_last_testtype);
         ed_next_date=(EditText)findViewById(R.id.ed_next_date);
         ed_next_type=(EditText)findViewById(R.id.ed_next_testtype);
         ed_info_remark=(EditText)findViewById(R.id.ed_info_remark);
@@ -243,7 +331,18 @@ public class Create_GateIn extends CommonActivity   {
 
 
         ed_eir_no = (EditText)findViewById(R.id.ed_eir_no);
+        ed_eir_no.setFilters(new InputFilter[] {
+                new InputFilter.AllCaps() {
+                    @Override
+                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                        return String.valueOf(source).toUpperCase();
+                    }
+                },
+                new InputFilter.LengthFilter(17)
+        });
         ed_location = (EditText)findViewById(R.id.ed_location);
+        ed_preCargo = (EditText)findViewById(R.id.ed_preCargo);
+        ed_preCargo.setOnClickListener(this);
         ed_status = (EditText)findViewById(R.id.ed_status);
         ed_vechicle = (EditText)findViewById(R.id.ed_vechicle);
         ed_transport = (EditText)findViewById(R.id.ed_transport);
@@ -277,7 +376,7 @@ public class Create_GateIn extends CommonActivity   {
         LL_Equipment_Info.setVisibility(View.GONE);
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
 
-        ed_equipement.setText(CaptureValue);
+//        ed_equipement.setText(CaptureValue);
 
         ed_time.setOnClickListener(this);
         ed_date.setOnClickListener(this);
@@ -386,9 +485,9 @@ public class Create_GateIn extends CommonActivity   {
                 equip_down.setVisibility(View.VISIBLE);
             }
         });
-        sp_customer = (Spinner)findViewById(R.id.sp_customer);
+        sp_customer = (CustomSpinner)findViewById(R.id.sp_customer);
         sp_equip_type = (Spinner)findViewById(R.id.sp_type);
-        sp_previous_cargo = (Spinner)findViewById(R.id.sp_previ_cargo);
+        sp_previous_cargo = (CustomSpinner)findViewById(R.id.sp_previ_cargo);
 
 
 
@@ -419,15 +518,15 @@ public class Create_GateIn extends CommonActivity   {
         int hour = c.get(Calendar.HOUR);
         //24 hour format
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
-        SimpleDateFormat time = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat time = new SimpleDateFormat("HH:MM");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
         ed_date.setText(systemDate);
-        ed_manuf_date.setText(systemDate);
-        ed_time.setText(curTime);
+//        ed_manuf_date.setText(systemDate);
+//        ed_time.setText(curTime);
 
-        ed_last_test_date.setText(systemDate);
+//        ed_last_test_date.setText(systemDate);
 
 
 
@@ -436,16 +535,14 @@ public class Create_GateIn extends CommonActivity   {
             @Override
             public void onItemSelected(AdapterView<?> arg0,
                                        View arg1, int position, long arg3) {
-                get_sp_customer = sp_customer.getSelectedItem().toString();
-                get_sp_customer_code=CustomerDropdownArrayList.get(position).getCode();
 
-                //shortToast(getApplicationContext(),"get_sp_customer_code==>"+get_sp_customer_code);
-                                /*txtrank.setText("Rank : "
-                                        + world.get(position).getRank());
-                                txtcountry.setText("Country : "
-                                        + world.get(position).getCountry());
-                                txtpopulation.setText("Population : "
-                                        + world.get(position).getPopulation());*/
+                if (count != 0) {
+                    get_sp_customer_code = CustomerDropdownArrayList.get(position).getCode();
+                    get_sp_customer = CustomerDropdownArrayList.get(position).getName();
+                    ed_customer.setText(get_sp_customer);
+                }
+                count++;
+
             }
 
             @Override
@@ -457,13 +554,24 @@ public class Create_GateIn extends CommonActivity   {
         sp_last_test_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i == 0){
-                    ed_next_type.setText(dropdown_MoreInfo_arraylist.get(1).getCode());
-                }else if(i==1)
-                {
-                    ed_next_type.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
 
+                if (last_test_type_count>0)
+                {
+                    if(i == 0){
+                        ed_next_type.setText(dropdown_MoreInfo_arraylist.get(1).getCode());
+                        ed_next_type_id=dropdown_MoreInfo_arraylist.get(1).getId();
+                        ed_last_type_id=dropdown_MoreInfo_arraylist.get(0).getId();
+                        ed_last_testtype.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
+                    }else if(i==1)
+                    {
+                        ed_next_type.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
+                        ed_last_type_id=dropdown_MoreInfo_arraylist.get(1).getId();
+                        ed_next_type_id=dropdown_MoreInfo_arraylist.get(0).getId();
+                        ed_last_testtype.setText(dropdown_MoreInfo_arraylist.get(1).getCode());
+//                        ed_last_testtype.setText(dropdown_MoreInfo_arraylist.get(0).getCode());
+                    }
                 }
+                last_test_type_count++;
             }
 
             @Override
@@ -471,6 +579,8 @@ public class Create_GateIn extends CommonActivity   {
 
             }
         });
+
+
 
         get_equipment="AAAL8445312";
         get_sp_customer="TSTCUST";
@@ -526,14 +636,32 @@ public class Create_GateIn extends CommonActivity   {
 
             }
         });
+      /*  if ((Str.length() < 0)|| Str.equals("")) {
+            //im_Attachment.setColorFilter(Color.CYAN,PorterDuff.Mode.LIGHTEN);
+            //   Toast.makeText(Update_Gateout.this,"greater",Toast.LENGTH_LONG).show();
+            Animation fade = AnimationUtils.loadAnimation(this, R.anim.img_fade);
+            im_Attachment.startAnimation(fade);
+
+        } else {
+            //im_Attachment.setColorFilter(Color.CYAN, PorterDuff.Mode.DARKEN);
+            //  Toast.makeText(Update_Gateout.this,"0",Toast.LENGTH_LONG).show();
+
+        }*/
+        im_Attachment.setOnClickListener(this);
 
 
         sp_previous_cargo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                get_sp_previous_code=dropdown_PreviousCargo_arraylist.get(i).getCode();
-                get_sp_previous_id=dropdown_PreviousCargo_arraylist.get(i).getId();
-                //  shortToast(getApplicationContext(),"get_sp_previous==>"+get_sp_previous);
+
+                if(pre_count>0) {
+                    get_sp_previous_code = dropdown_PreviousCargo_arraylist.get(i).getCode();
+                    get_sp_previous_id = dropdown_PreviousCargo_arraylist.get(i).getId();
+                    get_sp_previous_dec = dropdown_PreviousCargo_arraylist.get(i).getDesc();
+                    ed_preCargo.setText(get_sp_previous_dec.toUpperCase());
+                    //  shortToast(getApplicationContext(),"get_sp_previous==>"+get_sp_previous);
+                }
+                pre_count++;
             }
 
             @Override
@@ -595,6 +723,11 @@ public class Create_GateIn extends CommonActivity   {
         public void onTextChanged(CharSequence s, int start, int before, int count)
         {
 
+                if(s.length()>=4) {
+                    ed_equipement.setInputType(InputType.TYPE_CLASS_NUMBER);
+                }else if(s.length()<=3) {
+                    ed_equipement.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                }
         }
 
         public void afterTextChanged(Editable s)
@@ -612,9 +745,17 @@ public class Create_GateIn extends CommonActivity   {
         }
     };
 
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
+    @Override
+    public void onResume(){
+        super.onResume();
+        // put your code here...
+        if(encodeArray==null)
+        {
+            encodeArray=new ArrayList<Multi_Photo_Bean>();
+            list = new ArrayList<>();
+
+        }
+
     }
 
     @Override
@@ -660,16 +801,28 @@ public class Create_GateIn extends CommonActivity   {
             case R.id.LL_GateIn:
                 startActivity(new Intent(getApplicationContext(),GateIn.class));
                 break;
+            case R.id.ed_customer:
+
+                sp_customer.performClick();
+                break;
+            case R.id.ed_preCargo:
+                sp_previous_cargo.performClick();
+                break;
+            case R.id.ed_last_testtype:
+
+                sp_last_test_type.performClick();
+                break;
             case R.id.ed_date:
                 manuf_date=false;
-
                 last_test_date=false;
+                in_date=true;
+                im_in_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_date:
                 manuf_date=false;
-
-
+                im_in_date=true;
+                in_date=false;
                 last_test_date=false;
                 showDialog(DATE_DIALOG_ID);
 
@@ -688,16 +841,18 @@ public class Create_GateIn extends CommonActivity   {
                 break;
 
             case R.id.ed_test_date:
-
+                imV_manuf_date=false;
                 manuf_date=false;
                 last_test_date = true;
+                last_test_date_im = false;
                 showDialog(DATE_DIALOG_ID);
                 break;
             case R.id.im_last_Testdate:
                 manuf_date=false;
-                last_test_date = true;
+                last_test_date = false;
+                last_test_date_im=true;
+                imV_manuf_date=false;
 
-                manuf_date=false;
                 showDialog(DATE_DIALOG_ID);
                 break;
 
@@ -709,15 +864,16 @@ public class Create_GateIn extends CommonActivity   {
 
 
                     clickMessage="Submit";
-                    get_sp_customer = sp_customer.getSelectedItem().toString();
+                    get_sp_customer = ed_customer.getText().toString();
                     get_equipment = ed_equipement.getText().toString();
-                    get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
+                //    get_sp_previous = sp_previous_cargo.getSelectedItem().toString();
+                    get_sp_previous = ed_preCargo.getText().toString();
                     get_status = ed_status.getText().toString();
                     get_code = ed_code.getText().toString();
                     get_date = ed_date.getText().toString();
                     get_time = ed_time.getText().toString();
                     get_location = ed_location.getText().toString();
-                    get_eir_no = ed_eir_no.getText().toString();
+                    get_eir_no = ed_eir_no.getText().toString().toUpperCase();
                     get_vechicle = ed_vechicle.getText().toString();
                     get_transport = ed_transport.getText().toString();
                     get_remark = ed_remark.getText().toString();
@@ -731,19 +887,11 @@ public class Create_GateIn extends CommonActivity   {
                     get_next_date = ed_next_date.getText().toString();
                     get_next_type = ed_next_type.getText().toString();
                     get_info_remark = ed_info_remark.getText().toString();
+                    filename = ed_attach.getText().toString();
 
 
 
-                    try {
-                        if (filename.length() < 0) {
 
-                        } else {
-                            IfAttchment = "True";
-                        }
-                    } catch (Exception e) {
-
-                        IfAttchment = "False";
-                    }
 
                 get_sp_equipe = sp_equip_type.getSelectedItem().toString();
 
@@ -809,7 +957,7 @@ public class Create_GateIn extends CommonActivity   {
 
                         } else {
 
-                            changes = "true";
+                            changes = "True";
 
 
                             if (get_equipment.length() < 11) {
@@ -818,21 +966,221 @@ public class Create_GateIn extends CommonActivity   {
 
 
                             } else {
-                                Letter = get_equipment.substring(0,4);
-                                Number = get_equipment.substring(4,11);
-                                if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
-                                    Log.d("Character", Letter);
-                                    Log.d("Numbers", Number);
-                                    if (cd.isConnectingToInternet()) {
-                                        new Post_Verify_Equipment_No().execute();
+
+                                if (!get_tare_weight.equals("")) {
+
+
+
+                                  /*  if ((get_tare_weight.matches(".\\d"))) {
+                                        get_tare_weight = "0" + get_tare_weight + "00";
+                                    } else if ((get_tare_weight.matches("\\d."))) {
+                                        get_tare_weight = get_tare_weight + "000";
+                                    }*/
+
+                                    if (get_tare_weight.contains(".")) {
+
+                                        String[] new_MH = get_tare_weight.split(Pattern.quote("."));
+
+                                        String str1 = new_MH[0].toString();
+                                        String str2 = new_MH[1].toString();
+                                        if (str1.length() <= 7 && str2.length() == 2) {
+                                            get_tare_weight = str1+"."+str2+"0";
+
+                                        } else if (str1.length() <= 7 && (str2.length() == 1)) {
+                                            get_tare_weight = str1 +"."+str2+"00";
+                                        }else if (str1.length() <= 7 && ( str2.length() == 0)) {
+                                            get_tare_weight = str1 + ".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Tare Weight. Range must be from 0.01 to 9999999.99");
+                                            get_tare_weight=get_tare_weight+".000";
+                                        }
 
                                     } else {
-                                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+
+                                        if (get_tare_weight.length() <= 7) {
+                                            get_tare_weight = get_tare_weight + ".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Tare Weight. Range must be from 0.01 to 9999999.99");
+                                            get_tare_weight=get_tare_weight+".000";
+                                        }
                                     }
 
 
                                 } else {
-                                    shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
+                                    get_tare_weight = "";
+                                }
+                                if (!get_gross.equals("")) {
+
+
+/*
+
+                                    if ((get_gross.matches(".\\d"))) {
+                                        get_gross = "0" + get_gross + "00";
+                                    } else if ((get_gross.matches("\\d."))) {
+                                        get_gross = get_gross + "000";
+                                    }
+*/
+
+                                    if (get_gross.contains(".")) {
+
+                                        String[] new_MH = get_gross.split(Pattern.quote("."));
+
+                                        String str1 = new_MH[0].toString();
+                                        String str2 = new_MH[1].toString();
+                                        if (str1.length() <= 7 && str2.length() == 2) {
+                                            get_gross = str1+"."+str2+"0";
+
+                                        } else if (str1.length() <= 7 && (str2.length() == 1)) {
+                                            get_gross = str1 +"."+ str2+"00";
+                                        } else if (str1.length() <= 7 && (str2.length() == 0)) {
+                                            get_gross = str1 +".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Gross Weight. Range must be from 0.01 to 9999999.99");
+                                            get_gross=get_gross+".000";
+                                        }
+
+                                    } else {
+
+                                        if (get_gross.length() <= 7) {
+                                            get_gross = get_gross + ".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Gross Weight. Range must be from 0.01 to 9999999.99");
+                                            get_gross=get_gross+".000";
+                                        }
+                                    }
+
+
+                                } else {
+                                    get_gross = "";
+                                }
+                                if (!get_capacity.equals("")) {
+
+
+
+                                  /*  if ((get_capacity.matches(".\\d"))) {
+                                        get_capacity = "0" + get_capacity + "00";
+                                    } else if ((get_capacity.matches("\\d."))) {
+                                        get_capacity = get_capacity + "000";
+                                    }*/
+
+                                    if (get_capacity.contains(".")) {
+
+                                        String[] new_MH = get_capacity.split(Pattern.quote("."));
+
+                                        String str1 = new_MH[0].toString();
+                                        String str2 = new_MH[1].toString();
+                                        if (str1.length() <= 7 && str2.length() == 2) {
+                                            get_capacity =str1+"."+str2+"0";
+
+                                        } else if (str1.length() <= 7 && (str2.length() == 1)) {
+                                            get_capacity = str1 +"."+str2 +"00";
+                                        } else if (str1.length() <= 7 && (str2.length() == 0)) {
+                                            get_capacity = str1 +".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Capacity. Range must be from 0.01 to 9999999.99");
+                                            get_capacity=get_capacity+".000";
+                                        }
+
+                                    } else {
+
+                                        if (get_capacity.length() <= 7) {
+                                            get_capacity = get_capacity + ".000";
+                                        } else {
+//                                            shortToast(getApplicationContext(), "Invalid Capacity. Range must be from 0.01 to 9999999.99");
+                                            get_capacity=get_capacity+".000";
+                                        }
+                                    }
+
+
+                                } else {
+                                    get_capacity = "";
+                                }
+
+
+                                if (!get_capacity.equals("")||!get_tare_weight.equals("")||!get_gross.equals("")) {
+                                    String[] new_get_mh = get_tare_weight.split(Pattern.quote("."));
+                                    String[] new_get_mc = get_capacity.split(Pattern.quote("."));
+                                    String[] new_tare_weight = get_gross.split(Pattern.quote("."));
+
+                                    String str1,str1_2,str2,str2_2,str3,str3_2;
+                                    if(get_tare_weight.equals(""))
+                                    {
+                                         str1 ="";
+                                         str1_2 = "";
+                                    }else
+                                    {
+                                         str1 = new_get_mh[0].toString();
+                                         str1_2 = new_get_mh[1].toString();
+                                    } if(get_capacity.equals(""))
+                                    {
+                                        str2 ="";
+                                        str2_2 = "";
+                                    }else
+                                    {
+                                        str2 = new_get_mc[0].toString();
+                                        str2_2 = new_get_mc[1].toString();
+                                    }
+                                   if(get_gross.equals(""))
+                                    {
+                                        str3 ="";
+                                        str3_2 = "";
+                                    }else
+                                    {
+                                        str3 = new_tare_weight[0].toString();
+                                        str3_2 = new_tare_weight[1].toString();
+                                    }
+
+
+
+
+                                    if (str1.length() > 7 || str1_2.length()>3 ) {
+
+                                        shortToast(getApplicationContext(), "Invalid Tare Weight. Range must be from 0.01 to 9999999.99");
+
+                                    } else if( str2.length() > 7 || str2_2.length()>3)
+                                    {
+                                        shortToast(getApplicationContext(), "Invalid Capacity. Range must be from 0.01 to 9999999.99");
+
+                                    }else if(str3.length()>7 || str3_2.length()>3)
+                                    {
+                                        shortToast(getApplicationContext(), "Invalid Gross Weight. Range must be from 0.01 to 9999999.99");
+
+                                    }
+                                    else {
+                                        Letter = get_equipment.substring(0, 4);
+                                        Number = get_equipment.substring(4, 11);
+                                        if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                            Log.d("Character", Letter);
+                                            Log.d("Numbers", Number);
+                                            if (cd.isConnectingToInternet()) {
+                                                new Post_Verify_Equipment_No().execute();
+
+                                            } else {
+                                                shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                            }
+
+
+                                        } else {
+                                            shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
+                                        }
+                                    }
+                                } else {
+                                    Letter = get_equipment.substring(0, 4);
+                                    Number = get_equipment.substring(4, 11);
+                                    if (Character.isLetter(Letter.charAt(0)) && Character.isDigit(Number.charAt(4))) {
+                                        Log.d("Character", Letter);
+                                        Log.d("Numbers", Number);
+                                        if (cd.isConnectingToInternet()) {
+                                            new Post_Verify_Equipment_No().execute();
+
+                                        } else {
+                                            shortToast(getApplicationContext(), "Please check your Internet Connection..!");
+                                        }
+
+
+                                    } else {
+                                        shortToast(getApplicationContext(), "This Equipment Number is Not Valid..!");
+                                    }
                                 }
                             }
 
@@ -850,25 +1198,16 @@ public class Create_GateIn extends CommonActivity   {
                             (get_date.trim().equals("") || get_date == null)) {
                         shortToast(getApplicationContext(), "Please Key-in Mandate Fields");
                     } else {
-                        try {
-                            if (filename.length() < 0) {
 
-                            } else {
-                                IfAttchment = "True";
-                            }
-                        } catch (Exception e) {
-
-                            IfAttchment = "False";
-                        }
                         if (get_manu_date.equals(EIMNFCTR_DT) && get_tare_weight.equals(EITR_WGHT_NC) && get_gross.equals(EIGRSS_WGHT_NC)
                                 && get_capacity.equals(EICPCTY_NC)
                                 && get_last_survy.equals(EILST_SRVYR_NM) && get_last_test_date.equals(EILST_TST_DT)
                                 && get_last_test_type.equals(EILST_TST_TYP_ID) && get_next_date.equals(EINXT_TST_DT)
                                 && get_next_type.equals(EINXT_TST_TYP_ID) && get_info_remark.equals(EIRMRKS_VC) && get_swt_info_rental.equals(EIRNTL_BT)
                                 && get_swt_info_active.equals(EIACTV_BT)) {
-                            changes = "true";
+                            changes = "False";
                         } else {
-                            changes = "true";
+                            changes = "True";
                         }
                         String numberAsString = Integer.toString(pendingsize + 1);
                         db.open();
@@ -898,7 +1237,7 @@ public class Create_GateIn extends CommonActivity   {
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
                                 boolean isPM = (hourOfDay >= 12);
-                                ed_time.setText(String.format("%02d:%02d %s", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute, isPM ? "PM" : "AM"));
+                                ed_time.setText(String.format("%02d:%02d", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute));
                                 //   from_time.setText(hourOfDay + ":" + minute);
                             }
                         }, mHour, mMinute, false);
@@ -916,7 +1255,7 @@ public class Create_GateIn extends CommonActivity   {
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
                                 boolean isPM = (hourOfDay >= 12);
-                                ed_time.setText(String.format("%02d:%02d %s", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute, isPM ? "PM" : "AM"));
+                                ed_time.setText(String.format("%02d:%02d", (hourOfDay == 12 || hourOfDay == 0) ? 12 : hourOfDay % 12,minute));
                                 //   from_time.setText(hourOfDay + ":" + minute);
                             }
                         }, mHour, mMinute, false);
@@ -926,12 +1265,53 @@ public class Create_GateIn extends CommonActivity   {
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
             case R.id.refresh:
+
+               count=0;
+               pre_count=0;
+               last_test_type_count=0;
+                ed_equipement.setText("");
                 finish();
                 startActivity(getIntent());
                 break;
             case R.id.im_Attachment:
 
-                selectImage();
+                final CharSequence[] items = { "Take Photo", "Choose from Library"};
+
+                isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
+                AlertDialog.Builder builder = new AlertDialog.Builder(Create_GateIn.this);
+                builder.setTitle("Add Photo!");
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        boolean result= Utility.checkPermission(Create_GateIn.this, isCamPermission);
+
+                        if (items[item].equals("Take Photo")) {
+                            userChoosenTask ="Take Photo";
+                            if(result) {
+                                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                try {
+                                    startActivityForResult(intent, REQUEST_CAMERA);
+                                }catch (Exception e)
+                                {
+                                    isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
+
+                                    result = Utility.checkPermission(Create_GateIn.this, isCamPermission);
+
+
+                                }
+                            }
+
+                        } else if (items[item].equals("Choose from Library")) {
+                            userChoosenTask ="Choose from Library";
+                            if(result)
+                                startActivityForResult(new Intent(Create_GateIn.this, CustomGallery_Activity.class), CustomGallerySelectId);
+
+                        }
+                    }
+                });
+                builder.show();
+
+
 
                 break;
         }
@@ -955,7 +1335,7 @@ public class Create_GateIn extends CommonActivity   {
 
                 }
 
-               /* if (items[item].equals("Take Photo")) {
+                if (items[item].equals("Take Photo")) {
                     userChoosenTask ="Take Photo";
                     if(result)
                         cameraIntent();
@@ -965,7 +1345,7 @@ public class Create_GateIn extends CommonActivity   {
                     if(result)
                         galleryIntent();
 
-                }*/
+                }
             }
         });
         builder.show();
@@ -989,100 +1369,86 @@ public class Create_GateIn extends CommonActivity   {
     protected void onActivityResult(int requestcode, int resultcode,
                                     Intent imagereturnintent) {
         super.onActivityResult(requestcode, resultcode, imagereturnintent);
-        switch (requestcode) {
-            case CustomGallerySelectId:
 
-                if (resultcode == RESULT_OK) {
-                    String imagesArray = imagereturnintent.getStringExtra(CustomGalleryIntentKey);//get Intent data
-                    //Convert string array into List by splitting by ',' and substring after '[' and before ']'
-                    List<String> selectedImages = Arrays.asList(imagesArray.substring(1, imagesArray.length() - 1).split(", "));
-                    loadGridView(new ArrayList<String>(selectedImages),imagereturnintent);//call load gridview method by passing converted list into arrayList
-                } /*else if (resultcode == REQUEST_CAMERA) {
-                    onCaptureImageResult(imagereturnintent);
-                }
-                else
-                {
-                    Uri uri = imagereturnintent.getData();
-                    Log.d(TAG, "File Uri: " + uri.toString());
-                    // Get the path
-                    String path = null;
-                    path = getPath(this,uri);
-                    String filename=path.substring(path.lastIndexOf("/")+1);
-                    ed_attach.setText(filename);
-                    Log.d(TAG, "File Path: " + path);
-                }*/
-                break;
+
+        if (resultcode == RESULT_OK) {
+
+            if (requestcode == SELECT_FILE) {
+                String imagesArray = imagereturnintent.getStringExtra(CustomGalleryIntentKey);//get Intent data
+                //Convert string array into List by splitting by ',' and substring after '[' and before ']'
+                List<String> selectedImages = Arrays.asList(imagesArray.substring(1, imagesArray.length() - 1).split(", "));
+                loadGridView(new ArrayList<String>(selectedImages), imagereturnintent);//call load gridview method by passing converted list into arrayList
+            } else if (requestcode == REQUEST_CAMERA)
+                onCaptureImageResult(imagereturnintent);
+
 
         }
+
+
+
     }
 
     private void loadGridView(ArrayList<String> imagesArray,Intent imagereturnintent) {
         GridView_Adapter adapter = new GridView_Adapter(Create_GateIn.this, imagesArray, false);
-        encodeArray=new ArrayList<Multi_Photo_Bean>();
-
         for (int i=0;i<imagesArray.size();i++){
 //            imagesPathList.add(imagesArray(i));
+            try {
             selectedImageBitmap = BitmapFactory.decodeFile(imagesArray.get(i));
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             selectedImageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] byteArrayImage = byteArrayOutputStream.toByteArray();
-            encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
+
+                encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
+            }catch (Exception e)
+            {
+                shortToast(getApplicationContext(),"Image Size Should be lessthan 4MB ");
+            }
             Log.i("encodedImage ", encodedImage);
-            Uri selectedImageUri = imagereturnintent.getData();
-            String filePath = null;
-            // OI FILE Manager
-            // MEDIA GALLERY
 
             photo_attach_bean=new Multi_Photo_Bean();
-          /*  String s= getRealPathFromURI(selectedImageUri);
 
-            String imageName=s.substring(s.lastIndexOf("/")+1);
-            extansion=s.substring(s.lastIndexOf(".") + 1);*/
             Filename="imageName";
-            photo_attach_bean.setName(Filename+imagesArray.get(i));
+            String path = imagesArray.get(i);
+            String filename = path.substring(path.lastIndexOf("/") + 1);
+            final String fileName_from = path.substring(path.lastIndexOf('/') + 1);
+
+            Log.d("Last ", filename);
+            Log.d("Last fileName_from ", fileName_from);
+            photo_attach_bean.setName(fileName_from);
             photo_attach_bean.setBase64(encodedImage);
             photo_attach_bean.setLength(String.valueOf(encodedImage.length()));
+            photo_attach_bean.setAttachment_Id("");
             encodeArray.add(photo_attach_bean);
+            IfAttchment = "True";
+
+            verticalAdapter=new VerticalAdapter(encodeArray);
+            LinearLayoutManager verticalLayoutmanager
+                    = new LinearLayoutManager(Create_GateIn.this, LinearLayoutManager.VERTICAL, false);
+            list_item.setLayoutManager(verticalLayoutmanager);
+            list_item.setAdapter(verticalAdapter);
+
 
         }
+        String Str = "";
+        for (int ii = 0; ii < encodeArray.size(); ii++) {
+            Str += " " + encodeArray.get(ii).getName() + ",";
+        }
+        if (Str.endsWith(","))
+        {
+            Str=Str.substring(0,Str.length()-1);
+            ed_attach.setText(Str);
+        }
 //        ed_attach.setText(photo_attach_bean.getName());
-        ed_attach.setText("imageName");
+     //   ed_attach.setText("imageName");
         Filename=ed_attach.getText().toString();
 
     }
 
 
 
-/*
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_FILE)
-                onSelectFromGalleryResult(data);
-            else if (requestCode == REQUEST_CAMERA)
-                onCaptureImageResult(data);
-            else
-            {
-                Uri uri = data.getData();
-                Log.d(TAG, "File Uri: " + uri.toString());
-                // Get the path
-                String path = null;
-                path = getPath(this,uri);
-                filePath = data.getData().getPath();
-                file = new File(filePath);
-                Filename= file.getAbsolutePath();
-                imageName=filePath.substring(Filename.lastIndexOf("/")+1);
-                String basename = FilenameUtils.getBaseName(Filename);
-                String fileType = FilenameUtils.getExtension(Filename);
-                ed_attach.setText(basename+fileType);
-                Log.d(TAG, "File Path: " + path);
-            }
-        }
-    }
-*/
 
     private void onCaptureImageResult(Intent data) {
         Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
@@ -1108,8 +1474,29 @@ public class Create_GateIn extends CommonActivity   {
         byte[] byteArrayImage = bytes.toByteArray();
         encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
         filename=filename.substring(filename.lastIndexOf("/")+1);
-        ed_attach.setText(filename);
+        photo_attach_bean=new Multi_Photo_Bean();
+//            Filename="imageName";
+        photo_attach_bean.setName(filename);
+        photo_attach_bean.setBase64(encodedImage);
+        photo_attach_bean.setLength(String.valueOf(encodedImage.length()));
+        photo_attach_bean.setAttachment_Id("");
+        encodeArray.add(photo_attach_bean);
+        IfAttchment = "True";
 
+        ed_attach.setText(filename);
+        list.add(filename);
+        for (int ii = 0; ii < list.size(); ii++) {
+            Str += " " + list.get(ii) + ",";
+        }
+        if (Str.endsWith(",")) {
+            Str = Str.substring(0, Str.length() - 1);
+            ed_attach.setText(Str);
+        }
+        verticalAdapter=new VerticalAdapter(encodeArray);
+        LinearLayoutManager verticalLayoutmanager
+                = new LinearLayoutManager(Create_GateIn.this, LinearLayoutManager.VERTICAL, false);
+        list_item.setLayoutManager(verticalLayoutmanager);
+        list_item.setAdapter(verticalAdapter);
 
     }
     public String getPath(Context context, Uri uri) {
@@ -1171,16 +1558,17 @@ public class Create_GateIn extends CommonActivity   {
     }
     @Override
     protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
         switch (id) {
             case DATE_DIALOG_ID:
-
-                // open datepicker dialog.
-                // set date picker for current date
-                // add pickerListener listner to date picker
-                return new DatePickerDialog(this, pickerListener, year, month,day);
-
-
-
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMaxDate(new Date().getTime());
+                return dialog;
+            //end changes...
         }
         return null;
     }
@@ -1207,17 +1595,18 @@ public class Create_GateIn extends CommonActivity   {
             day   = selectedDay;
 
 
-            if(manuf_date==true || imV_manuf_date==true)
+            if(manuf_date || imV_manuf_date)
             {
                 ed_manuf_date.setText(formatDate(year, month, day));
 
 
-            }else if(last_test_date==true) {
+            }else if(last_test_date|| last_test_date_im) {
 
                 ed_last_test_date.setText(formatDate(year, month, day));
+                ed_next_date.setText(formatDate(year+2, month+6, day));
 
 
-            }else
+            }else if(im_in_date || in_date)
             {
                 ed_date.setText(formatDate(year, month, day));
             }
@@ -1315,6 +1704,7 @@ public class Create_GateIn extends CommonActivity   {
 
                             customer_DropdownBean.setName(jsonObject.getString("Name"));
                             customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            customer_DropdownBean.setTRFF_CD_DESCRPTN_VC(jsonObject.getString("Name"));
                             CustomerName = jsonObject.getString("Name");
                             CustomerCode = jsonObject.getString("Code");
                             String[] set1 = new String[2];
@@ -1362,10 +1752,15 @@ public class Create_GateIn extends CommonActivity   {
 
             if(dropdown_customer_list!=null)
             {
-                ArrayAdapter<String> CustomerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
+
+                customAdapter = new SpinnerCustomAdapter(Create_GateIn.this, R.layout.spinner_text, CustomerDropdownArrayList);
+                customAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Set adapter to spinner
+                sp_customer.setAdapter(customAdapter);
+              /*  ArrayAdapter<String> CustomerAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 CustomerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_customer.setAdapter(CustomerAdapter);
-
+*/
             }
             else if(dropdown_customer_list.size()<1)
             {
@@ -1558,6 +1953,9 @@ public class Create_GateIn extends CommonActivity   {
                         invitejsonObject.put("ContentLength", encodeArray.get(i).getLength());
                         invitejsonObject.put("base64imageString", encodeArray.get(i).getBase64());
                         invite_jsonlist.put(invitejsonObject);
+
+                       Log.d("base64imageString",encodeArray.get(i).getBase64());
+
                     }
                     reqObj.put("ArrayOfFileParams",invite_jsonlist);
 //                    Log.d("ArrayOfFileParams", String.valueOf(invite_jsonlist));
@@ -1566,20 +1964,33 @@ public class Create_GateIn extends CommonActivity   {
 
                 }catch (Exception e)
                 {
-                    runOnUiThread(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            //update ui here
-                            // display toast here
-                            //    pluse.setVisibility(View.INVISIBLE);
-                            // no_eventtoday.setVisibility(View.INVISIBLE);
-                            //   shortToast(getApplicationContext(),"please select Members");
+                }
+                SimpleDateFormat fromUser = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+                SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+                String datePattern = "\\d{2}-\\d{2}-\\d{4}";
 
+
+                try {
+                    if (get_date.equals(null) || get_date.length() < 0) {
+
+                        get_date = "";
+                    } else {
+                        Boolean is_edt_Date1 = get_date.matches(datePattern);
+                        if (is_edt_Date1 == true) {
+                            get_date = myFormat.format(fromUser.parse(get_date));
+
+
+                        } else {
 
                         }
-                    });
 
+
+                    }
+
+                }catch (Exception e)
+                {
+                    get_date = "";
                 }
                 String numberAsString = Integer.toString(pendingsize+1);
                 jsonObject.put("GTN_ID", numberAsString);
@@ -1601,13 +2012,80 @@ public class Create_GateIn extends CommonActivity   {
                 jsonObject.put("HTNG_BT", get_swt_heating);
                 jsonObject.put("RMRKS_VC", get_remark);
                 jsonObject.put("CHECKED", "True");
-                jsonObject.put("PRDCT_DSCRPTN_VC", get_sp_previous);
+                jsonObject.put("PRDCT_DSCRPTN_VC", get_sp_previous_dec);
                 jsonObject.put("RNTL_BT", get_swt_rental);
-                jsonObject.put("hfc", reqObj);
                 jsonObject.put("RepairEstimateId", numberAsString);
-                jsonObject.put("IfAttchment",IfAttchment );
                 jsonObject.put("UserName",sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("Mode", "new");
+
+
+
+                try {
+
+                    if(get_manu_date.equals(null)||get_manu_date.length()<0)
+                    {
+
+                        get_manu_date="";
+                    }else
+                    {
+                        Boolean is_edt_Date1 = get_manu_date.matches(datePattern);
+                        if(is_edt_Date1==true)
+                        {
+                            get_manu_date = myFormat.format(fromUser.parse(get_manu_date));
+
+
+                        }else
+                        {
+
+                        }
+                    }}catch (Exception e)
+                {
+                    get_manu_date="";
+                }
+                try {
+
+                    if(get_last_test_date.equals(null)||get_last_test_date.length()<0)
+                    {
+
+                        get_last_test_date="";
+                    }else
+                    {
+                        Boolean is_edt_Date1 = get_last_test_date.matches(datePattern);
+                        if(is_edt_Date1==true)
+                        {
+                            get_last_test_date = myFormat.format(fromUser.parse(get_last_test_date));
+
+
+                        }else
+                        {
+
+                        }
+                    }
+                }catch (Exception e)
+                {
+                    get_manu_date="";
+                }  try {
+
+                    if(get_next_date.equals(null)||get_next_date.length()<0)
+                    {
+
+                        get_next_date="";
+                    }else
+                    {
+                        Boolean is_edt_Date1 = get_next_date.matches(datePattern);
+                        if(is_edt_Date1==true)
+                        {
+                            get_next_date = myFormat.format(fromUser.parse(get_next_date));
+
+
+                        }else
+                        {
+
+                        }
+                    }}catch (Exception e)
+                {
+                    get_next_date="";
+                }
 
 
                 jsonObject.put("EIMNFCTR_DT", get_manu_date);
@@ -1616,9 +2094,9 @@ public class Create_GateIn extends CommonActivity   {
                 jsonObject.put("EICPCTY_NC",get_capacity);
                 jsonObject.put("EILST_SRVYR_NM", get_last_survy);
                 jsonObject.put("EILST_TST_DT", get_last_test_date);
-                jsonObject.put("EILST_TST_TYP_ID", get_last_test_type);
+                jsonObject.put("EILST_TST_TYP_ID",ed_last_type_id);
                 jsonObject.put("EINXT_TST_DT", get_next_date);
-                jsonObject.put("EINXT_TST_TYP_ID", get_next_type);
+                jsonObject.put("EINXT_TST_TYP_ID",ed_next_type_id);
                 jsonObject.put("EIRMRKS_VC", get_info_remark);
                 jsonObject.put("EIACTV_BT", get_swt_info_active);
                 jsonObject.put("EIRNTL_BT", get_swt_info_rental);
@@ -1626,6 +2104,8 @@ public class Create_GateIn extends CommonActivity   {
                 jsonObject.put("EIHasChanges", changes);
                 jsonObject.put("PageName", "GateIn");
                 jsonObject.put("GateinTransactionNo", "");
+                jsonObject.put("IfAttchment",IfAttchment );
+                jsonObject.put("hfc", reqObj);
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -1641,18 +2121,9 @@ public class Create_GateIn extends CommonActivity   {
 
                 JSONObject returnMessage = jsonResp.getJSONObject("d");
 
-                String message = returnMessage.getString("equipmentUpdate");
-                responseString=message;
+                responseString = returnMessage.getString("equipmentUpdate");
+//                responseString=message;
                 Log.d("responseString", returnMessage.toString());
-/*
-                for(int i=0;i<returnMessage.length();i++)
-                {
-                    String message = returnMessage.getString(i);
-                    responseString=message;
-                    Log.i("....responseString...",message);
-                    // loop and add it to array or arraylist
-                }
-*/
 
 
             } catch (ClientProtocolException e) {
@@ -1673,6 +2144,8 @@ public class Create_GateIn extends CommonActivity   {
             if(responseString!=null) {
                 if (responseString.equalsIgnoreCase("Success") || responseString.equalsIgnoreCase("This operation requires IIS integrated pipeline mode.")) {
                     Toast.makeText(getApplicationContext(), "GateIn Created Successfully.", Toast.LENGTH_SHORT).show();
+
+                    ed_equipement.setText("");
                     finish();
                     Intent i = new Intent(getApplication(), GateIn.class);
                     startActivity(i);
@@ -1760,6 +2233,7 @@ public class Create_GateIn extends CommonActivity   {
 
                             moreInfo_DropdownBean.setId(jsonObject.getString("ENM_ID"));
                             moreInfo_DropdownBean.setCode(jsonObject.getString("ENM_CD"));
+                            moreInfo_DropdownBean.setTRFF_CD_DESCRPTN_VC(jsonObject.getString("ENM_CD"));
                             infoId = jsonObject.getString("ENM_ID");
                             infoCode = jsonObject.getString("ENM_CD");
                             String[] set1 = new String[2];
@@ -1804,9 +2278,14 @@ public class Create_GateIn extends CommonActivity   {
             {
 //                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
 //                listview.setAdapter(adapter);
-                ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_MoreInfo_list);
+             /*   ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_MoreInfo_list);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_last_test_type.setAdapter(CargoAdapter);
+*/
+                customAdapter_last_test_type = new SpinnerCustomAdapter_last_type(Create_GateIn.this, R.layout.spinner_text, dropdown_MoreInfo_arraylist);
+                customAdapter_last_test_type.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Set adapter to spinner
+                sp_last_test_type.setAdapter(customAdapter_last_test_type);
 
             }
             else
@@ -1893,6 +2372,7 @@ public class Create_GateIn extends CommonActivity   {
                             cargo_DropdownBean.setId(jsonObject.getString("ID"));
                             cargo_DropdownBean.setCode(jsonObject.getString("Code"));
                             cargo_DropdownBean.setDesc(jsonObject.getString("Description"));
+                            cargo_DropdownBean.setTRFF_CD_DESCRPTN_VC(jsonObject.getString("Code_Description"));
                             PreviousCargoID = jsonObject.getString("ID");
                             PreviousCargoCode = jsonObject.getString("Code");
                             PreviousCargoDescription = jsonObject.getString("Description");
@@ -1940,9 +2420,13 @@ public class Create_GateIn extends CommonActivity   {
             {
 //                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
 //                listview.setAdapter(adapter);
-                ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_PreviousCargo_list);
-                CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_previous_cargo.setAdapter(CargoAdapter);
+
+
+                customAdapter_cargo = new SpinnerCustomAdapter_Cargo(Create_GateIn.this, R.layout.spinner_text, dropdown_PreviousCargo_arraylist);
+                customAdapter_cargo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+              /*  ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_PreviousCargo_list);
+                CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);*/
+                sp_previous_cargo.setAdapter(customAdapter_cargo);
 
             }
             else if(dropdown_PreviousCargo_list.size()<1)
@@ -2048,10 +2532,6 @@ public class Create_GateIn extends CommonActivity   {
                         if(systemDate.compareTo(get_date)<0 )
                         {
                             shortToast(getApplicationContext(),"In Date cannot be greater than Current Date..!");
-                        }else if( systemDate.compareTo(get_manu_date)<0)
-                        {
-                            shortToast(getApplicationContext(),"Maunf. Date cannot be greater than Current Date..!");
-
                         }else {
                             new PostInfo().execute();
                         }
@@ -2069,7 +2549,7 @@ public class Create_GateIn extends CommonActivity   {
                     }
                 }else
                 {
-                    shortToast(getApplicationContext()," This Equipment " + get_equipment + "already exists for Customer"+  get_sp_customer );
+                    shortToast(getApplicationContext(),validationStatus);
                 }
 
 
@@ -2510,9 +2990,7 @@ public class Create_GateIn extends CommonActivity   {
                 ed_status.setText(getStatus);
                 ed_code.setText(equipement_code);
 
-               /* ArrayAdapter<String> TypeAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_equipment_info_list);
-                TypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                sp_last_test_type.setAdapter(TypeAdapter);*/
+
 
             }
             else
@@ -2530,7 +3008,345 @@ public class Create_GateIn extends CommonActivity   {
     }
 
 
+    public class VerticalAdapter extends RecyclerView.Adapter<VerticalAdapter.MyViewHolder> {
 
+        private ArrayList<Multi_Photo_Bean> verticalList;
+        private Multi_Photo_Bean userListBean;
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            public TextView Cust_Name,time,attachment_id,image_position;
+            ImageView im_delete;
+            public MyViewHolder(View view) {
+                super(view);
+                LinearLayout whole = (LinearLayout) view.findViewById(R.id.LL_whole);
+                Cust_Name = (TextView) view.findViewById(R.id.image_name);
+                time = (TextView) view.findViewById(R.id.text3);
+                attachment_id = (TextView) view.findViewById(R.id.attachment_id);
+                image_position = (TextView) view.findViewById(R.id.image_position);
+                im_delete = (ImageView) view.findViewById(R.id.im_delete);
+            }
+        }
+
+
+        public VerticalAdapter(ArrayList<Multi_Photo_Bean> verticalList) {
+            this.verticalList = verticalList;
+        }
+
+        @Override
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.image_list_row, parent, false);
+
+            return new MyViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(final MyViewHolder holder, final int position) {
+
+       /* holder.txtView.setText(verticalList.get(position));
+        holder.txtView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });*/
+            userListBean = verticalList.get(position);
+            final String fileName_from = userListBean.getName().substring(userListBean.getName().lastIndexOf('/') + 1);
+            holder.Cust_Name.setText(fileName_from);
+            holder.attachment_id.setText(userListBean.getAttachment_Id());
+            holder.image_position.setText(String.valueOf(position));
+
+            holder.Cust_Name.setOnClickListener(new View.OnClickListener() {
+                public Bitmap bitmap;
+
+                @Override
+                public void onClick(View view) {
+
+                    Log.i("getAttachment_Id()", verticalList.get(position).getAttachment_Id());
+
+                    String base64Content = verticalList.get(position).getBase64();
+                    byte[] bytes = Base64.decode(base64Content, Base64.DEFAULT);
+                    try {
+                        bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    }catch (Exception e)
+                    {
+                        shortToast(getApplicationContext(),"Image Size Should be lessthan 4MB ");
+                    }
+                    popImageUp(bitmap, "");
+//                            Log.i("image_url", list.get(position).getPathUrl());
+
+
+                }
+            });
+
+            holder.im_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    GlobalConstants.attach_ID = verticalList.get(position).getAttachment_Id();
+                    GlobalConstants.position = String.valueOf(verticalList.get(position));
+                    Log.i("getAttachment_Id()", verticalList.get(position).getAttachment_Id());
+                    if (verticalList.get(position).getAttachment_Id().equals("")) {
+                        GlobalConstants.from = "Repairpending_delete";
+                        GlobalConstants.image_name = fileName_from;
+
+//                                image_arraylist=new ArrayList<Image_Bean>();
+
+
+                        verticalList.remove(verticalList.get(position));
+
+                        verticalAdapter=new VerticalAdapter(encodeArray);
+                        LinearLayoutManager verticalLayoutmanager
+                                = new LinearLayoutManager(Create_GateIn.this, LinearLayoutManager.VERTICAL, false);
+                        list_item.setLayoutManager(verticalLayoutmanager);
+                        list_item.setAdapter(verticalAdapter);
+
+                    } else {
+                        new Delete_Attachment().execute();
+
+                    }
+
+                }
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return verticalList.size();
+        }
+    }
+
+    public class UserListAdapter extends BaseAdapter {
+
+        private final ArrayList<Multi_Photo_Bean> arraylist;
+        private ArrayList<Multi_Photo_Bean> list;
+        Context context;
+
+        int resource;
+        private Multi_Photo_Bean userListBean;
+        int lastPosition = -1;
+
+        public UserListAdapter(Context context, int resource, ArrayList<Multi_Photo_Bean> list) {
+            this.context = context;
+            this.list = list;
+            this.resource = resource;
+            this.arraylist = new ArrayList<Multi_Photo_Bean>();
+            this.arraylist.addAll(list);
+        }
+
+        @Override
+        public int getCount() {
+            return list.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return list.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                convertView = inflater.inflate(resource, null);
+                holder = new ViewHolder();
+
+               /* Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
+                convertView.startAnimation(animation);
+                lastPosition = position;*/
+                holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
+                holder.Cust_Name = (TextView) convertView.findViewById(R.id.image_name);
+                holder.time = (TextView) convertView.findViewById(R.id.text3);
+                holder.attachment_id = (TextView) convertView.findViewById(R.id.attachment_id);
+                holder.image_position = (TextView) convertView.findViewById(R.id.image_position);
+                holder.im_delete = (ImageView) convertView.findViewById(R.id.im_delete);
+
+
+                // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            if (list.size() < 1) {
+                Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
+            } else {
+
+                userListBean = list.get(position);
+
+
+                final String fileName_from = userListBean.getName().substring(userListBean.getName().lastIndexOf('/') + 1);
+                holder.Cust_Name.setText(fileName_from);
+
+                holder.attachment_id.setText("");
+
+                holder.image_position.setText(String.valueOf(position));
+
+                holder.Cust_Name.setOnClickListener(new View.OnClickListener() {
+                    public Bitmap bitmap;
+
+                    @Override
+                    public void onClick(View view) {
+
+                        Log.i("getAttachment_Id()", list.get(position).getAttachment_Id());
+
+                            String base64Content = list.get(position).getBase64();
+                            byte[] bytes = Base64.decode(base64Content, Base64.DEFAULT);
+                        try {
+                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        }catch (Exception e)
+                        {
+                            shortToast(getApplicationContext(),"Image Size Should be lessthan 4MB ");
+                        }
+                            popImageUp(bitmap, "");
+//                            Log.i("image_url", list.get(position).getPathUrl());
+
+
+                    }
+                });
+
+                holder.im_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        GlobalConstants.attach_ID = list.get(position).getAttachment_Id();
+                        GlobalConstants.position = String.valueOf(list.get(position));
+                        Log.i("getAttachment_Id()", list.get(position).getAttachment_Id());
+                        if (list.get(position).getAttachment_Id().equals("")) {
+                            GlobalConstants.from = "Repairpending_delete";
+                            GlobalConstants.image_name = fileName_from;
+
+//                                image_arraylist=new ArrayList<Image_Bean>();
+
+
+                            list.remove(list.get(position));
+
+                            verticalAdapter=new VerticalAdapter(encodeArray);
+                            LinearLayoutManager verticalLayoutmanager
+                                    = new LinearLayoutManager(Create_GateIn.this, LinearLayoutManager.VERTICAL, false);
+                            list_item.setLayoutManager(verticalLayoutmanager);
+                            list_item.setAdapter(verticalAdapter);
+
+                        } else {
+                            new Delete_Attachment().execute();
+
+                        }
+
+                    }
+                });
+
+
+            }
+            return convertView;
+        }
+
+
+    }
+
+    public class Delete_Attachment extends AsyncTask<Void, Void, Void> {
+        private JSONArray jsonarray;
+        private JSONArray LineItems_Json;
+        private ProgressDialog progressDialog;
+        private String getJsonObject;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Create_GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLRepairEstimate_Attachment_Delete);
+            httpPost.setHeader("Content-Type", "application/json");
+
+            try {
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("bv_strAttachmentId", GlobalConstants.attach_ID);
+
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", String.valueOf(jsonObject));
+                Log.d("req", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+
+                JSONObject d_JsonObject = jsonrootObject.getJSONObject("d");
+                getJsonObject = d_JsonObject.getString("Status");
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+
+            progressDialog.dismiss();
+            try {
+                if (getJsonObject.equalsIgnoreCase("Success")) {
+                    shortToast(getApplicationContext(), "Attachment Deleted Succesfully");
+
+                    for (int i = 0; i < encodeArray.size(); i++) {
+                        if (encodeArray.get(i).getAttachment_Id().equalsIgnoreCase(GlobalConstants.attach_ID)) {
+                            encodeArray.remove(i);
+                        }
+
+                    }
+                    verticalAdapter=new VerticalAdapter(encodeArray);
+                    LinearLayoutManager verticalLayoutmanager
+                            = new LinearLayoutManager(Create_GateIn.this, LinearLayoutManager.VERTICAL, false);
+                    list_item.setLayoutManager(verticalLayoutmanager);
+                    list_item.setAdapter(verticalAdapter);
+
+
+                } else {
+                    shortToast(getApplicationContext(), "Attachment Deleted Failed");
+
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
+    }
+
+    static class ViewHolder {
+        TextView equip_no, time, image_position, attachment_id, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, pre_id, pre_code, cust_code, type_id, code_id,
+                vechicle, transport, attachID, filename, Eir_no, heating_bt, rental_bt, remark, status, pre_adv_id, type;
+        CheckBox checkBox;
+        ImageView im_delete;
+
+        LinearLayout whole, LL_username;
+    }
 
 
 

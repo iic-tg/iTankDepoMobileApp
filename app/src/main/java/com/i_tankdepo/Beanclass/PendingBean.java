@@ -1,6 +1,8 @@
 package com.i_tankdepo.Beanclass;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Admin on 11/24/2016.
@@ -32,12 +34,119 @@ public class PendingBean implements Serializable {
     String prev_code;
     String prev_Id;
     String PR_ADVC_CD;
+    String URL;
 
     String GI_TRNSCTN_NO;
     String Attach_ID;
     String customerID;
+    String EIMNFCTR_DT;
+    String     EITR_WGHT_NC;
+    String      EIGRSS_WGHT_NC;
+    String      EICPCTY_NC;
+    String      EILST_SRVYR_NM;
+    String      EILST_TST_DT;
+    String      EILST_TST_TYP_ID;
+    String      EINXT_TST_DT;
+    String     EINXT_TST_TYP_ID;
+    String      EIRMRKS_VC;
 
+    public String getURL() {
+        return URL;
+    }
 
+    public void setURL(String URL) {
+        this.URL = URL;
+    }
+
+    public String getEIMNFCTR_DT() {
+        return EIMNFCTR_DT;
+    }
+
+    public void setEIMNFCTR_DT(String EIMNFCTR_DT) {
+        this.EIMNFCTR_DT = EIMNFCTR_DT;
+    }
+
+    public String getEITR_WGHT_NC() {
+        return EITR_WGHT_NC;
+    }
+
+    public void setEITR_WGHT_NC(String EITR_WGHT_NC) {
+        this.EITR_WGHT_NC = EITR_WGHT_NC;
+    }
+
+    public String getEIGRSS_WGHT_NC() {
+        return EIGRSS_WGHT_NC;
+    }
+
+    public void setEIGRSS_WGHT_NC(String EIGRSS_WGHT_NC) {
+        this.EIGRSS_WGHT_NC = EIGRSS_WGHT_NC;
+    }
+
+    public String getEICPCTY_NC() {
+        return EICPCTY_NC;
+    }
+
+    public void setEICPCTY_NC(String EICPCTY_NC) {
+        this.EICPCTY_NC = EICPCTY_NC;
+    }
+
+    public String getEILST_SRVYR_NM() {
+        return EILST_SRVYR_NM;
+    }
+
+    public void setEILST_SRVYR_NM(String EILST_SRVYR_NM) {
+        this.EILST_SRVYR_NM = EILST_SRVYR_NM;
+    }
+
+    public String getEILST_TST_DT() {
+        return EILST_TST_DT;
+    }
+
+    public void setEILST_TST_DT(String EILST_TST_DT) {
+        this.EILST_TST_DT = EILST_TST_DT;
+    }
+
+    public String getEILST_TST_TYP_ID() {
+        return EILST_TST_TYP_ID;
+    }
+
+    public void setEILST_TST_TYP_ID(String EILST_TST_TYP_ID) {
+        this.EILST_TST_TYP_ID = EILST_TST_TYP_ID;
+    }
+
+    public String getEINXT_TST_DT() {
+        return EINXT_TST_DT;
+    }
+
+    public void setEINXT_TST_DT(String EINXT_TST_DT) {
+        this.EINXT_TST_DT = EINXT_TST_DT;
+    }
+
+    public String getEINXT_TST_TYP_ID() {
+        return EINXT_TST_TYP_ID;
+    }
+
+    public void setEINXT_TST_TYP_ID(String EINXT_TST_TYP_ID) {
+        this.EINXT_TST_TYP_ID = EINXT_TST_TYP_ID;
+    }
+
+    public String getEIRMRKS_VC() {
+        return EIRMRKS_VC;
+    }
+
+    public void setEIRMRKS_VC(String EIRMRKS_VC) {
+        this.EIRMRKS_VC = EIRMRKS_VC;
+    }
+
+    List<String> list1 = new ArrayList<>();
+
+    public List<String> getList1() {
+        return list1;
+    }
+
+    public void setList1(List<String> list1) {
+        this.list1 = list1;
+    }
 
     public String getCustomerName() {
         return customerName;

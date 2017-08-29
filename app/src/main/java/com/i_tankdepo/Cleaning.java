@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.CleaningBean;
 import com.i_tankdepo.Beanclass.PendingBean;
@@ -63,6 +64,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -81,7 +83,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
     private ListView listview, searchlist;
     private RelativeLayout RL_musubmit, RL_pending,RL_heating,RL_Repair;
-    private ImageView menu, im_up, im_down, im_ok, im_close;
+    private ImageView menu, im_info_cleaning,im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
     LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
@@ -102,7 +104,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -115,6 +117,14 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     private String getEditText;
     private ScrollView scrollbar;
     private ImageView iv_changeOfStatus;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private String LastStatusDate,OriginalCleaningDate,Date_in;
 
 
     @Override
@@ -144,6 +154,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         heating.setVisibility(View.GONE);
         Leaktest.setVisibility(View.GONE);
         cleaning_text.setText("Cleaning");
+        cleaning_text.setGravity(Gravity.CENTER_HORIZONTAL);
         bt_gateout = (Button)findViewById(R.id.bt_gateout);
         bt_gateout.setVisibility(View.GONE);
 
@@ -241,10 +252,16 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Cleaning_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Cleaning_Dropdown_details().execute();
+                        new Get_Cleaning_details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_Cleaning_details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +303,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if (cd.isConnectingToInternet()) {
-                        new Get_Cleaning_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
@@ -424,6 +441,9 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="ACN";
+                GlobalConstants.status_id="3";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.bt_mysubmit:
@@ -441,10 +461,21 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }
+
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+
                 }else {
                     selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
@@ -454,6 +485,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -585,18 +617,76 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             cleaning_bean.setEquipno(jsonObject.getString("EquipmentNo"));
                             cleaning_bean.setEquipStatus(jsonObject.getString("EquipmentStatus"));
                             cleaning_bean.setEquipStatusType(jsonObject.getString("EquipmentStatusType"));
-                            cleaning_bean.setInDate(jsonObject.getString("InDate"));
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            OriginalCleaningDate=jsonObject.getString("OriginalCleaningDate");
+                            LastStatusDate=jsonObject.getString("LastStatusDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] Original_CleaningDate=OriginalCleaningDate.split(" ");
+                            String[] LastStatus_Date=LastStatusDate.split(" ");
+                            Date_in=In_date[0];
+                            OriginalCleaningDate=Original_CleaningDate[0];
+                            LastStatusDate=LastStatus_Date[0];
+
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0
+                                        ||Date_in.equals("") ) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (OriginalCleaningDate.equals(null) || OriginalCleaningDate.length() < 0
+                                        ||OriginalCleaningDate.equals("")||OriginalCleaningDate.equals("null") ) {
+
+                                    OriginalCleaningDate = "";
+                                } else {
+
+                                    OriginalCleaningDate = myFormat.format(fromUser.parse(OriginalCleaningDate));
+
+
+
+
+                                }if (LastStatusDate.equals(null) || LastStatusDate.length() < 0
+                                        ||LastStatusDate.equals("") ) {
+
+                                    LastStatusDate = "";
+                                } else {
+
+                                    LastStatusDate = myFormat.format(fromUser.parse(LastStatusDate));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+
+                            cleaning_bean.setInDate(Date_in);
+                            cleaning_bean.setOriginalCleaningDate(OriginalCleaningDate);
+                            cleaning_bean.setLastStatusDate(LastStatusDate);
+
                             cleaning_bean.setPrevoiusCargo(jsonObject.getString("PrevoiusCargo"));
-                            cleaning_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
                             cleaning_bean.setAdditionalCleaningBit(jsonObject.getString("AdditionalCleaningBit"));
                             cleaning_bean.setCleaningId(jsonObject.getString("CleaningId"));
                             cleaning_bean.setCleaningReferenceNo(jsonObject.getString("CleaningReferenceNo"));
                             cleaning_bean.setRemarks(jsonObject.getString("Remarks"));
-                            cleaning_bean.setOriginalCleaningDate(jsonObject.getString("OriginalCleaningDate"));
                             cleaning_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
                             cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
                             cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
                             cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
+                            cleaning_bean.setChemicalName(jsonObject.getString("ChemicalName"));
 
                             cleaning_arraylist.add(cleaning_bean);
 
@@ -759,11 +849,20 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                 String part1_time = parts[1];
                 System.out.println("from date after split" + part1_date);
 */
-                holder.equip_no.setText(userListBean.getEquipno() + "," + userListBean.getEquipStatusType());
+                holder.equip_no.setText(userListBean.getEquipno() );
                 holder.Cust_Name.setText(userListBean.getCustomerName());
                 holder.time.setText(userListBean.getInDate());
                 holder.previous_crg.setText(userListBean.getPrevoiusCargo());
                 holder.cleaningMethod.setText(userListBean.getCleaningmethod());
+                String additional_cleaning=list.get(position).getAdditionalCleaningBit();
+                if(additional_cleaning.equals("0"))
+                {
+                    holder.add_Cleaning .setText("No");
+                }else {
+                    holder.add_Cleaning .setText("Yes");
+
+
+                }
 
 
 
@@ -799,7 +898,6 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         GlobalConstants.equipment_no = list.get(position).getEquipno();
                         GlobalConstants.customer_name = list.get(position).getCustomerName();
                         GlobalConstants.customer_Id = list.get(position).getCustomerId();
-                        GlobalConstants.equip_status = list.get(position).getEquipStatus();
                         GlobalConstants.equip_status_type = list.get(position).getEquipStatusType();
                         GlobalConstants.indate = list.get(position).getInDate();
                         GlobalConstants.previous_cargo = list.get(position).getPrevoiusCargo();
@@ -813,6 +911,12 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                         GlobalConstants.cleaning_method = list.get(position).getCleaningmethod();
                         GlobalConstants.slab_rate = list.get(position).getSlabRate();
                         GlobalConstants.gi_trans_no = list.get(position).getGiTransactionNo();
+                        GlobalConstants.status = "CLN";
+                        GlobalConstants.equip_status = "CLN";
+                        GlobalConstants.equip_status_id = "5";
+//                        cleaning_bean.setChemicalName(jsonObject.getString("ChemicalName"));
+                        GlobalConstants.ChemicalName =  list.get(position).getChemicalName();
+
 
                         startActivity(i);
 
@@ -862,6 +966,176 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
     }
 
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Cleaning.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid) {
+
+
+            if (jsonarray != null)
+            {
+                if (dropdown_customer_list != null) {
+                    boxAdapter = new ListAdapter(Cleaning.this, products);
+                    searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                    searchView1.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void afterTextChanged(Editable arg0) {
+                            // TODO Auto-generated method stub
+                            String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                            boxAdapter.filter(text);
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                      int arg2, int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+
+
+                }
+        }
+            else
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Get_Cleaning_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -1073,7 +1347,13 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
 
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
 
           /*  for(int i=0;i<selected_member_arraylist.size();i++)
@@ -1290,6 +1570,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
                     }else {
@@ -1322,13 +1603,24 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             cleaning_bean.setSlabRate(jsonObject.getString("SlabRate"));
                             cleaning_bean.setGiTransactionNo(jsonObject.getString("GiTransactionNo"));
                             cleaning_bean.setCleaningmethod(jsonObject.getString("CleaningMethod"));
+                            cleaning_bean.setChemicalName(jsonObject.getString("ChemicalName"));
                             cleaning_arraylist.add(cleaning_bean);
 
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
@@ -1336,7 +1628,7 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
                             //update ui here
                             // display toast here
                             shortToast(getApplicationContext(),"No Records Found");
-
+                            listview.setVisibility(View.GONE);
 
                         }
                     });
@@ -1357,18 +1649,20 @@ public class Cleaning extends CommonActivity implements NavigationView.OnNavigat
         @Override
         protected void onPostExecute (Void aVoid){
 
+            if (jsonarray != null) {
 
+                if (cleaning_arraylist != null) {
+                    adapter = new UserListAdapter(Cleaning.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(cleaning_arraylist!=null)
-            {
-                adapter = new UserListAdapter(Cleaning.this, R.layout.cleaning_list_item_row, cleaning_arraylist);
-                listview.setAdapter(adapter);
+                } else {
+                    shortToast(getApplicationContext(), "No Records Found");
+                    listview.setVisibility(View.GONE);
 
-            }
-            else if(cleaning_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
+                }
+            } else {
+                shortToast(getApplicationContext(), "No Records Found");
+                listview.setVisibility(View.GONE);
 
             }
 

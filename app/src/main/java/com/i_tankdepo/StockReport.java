@@ -166,6 +166,9 @@ public class StockReport extends CommonActivity implements NavigationView.OnNavi
     public void onClick(View view) {
         switch (view.getId() ){
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
+                GlobalConstants.status_id="";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.status_home:

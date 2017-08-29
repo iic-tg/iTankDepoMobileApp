@@ -309,7 +309,7 @@
                                android:layout_height="match_parent"
                                android:layout_gravity="center"
                                android:background="@color/white"
-                               android:text="Preadvice"
+                               android:text="Pending"
                                android:textColor="@color/list_text"
                                android:layout_marginBottom="3dp"
                                android:id="@+id/bt_pending"

@@ -22,6 +22,16 @@ public class CleaningBean {
     String slabRate;
     String giTransactionNo;
     String Cleaningmethod;
+    String ChemicalName;
+
+
+    public String getChemicalName() {
+        return ChemicalName;
+    }
+
+    public void setChemicalName(String chemicalName) {
+        ChemicalName = chemicalName;
+    }
 
     public String getEquipno() {
         return equipno;

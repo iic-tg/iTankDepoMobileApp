@@ -461,17 +461,15 @@
 
 
                         </LinearLayout>
-                        <LinearLayout
+                        <EditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <EditText
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:textColor="@color/list_text"
-                                android:id="@+id/ed_remarks"/>
-                        </LinearLayout>
+                            android:textColor="@color/list_text"
+                            android:maxLength="500"
+                            android:singleLine="false"
+                            android:inputType="text|textNoSuggestions"
+                            android:id="@+id/ed_remarks"/>
+
 
                     </LinearLayout>
 

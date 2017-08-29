@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Admin on 12/23/2016.
@@ -88,7 +89,7 @@ public class LeakTestCreate extends CommonActivity {
     List<String> Eq_type = new ArrayList<>();
     List<String> depot = new ArrayList<>();
     List<String> location = new ArrayList<>();
-    private String EquipmentNo,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
+    private String EquipmentNo,new_gate_In_date,get_type,Customer,Location,cureentStatus,type,Depot,Indate,EquipmentNumber;
     private TextView tv_equip_no,tv_name,tv_testDate;
     private ImageView iv_changeOfStatus;
     private DBAdapter db;
@@ -183,9 +184,9 @@ public class LeakTestCreate extends CommonActivity {
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
         SimpleDateFormat time = new SimpleDateFormat("hh:mm");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
-
+        ed_testDate.setText(systemDate);
         get_switch_shellTest="False";
         switch_shellTest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -232,10 +233,7 @@ public class LeakTestCreate extends CommonActivity {
     }
 
 
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
-    }
+
 
     @Override
     public void onClick(View view) {
@@ -320,7 +318,8 @@ public class LeakTestCreate extends CommonActivity {
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case DATE_DIALOG_ID:
-
+                DatePickerDialog datePickerDialog = new DatePickerDialog(this, pickerListener, year, month, day);
+                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 // open datepicker dialog.
                 // set date picker for current date
                 // add pickerListener listner to date picker
@@ -337,7 +336,7 @@ public class LeakTestCreate extends CommonActivity {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -423,9 +422,29 @@ public class LeakTestCreate extends CommonActivity {
                             equipNoBean = new EquipNoBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
 
+                            Indate=jsonObject.getString("InDate");
+                            String[] In_date=Indate.split(" ");
+                            Indate=In_date[0];
+                            try {
+                                if (Indate.equals(null) || Indate.length() < 0) {
+
+                                    Indate = "";
+                                } else {
+
+                                    Indate = myFormat.format(fromUser.parse(Indate));
+
+                                }
+
+                            }catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                            Log.i("Indate",Indate);
                             equipNoBean.setEquip_no(jsonObject.getString("EQPMNT_NO"));
-                            equipNoBean.setInDate(jsonObject.getString("InDate"));
+                            equipNoBean.setInDate(Indate);
                             equipNoBean.setCurrentStatus(jsonObject.getString("CurrentStatus"));
                             equipNoBean.setType(jsonObject.getString("Type"));
                             equipNoBean.setCustomer(jsonObject.getString("Customer"));
@@ -433,7 +452,19 @@ public class LeakTestCreate extends CommonActivity {
                             equipNoBean.setYrdLocation(jsonObject.getString("YrdLocation"));
 
                             EquipmentNo = jsonObject.getString("EQPMNT_NO");
-                            Indate = jsonObject.getString("InDate");
+
+
+//                            Indate = jsonObject.getString("InDate");
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+
+                                }
+                            });
+
                             cureentStatus = jsonObject.getString("CurrentStatus");
                             type = jsonObject.getString("Type");
                             Customer = jsonObject.getString("Customer");
@@ -494,6 +525,8 @@ public class LeakTestCreate extends CommonActivity {
 
             if(dropdown_equipment_no_list!=null)
             {
+
+
                 worldlist.add(0,"Please Select");
                 ArrayAdapter<String> EquipmentNoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,worldlist);
                 EquipmentNoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -512,6 +545,7 @@ public class LeakTestCreate extends CommonActivity {
                             int Id_position =position -1;
                            // getTostatusID = ToStatusDropdownArrayList.get(Id_position).getCode();
                             get_type=equipNoBeanArrayList.get(Id_position).getType();
+                            new_gate_In_date=equipNoBeanArrayList.get(Id_position).getInDate();
                             Log.d("EQUIPMENT NUMBER",get_type);
                             getInDate = ed_in_Date.getText().toString();
                             getCust_Name =ed_customer.getText().toString();
@@ -740,9 +774,10 @@ public class LeakTestCreate extends CommonActivity {
             super.onPostExecute(aVoid);
             if(responseString!=null) {
                 if (responseString.equalsIgnoreCase("Success") ) {
-                    String[] parts = Indate.split(" ");
-                    String part1_date = parts[0];
-                    ed_in_Date.setText(part1_date);
+
+                            ed_in_Date.setText(new_gate_In_date);
+
+
                     ed_customer.setText(Customer);
                     ed_current_status.setText(cureentStatus);
 

@@ -135,6 +135,16 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:visibility="gone"
+            android:id="@+id/text_currency"
+            android:focusable="false"
+            android:gravity="bottom"
+            android:textColor="@color/list_text"
+            android:text="text1"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:id="@+id/tv_status"
             android:focusable="false"
             android:gravity="bottom"
@@ -252,6 +262,15 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:id="@+id/tv_text20"
+            android:focusable="false"
+            android:gravity="bottom"
+            android:textColor="@color/list_text"
+            android:text="text1"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:id="@+id/tv_text18"
             android:focusable="false"
             android:gravity="bottom"
@@ -270,7 +289,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:id="@+id/tv_text20"
+            android:id="@+id/tv_text20_"
             android:focusable="false"
             android:gravity="bottom"
             android:textColor="@color/list_text"
@@ -373,7 +392,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/LL_whole"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
 
 
@@ -459,7 +479,7 @@
                 android:focusable="false"
                 android:textColor="@color/list_text_date"
                 android:id="@+id/text4"
-                android:text="08:15 am"/>
+                android:text=""/>
 
 
         </LinearLayout>
@@ -472,24 +492,10 @@
             android:orientation="horizontal"
             android:id="@+id/LL_username"
             android:background="@color/white"
-            android:weightSum="4">
+            >
+
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5"
-                android:gravity="center|right"
-                android:textColor="@color/list_text_date"
-                android:text="Submitted By :"/>
-            <TextView
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center|right"
@@ -499,4 +505,19 @@
         </LinearLayout>
 
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/tv_status_cd"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/tv_status_id"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/tv_customer_id"/>
 </RelativeLayout>

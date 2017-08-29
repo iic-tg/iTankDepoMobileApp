@@ -68,30 +68,29 @@
          style="@style/View_vertical"
          />-->
     <LinearLayout
+        android:id="@+id/LL_heat_submit"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:id="@+id/LL_heat_submit"
-        android:orientation="vertical"
-        android:background="@color/submit">
+        android:background="@color/submit"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/heat_submit"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@android:color/transparent"
-            android:drawableTop="@mipmap/ic_submit"
-            android:gravity="center"
             android:drawableTint="@color/white"
-            />
+            android:drawableTop="@mipmap/ic_submit"
+            android:gravity="center" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/white"
             android:background="@android:color/transparent"
-            android:text="Submit"/>
+            android:gravity="center"
+            android:text="Submit"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -202,11 +201,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:gravity="center|left"
             android:id="@+id/tv_heating"
             android:textColor="@color/white"
+            android:singleLine="true"
+            android:textSize="12dp"
             android:background="@android:color/transparent"
-            android:text="Heating"/>
+            android:text=""/>
     </LinearLayout>
 
 

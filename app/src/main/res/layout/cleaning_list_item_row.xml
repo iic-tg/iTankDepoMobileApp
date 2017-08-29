@@ -297,20 +297,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:id="@+id/tv_cleaning_method"
-                android:textColor="@color/list_text_date"
-                android:gravity="center|right"
-                android:focusable="false"
-                android:text="17-OCt-16"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
                 android:gravity="center|right"
                 android:focusable="false"
                 android:textColor="@color/list_text_date"
                 android:id="@+id/tv_additional_cleraning"
-                android:text="Cleaning"/>
+                android:text=""/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:id="@+id/tv_cleaning_method"
+                android:textColor="@color/list_text_date"
+                android:gravity="center|right"
+                android:visibility="invisible"
+                android:focusable="false"
+                android:text="17-OCt-16"/>
+
 
 
         </LinearLayout>

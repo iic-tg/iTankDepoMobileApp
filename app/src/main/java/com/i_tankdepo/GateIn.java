@@ -52,6 +52,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
+import com.i_tankdepo.Beanclass.Image_Bean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.PendingBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -74,6 +76,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.Collection;
@@ -121,9 +125,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
     private UserListAdapter adapter;
     ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products_Cust ;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
+    List<String> selected_id_list = new ArrayList<String>();
+
     private JSONObject filenamejson;
     private String filename,attachID;
     private ProgressDialog progressDialog;
@@ -134,6 +141,14 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
     private String getEditText;
     private ScrollView scrollbar;
     private int totalCount;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private String Date_in;
 
 
     @Override
@@ -243,10 +258,17 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_GateIn_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_GateIn_Dropdown_details().execute();
+                        new Get_GateIn_details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_GateIn_details().execute();
+
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +310,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_GateIn_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
@@ -427,19 +449,22 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="IND";
+                GlobalConstants.status_id="1";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.add:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
+                startActivity(new Intent(getApplicationContext(),Ocr_Activity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));
                 break;
             case R.id.footer_add_btn:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
+                startActivity(new Intent(getApplicationContext(),Ocr_Activity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));
 
                 break;
             case R.id.tv_add:
-                startActivity(new Intent(getApplicationContext(),CaptureActivity.class));
+                startActivity(new Intent(getApplicationContext(),Ocr_Activity.class));
                 GlobalConstants.pendingcount= Integer.parseInt(String.valueOf(pending_arraylist.size()));
 
 
@@ -464,19 +489,31 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
                 }else {
                     selected_name.clear();
+                    selected_id_list.clear();
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
                                 String[] set = new String[2];
                                 set[0] = p.name;
+                                set[1] = p.Id;
 
                                 selected_name.add(set[0]);
+                                selected_id_list.add(set[1]);
+
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
 
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
@@ -489,15 +526,16 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
                                 //shortToast(getApplicationContext(),p.name);
 
-                                if (cd.isConnectingToInternet()) {
-                                    new Get_GateIn_SearchList_details().execute();
-                                } else {
-                                    shortToast(getApplicationContext(), "Please check Your Internet Connection");
-                                }
+
                             } else {
                                 shortToast(getApplicationContext(), "Please Select CustomerName");
                             }
                         }
+                    }
+                    if (cd.isConnectingToInternet()) {
+                        new Get_GateIn_SearchList_details().execute();
+                    } else {
+                        shortToast(getApplicationContext(), "Please check Your Internet Connection");
                     }
                 }
 
@@ -628,7 +666,33 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                                 pending_bean.setStatus(jsonObject.getString("EQPMNT_STTS_CD"));
                                 pending_bean.setRental_bt(jsonObject.getString("RNTL_BT"));
                                 pending_bean.setRemark(jsonObject.getString("RMRKS_VC"));
-                                pending_bean.setDate(jsonObject.getString("GTN_DT"));
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("GTN_DT");
+                            String[] In_date=Date_in.split(" ");
+                            Date_in=In_date[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                                 pending_bean.setDate(Date_in);
+//                                pending_bean.setDate(jsonObject.getString("GTN_DT"));
                                 pending_bean.setGateIn_Id(jsonObject.getString("GTN_ID"));
                                 pending_bean.setTime(jsonObject.getString("GTN_TM"));
                                 pending_bean.setCust_code(jsonObject.getString("CSTMR_ID"));
@@ -808,16 +872,12 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             }else {
 
                 userListBean = list.get(position);
-                String[] parts = userListBean.getDate().split(" ");
-                String part1_date = parts[0];
-                String part1_time = parts[1];
-                System.out.println("from date after split" + part1_date);
 
                 holder.equip_no.setText(userListBean.getEquipmentNo() + "," + userListBean.getType());
                 holder.Cust_Name.setText(userListBean.getCustomerName());
-                holder.time.setText(part1_date + " & " + userListBean.getTime());
+                holder.time.setText(userListBean.getPreviousCargo());
 
-                holder.previous_crg.setText(userListBean.getPreviousCargo());
+//                holder.previous_crg.setText(userListBean.getPreviousCargo());
                 holder.attachmentstatus.setText(userListBean.getAttachmentStatus());
                 holder.gateIn_Id.setText(userListBean.getGateIn_Id());
                 holder.location.setText(userListBean.getLocation());
@@ -1057,7 +1117,8 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                     GlobalConstants.attachmentStatus=attachmentstatus;
                     GlobalConstants.attach_filename = filename;
                     GlobalConstants.attach_ID = attachID;
-
+                    ArrayList<Image_Bean> encodeArray=new ArrayList();
+                    GlobalConstants.multiple_encodeArray=encodeArray;
                     startActivity(i);
                 }else {
                     shortToast(getApplicationContext(),Lock_return_Message);
@@ -1194,7 +1255,183 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
             if(pending_accordion_arraylist!=null)
             {
-                boxAdapter = new ListAdapter(GateIn.this, products);
+
+
+                    boxAdapter = new ListAdapter(GateIn.this, products);
+                    searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                    searchView1.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void afterTextChanged(Editable arg0) {
+                            // TODO Auto-generated method stub
+                            String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                            boxAdapter.filter(text);
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                      int arg2, int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+
+
+            }
+            else if(pending_accordion_arraylist.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+                LL_hole.setVisibility(View.GONE);
+                no_data.setVisibility(View.VISIBLE);
+                searchlist.setVisibility(View.GONE);
+
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
+
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(GateIn.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products_Cust = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products_Cust.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(GateIn.this, products_Cust);
                 searchlist.setAdapter(boxAdapter);
 
              /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
@@ -1225,13 +1462,9 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
 
             }
-            else if(pending_accordion_arraylist.size()<1)
+            else if(dropdown_customer_list.size()<1)
             {
                 shortToast(getApplicationContext(),"Data Not Found");
-                LL_hole.setVisibility(View.GONE);
-                no_data.setVisibility(View.VISIBLE);
-                searchlist.setVisibility(View.GONE);
-
 
             }
 
@@ -1240,6 +1473,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
         }
 
     }
+
     public class ListAdapter extends BaseAdapter {
         private final ArrayList<Product> arraylist;
         Context ctx;
@@ -1288,7 +1522,13 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
             cbBuy.setOnCheckedChangeListener(myCheckChangList);
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
             return view;
         }
@@ -1412,6 +1652,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                             shortToast(getApplicationContext(), "No Records Found");
+                            listview.setVisibility(View.GONE);
                         }
                     });
                 }else {
@@ -1461,10 +1702,20 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         pending_arraylist.add(pending_bean);
 
 
+                        runOnUiThread(new Runnable(){
+
+                            @Override
+                            public void run(){
+                                //update ui here
+                                // display toast here
+                                listview.setVisibility(View.VISIBLE);
+
+                            }
+                        });
 
                     }
                 }
-            }else if(jsonarray.length()<1){
+            }else {
                 runOnUiThread(new Runnable(){
 
                     @Override
@@ -1472,7 +1723,7 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
                         //update ui here
                         // display toast here
                         shortToast(getApplicationContext(),"No Records Found");
-
+                        listview.setVisibility(View.GONE);
 
                     }
                 });
@@ -1495,17 +1746,19 @@ public class GateIn extends CommonActivity implements NavigationView.OnNavigatio
 
 
         progressDialog.dismiss();
+        if(jsonarray!=null) {
+            if (pending_arraylist != null) {
+                adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
+                listview.setAdapter(adapter);
 
-        if(pending_arraylist!=null)
-        {
-            adapter = new UserListAdapter(GateIn.this, R.layout.list_item_row, pending_arraylist);
-            listview.setAdapter(adapter);
+            } else if (pending_arraylist.size() < 1) {
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
 
-        }
-        else if(pending_arraylist.size()<1) {
+            }
+        }else {
             shortToast(getApplicationContext(), "Data Not Found");
-
-
+            listview.setVisibility(View.GONE);
         }
     }
 

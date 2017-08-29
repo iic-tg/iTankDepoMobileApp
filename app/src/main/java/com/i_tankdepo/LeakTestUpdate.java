@@ -49,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -169,10 +170,21 @@ public class LeakTestUpdate extends CommonActivity{
         String[] parts = TestDate.split(" ");
         String part1_date = parts[0];
 
+        SimpleDateFormat fromUser = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String createddate = null;
+        try {
+            createddate = myFormat.format(fromUser.parse(part1_date));
 
-        text1.setText(Cust_Name+" , "+Equip_NO+" , "+Type);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Log.i("date", createddate);
+
+
+        text1.setText(Cust_Name + " , " + Equip_NO + " , " + Type);
         text2.setText(NoofTimesGenerated);
-        ed_testDate.setText(part1_date);
+        ed_testDate.setText(createddate);
         ed_relief_value1.setText(relief_value1);
         ed_relief_value2.setText(relief_value2);
         ed_press_guage1.setText(pressureGauge1);
@@ -248,10 +260,6 @@ public class LeakTestUpdate extends CommonActivity{
 
     }
 
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
-    }
 
 
     @Override
@@ -305,16 +313,17 @@ public class LeakTestUpdate extends CommonActivity{
 
     @Override
     protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
         switch (id) {
             case DATE_DIALOG_ID:
-
-                // open datepicker dialog.
-                // set date picker for current date
-                // add pickerListener listner to date picker
-                return new DatePickerDialog(this, pickerListener, year, month,day);
-
-
-
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMaxDate(new Date().getTime());
+                return dialog;
+            //end changes...
         }
         return null;
     }
@@ -324,7 +333,7 @@ public class LeakTestUpdate extends CommonActivity{
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -340,7 +349,7 @@ public class LeakTestUpdate extends CommonActivity{
             month = selectedMonth;
             day   = selectedDay;
 
-            view.setMinDate(System.currentTimeMillis() - 1000);
+            //  view.setMinDate(System.currentTimeMillis() - 1000);
 
 
                 ed_testDate.setText(formatDate(year, month, day));

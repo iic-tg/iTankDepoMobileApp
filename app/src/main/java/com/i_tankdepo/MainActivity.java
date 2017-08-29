@@ -3,6 +3,7 @@ package com.i_tankdepo;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -34,6 +35,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
 import com.i_tankdepo.SQLite.DBAdapter;
+import com.i_tankdepo.Util.Utility;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -57,6 +59,7 @@ import static com.i_tankdepo.SQLite.DBAdapter.KEY_ROWID;
 public class MainActivity extends CommonActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static boolean isCamPermission;
     Toolbar toolbar;
     private ImageView menu, up, down, iv_back, iv_changeOfStatus;
     private DrawerLayout drawer;
@@ -70,7 +73,8 @@ public class MainActivity extends CommonActivity
     private ImageView im_gatein, im_gateout, im_heating, im_cleaning, im_Inspection, im_repair, im_leaktest, im_equipement, im_stock, home_changeStatus;
     private Button gateoutCount, gateInCount, heatingCount, cleaningCount, leaktestCount, repairCount, inspectionCount;
     private String gateIn, gateout, cleaning, heating, inspection, leaktest;
-    private String GateinCount, GateOutCount, CleaningCount, InspectionCount, HeatingCount, LeaktestCount, authorization;
+    private String GateinCount, GateOutCount, CleaningCount, InspectionCount, HeatingCount, Repair_Est,Repair_Appr,Repair_Com,Survey_Com,
+            RepairCount,LeaktestCount, authorization;
     private DBAdapter db;
     private long Total_Count;
     private Cursor c;
@@ -87,6 +91,17 @@ public class MainActivity extends CommonActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        isCamPermission = sp2.getBoolean(SP2_CAMERA_PERM_DENIED, false);
+        if(checkWriteExternalPermission()!=true) {
+            boolean result = Utility.checkPermission(MainActivity.this, isCamPermission);
+        }
+
+
+
+
+
 
         db = new DBAdapter(MainActivity.this);
 
@@ -235,7 +250,7 @@ public class MainActivity extends CommonActivity
         navigationView.setNavigationItemSelectedListener(this);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -248,6 +263,14 @@ public class MainActivity extends CommonActivity
         }
     }
 
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        finish();
+        startActivity(getIntent());
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -306,6 +329,8 @@ public class MainActivity extends CommonActivity
 
         switch (view.getId()) {
             case R.id.home_changeStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
                 startActivity(new Intent(getApplicationContext(), ChangeOfStatus.class));
                 break;
             case R.id.LL_GateIn:
@@ -327,7 +352,12 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(), LeakTest.class));
                 break;
             case R.id.LL_Repair:
-//                startActivity(new Intent(getApplicationContext(),RepairEstimatePending.class));
+
+                GlobalConstants.repair_est_count=Repair_Est;
+                GlobalConstants.repair_app_count=Repair_Appr;
+                GlobalConstants.repair_com_count=Repair_Com;
+                GlobalConstants.survey_com_count=Survey_Com;
+                startActivity(new Intent(getApplicationContext(),Repair_MainActivity.class));
                 break;
             case R.id.LL_History:
                 startActivity(new Intent(getApplicationContext(), EquipmentHistory.class));
@@ -336,6 +366,8 @@ public class MainActivity extends CommonActivity
                 startActivity(new Intent(getApplicationContext(), StockReport.class));
                 break;
             case R.id.LL_change_status:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
                 startActivity(new Intent(getApplicationContext(), ChangeOfStatus.class));
                 break;
         }
@@ -363,7 +395,7 @@ public class MainActivity extends CommonActivity
                 .build();
     }
 
-    @Override
+  /*  @Override
     public void onStart() {
         super.onStart();
 
@@ -382,7 +414,7 @@ public class MainActivity extends CommonActivity
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }
-
+*/
     public class Post_Role_Based extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
         private JSONObject jsonResp;
@@ -395,6 +427,12 @@ public class MainActivity extends CommonActivity
             progressDialog.setMessage("Please Wait...");
             progressDialog.setIndeterminate(false);
             progressDialog.setCancelable(false);
+
+            if (! isFinishing()) {
+
+                progressDialog.show();
+
+            }
 //            if ((progressDialog != null) && progressDialog.isShowing()) {
             progressDialog.show();
 //            }
@@ -417,7 +455,7 @@ public class MainActivity extends CommonActivity
             try {
                 JSONObject jsonObject = new JSONObject();
 
-                jsonObject.put("RL_ID", RoleID);
+                jsonObject.put("RL_ID", sp.getString(SP_ROLE_ID,"role_Id"));
                 jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
 
 
@@ -428,9 +466,23 @@ public class MainActivity extends CommonActivity
                 String resp = EntityUtils.toString(httpEntity);
 
                 Log.d("responce", resp);
+                Log.d("req_roll", String.valueOf(jsonObject));
                 JSONObject jsonrootObject = new JSONObject(resp);
                 JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
 
+
+                /* "GateinCount": 9,
+                    "GateoutCount": 1,
+                    "CleaningCount": 116,
+                    "RepairEstimateCount": 7,
+                    "RepairApprovalCount": 21,
+                    "RepairCompletionCount": 10,
+                    "SurveyCompletionCount": 2,
+                    "RepairCount": 109,
+                    "InspectionCount": 17,
+                    "HeatingCount": 41,
+                    "LeakTestCount": 24,
+                    "Status": "Success"*/
 
                 jsonArray = getJsonObject.getJSONArray("RoleDetails");
 
@@ -440,6 +492,11 @@ public class MainActivity extends CommonActivity
                 InspectionCount = getJsonObject.getString("InspectionCount");
                 HeatingCount = getJsonObject.getString("HeatingCount");
                 LeaktestCount = getJsonObject.getString("LeakTestCount");
+                RepairCount = getJsonObject.getString("RepairCount");
+                Repair_Est = getJsonObject.getString("RepairEstimateCount");
+                Repair_Appr = getJsonObject.getString("RepairApprovalCount");
+                Repair_Com = getJsonObject.getString("RepairCompletionCount");
+                Survey_Com = getJsonObject.getString("SurveyCompletionCount");
                /* authorization = getJsonObject.getString("Status");
                 Log.d("error...",authorization);*/
 
@@ -614,7 +671,9 @@ public class MainActivity extends CommonActivity
             inspectionCount.setText(InspectionCount);
             cleaningCount.setText(CleaningCount);
             leaktestCount.setText(LeaktestCount);
+            repairCount.setText(RepairCount);
 
+            repairCount.setVisibility(View.VISIBLE);
             gateInCount.setVisibility(View.VISIBLE);
             gateoutCount.setVisibility(View.VISIBLE);
             heatingCount.setVisibility(View.VISIBLE);
@@ -623,9 +682,10 @@ public class MainActivity extends CommonActivity
             leaktestCount.setVisibility(View.VISIBLE);
 
 //        }
+            if ((progressDialog != null) && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
 
-
-            progressDialog.dismiss();
 
         }
     }
@@ -1182,6 +1242,12 @@ public class MainActivity extends CommonActivity
         }
     }
 
+    private boolean checkWriteExternalPermission()
+    {
 
+        String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
+        int res = getApplicationContext().checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
 
 }

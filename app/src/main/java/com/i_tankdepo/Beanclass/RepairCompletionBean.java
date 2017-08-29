@@ -21,6 +21,15 @@ public class RepairCompletionBean implements Serializable {
     String Time;
     String Remarks;
     String attchement;
+    String Activity_Date;
+
+    public String getActivity_Date() {
+        return Activity_Date;
+    }
+
+    public void setActivity_Date(String activity_Date) {
+        Activity_Date = activity_Date;
+    }
 
     public String getEquip_no() {
         return Equip_no;

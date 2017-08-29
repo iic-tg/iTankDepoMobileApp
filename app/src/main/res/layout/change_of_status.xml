@@ -108,13 +108,15 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/sp_current_status"
                                 android:textColor="@color/list_text"
+                                android:visibility="invisible"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
-                            <!-- <EditText
+                             <EditText
                                  android:layout_width="match_parent"
-                                 android:id="@+id/ed_customer"
-                                 android:layout_height="match_parent"
+                                 android:id="@+id/ed_current_status"
+                                 android:layout_height="wrap_content"
                                  android:padding="5dp"
                                  android:lines="1"
+                                 android:focusable="false"
                                  android:singleLine="true"
                                  android:paddingRight="10dp"
                                  android:layout_marginRight="4dp"
@@ -124,8 +126,8 @@
                                  android:layout_width="20dp"
                                  android:layout_height="20dp"
                                  android:layout_marginTop="5dp"
-                                 android:src="@mipmap/ic_down_dark"
-                                 android:layout_alignParentRight="true"/>-->
+                                 android:src="@mipmap/ic_down"
+                                 android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
                         <RelativeLayout
@@ -138,7 +140,27 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/sp_status_customer"
                                 android:textColor="@color/list_text"
+                                android:visibility="invisible"
                                 style="@style/Widget.AppCompat.Spinner.Underlined"></Spinner>
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:lines="1"
+                                android:singleLine="true"
+                                android:paddingRight="10dp"
+                                android:layout_marginRight="4dp"
+                                android:hint=""
+                                android:focusable="false"
+                                android:id="@+id/ed_status_cust"/>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@mipmap/ic_down"
+                                android:id="@+id/im_endDate"
+                                android:tint="@color/black"
+                                android:layout_alignParentRight="true"/>
                         </RelativeLayout>
 
                     </LinearLayout>
@@ -196,7 +218,14 @@
                             android:layout_marginRight="5dp"
                             android:background="@color/Title"
                             android:src="@mipmap/ic_search"/>
-
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|left"
+                            android:paddingLeft="5dp"
+                            android:visibility="gone"
+                            android:id="@+id/tv_status_no"
+                            />
 
                     </RelativeLayout>
 

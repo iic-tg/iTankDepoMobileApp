@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private Toolbar toolbar;
     private ImageView menu, equip_up, equip_down, im_ok, im_close,im_date,iv_back,im_search;
     private LinearLayout LL_hole,accordian_LL,LL_status_submit,LL_run;
-    private TextView tv_toolbarTitle,list_noData;
+    private TextView tv_status_no,tv_toolbarTitle,list_noData;
     private Button status_home,status_refresh,status_submit;
     private Spinner sp_current_status,sp_status_customer,sp_to_status;
     private EditText ed_equip_no,ed_date, ed_time,ed_remarks,ed_to_statusDate,searchView2;
@@ -120,6 +121,9 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     private ImageView iv_changeOfStatus;
     private String ToStatus;
     private String Letter,Number;
+    int count=0;
+    int count_status=0;
+    private EditText ed_status_cust,ed_current_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +147,8 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         LL_hole = (LinearLayout)findViewById(R.id.LL_hole);
         accordian_LL = (LinearLayout)findViewById(R.id.accordian_LL);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
+        tv_status_no = (TextView) findViewById(R.id.tv_status_no);
+        tv_status_no.setText(GlobalConstants.status_id);
         tv_toolbarTitle.setText("Change of Status");
         status_list_view=(ListView)findViewById(R.id.status_list_view);
 
@@ -152,7 +158,23 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         LL_run.setVisibility(View.GONE);
 
         sp_current_status = (Spinner)findViewById(R.id.sp_current_status);
+
         sp_status_customer = (Spinner)findViewById(R.id.sp_status_customer);
+        ed_status_cust = (EditText)findViewById(R.id.ed_status_cust);
+        ed_current_status = (EditText)findViewById(R.id.ed_current_status);
+        ed_current_status.setText(GlobalConstants.status);
+        ed_current_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sp_current_status.performClick();
+            }
+        });
+        ed_status_cust.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sp_status_customer.performClick();
+            }
+        });
         sp_to_status = (Spinner)findViewById(R.id.sp_to_status);
 
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
@@ -165,6 +187,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         accordian_LL.setVisibility(View.GONE);
 
         ed_equip_no = (EditText)findViewById(R.id.ed_equip_no);
+        ed_equip_no.setText(GlobalConstants.equipment_no);
         ed_to_statusDate = (EditText)findViewById(R.id.ed_to_statusDate);
         ed_remarks = (EditText)findViewById(R.id.ed_remarks);
         im_close = (ImageView) findViewById(R.id.im_close);
@@ -249,10 +272,16 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         }
 
         sp_status_customer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                getCustomer = sp_status_customer.getSelectedItem().toString();
-                getCustomerID= CustomerDropdownArrayList.get(position).getCode();
+                if(count!=0) {
+                    getCustomer = sp_status_customer.getSelectedItem().toString();
+                    getCustomerID = CustomerDropdownArrayList.get(position).getCode();
+                    ed_status_cust.setText(getCustomer);
+                }
+                count++;
             }
 
             @Override
@@ -262,17 +291,25 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
         });
 
         sp_current_status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                getCurrentStatusName = sp_current_status.getSelectedItem().toString();
+                if(count_status!=0) {
+                    getCurrentStatusName = sp_current_status.getSelectedItem().toString();
 
-                getCurrentStatusID=currentStatusBeanArrayList.get(position).getID();
-
-                if(cd.isConnectingToInternet()){
-                    new Get_To_Status().execute();
-                }else{
-                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    getCurrentStatusID = currentStatusBeanArrayList.get(position).getID();
+                    ed_current_status.setText(getCurrentStatusName);
+                    tv_status_no.setText(getCurrentStatusID);
+                    if(cd.isConnectingToInternet()){
+                        new Get_To_Status().execute();
+                    }else{
+                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    }
                 }
+
+                count_status++;
+
+
             }
 
             @Override
@@ -318,10 +355,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
 
     }
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
-    }
+
 
     @Override
     public void onClick(View view) {
@@ -343,15 +377,18 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
             case R.id.im_close:
                 LL_hole.setVisibility(View.GONE);
                 accordian_LL.setVisibility(View.GONE);
-                ed_equip_no.setText("");
-
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_search:
                 equip_up.setVisibility(View.VISIBLE);
                 LL_hole.setVisibility(View.VISIBLE);
                 accordian_LL.setVisibility(View.VISIBLE);
                 equip_down.setVisibility(View.GONE);
+                getCurrentStatusName = ed_current_status.getText().toString();
+                getCurrentStatusID = tv_status_no.getText().toString();
                 getEquipmentNo = ed_equip_no.getText().toString();
+                String current_status = ed_current_status.getText().toString();
 
                 if(getEquipmentNo.length()> 0 && getEquipmentNo.length()<11 ){
 
@@ -360,8 +397,15 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 }else
                 {
                     if (cd.isConnectingToInternet()){
-                        new Get_To_Status().execute();
-                        new Get_ChangeOfStatus_details().execute();
+
+                        if(!current_status.equals("")||! getEquipmentNo.equals(""))
+                        {
+                            new Get_To_Status().execute();
+                            new Get_ChangeOfStatus_details().execute();
+                        }else {
+                            shortToast(getApplicationContext(),"Current Status or Equipment No is required to perform Change of Status Operation");
+
+                        }
                     }else{
                         shortToast(getApplicationContext(),"Please check your Internet Connection..!");
                     }
@@ -389,7 +433,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 break;
             case R.id.status_submit:
                 selected_list=new ArrayList<>();
-                getCurrentStatusName = sp_current_status.getSelectedItem().toString();
+                getCurrentStatusName = ed_current_status.getText().toString();
                 getCustomer = sp_status_customer.getSelectedItem().toString();
                 getdate=ed_to_statusDate.getText().toString();
                 getremark=ed_remarks.getText().toString();
@@ -415,21 +459,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
                                   //   selected_name.add(set[0]);
                                   LL_hole.setVisibility(View.GONE);
-                                  if (cd.isConnectingToInternet()) {
-                                      if(getTostatusName.equalsIgnoreCase("Please select"))
-                                      {
-                                          shortToast(getApplicationContext(), "Please Select To Status..!");
-                                          LL_hole.setVisibility(View.VISIBLE);
 
-                                      }else
-                                      {
-                                          new Post_COS_details().execute();
-                                          LL_hole.setVisibility(View.GONE);
-
-                                      }
-                                  } else {
-                                      shortToast(getApplicationContext(), "Please check Your Internet Connection");
-                                  }
 
                                   /*if (ToStatus.equalsIgnoreCase("Please Select")) {
 
@@ -450,6 +480,22 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                               }
                           }
                       }
+
+                      if (cd.isConnectingToInternet()) {
+                          if(getTostatusName.equalsIgnoreCase("Please select"))
+                          {
+                              shortToast(getApplicationContext(), "Please Select To Status..!");
+                              LL_hole.setVisibility(View.VISIBLE);
+
+                          }else
+                          {
+                              new Post_COS_details().execute();
+                              LL_hole.setVisibility(View.GONE);
+
+                          }
+                      } else {
+                          shortToast(getApplicationContext(), "Please check Your Internet Connection");
+                      }
                   }
 
               }catch (Exception e){
@@ -466,16 +512,17 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
     }
     @Override
     protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
         switch (id) {
             case DATE_DIALOG_ID:
-
-                // open datepicker dialog.
-                // set date picker for current date
-                // add pickerListener listner to date picker
-                return new DatePickerDialog(this, pickerListener, year, month,day);
-
-
-
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMaxDate(new Date().getTime());
+                return dialog;
+            //end changes...
         }
         return null;
     }
@@ -501,7 +548,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
             month = selectedMonth;
             day   = selectedDay;
 
-            view.setMinDate(System.currentTimeMillis() - 1000);
+           // view.setMinDate(System.currentTimeMillis() - 1000);
 
 
             ed_to_statusDate.setText(formatDate(year, month, day));
@@ -658,18 +705,42 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
             {
 //                UserListAdapter adapter = new UserListAdapter(Create_GateIn.this, R.layout.list_item_row, pending_arraylist);
 //                listview.setAdapter(adapter);
+
+                for(int i=0;i<dropdown_currentStatus_list.size();i++)
+                {
+                    try {
+                        Log.i("GlobalConstants.status",GlobalConstants.status);
+                        if (GlobalConstants.status.equals(dropdown_currentStatus_list.get(i))) {
+
+                            int index = dropdown_currentStatus_list.indexOf(GlobalConstants.status);
+                            dropdown_currentStatus_list.remove(index);
+
+                            dropdown_currentStatus_list.add(0, GlobalConstants.status);
+                            System.out.println("after appartmentArray" + dropdown_currentStatus_list.size());
+
+                            System.out.println("appartmentArray" + currentStatusBeanArrayList.get(index));
+                            CurrentStatusBean appartment_nameBean = currentStatusBeanArrayList.get(index);
+                            currentStatusBeanArrayList.remove(index);
+                            currentStatusBeanArrayList.add(0, appartment_nameBean);
+                      /*  appartmentArray.remove(appartmentArray.get(i));
+                        appartmentArray.add(0, appartmentname);*/
+                            //  tv_toolbarTitle.setBackgroundColor(Color.BLUE);
+
+
+                        }
+                    }catch (Exception e)
+                    {
+                        Log.i("Exception", String.valueOf(e));
+                    }
+                }
+
                 ArrayAdapter<String> CargoAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.spinner_text,dropdown_currentStatus_list);
                 CargoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sp_current_status.setAdapter(CargoAdapter);
 
 
 
-                /*if(cd.isConnectingToInternet()){
-                    new Get_To_Status().execute();
-                    equip_up.setVisibility(View.GONE);
-                }else{
-                    shortToast(getApplicationContext(),"Please check your Internet Connection..!");
-                }*/
+
 
             }
             else
@@ -1007,8 +1078,20 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
                 jsonObject.put("StatusID",getCurrentStatusID);
                 jsonObject.put("EquipmentNo",getEquipmentNo);
-                jsonObject.put("CustomerID",getCustomerID);
+                try {
+                    if (getCustomerID.equals("")) {
+                        jsonObject.put("CustomerID", "");
 
+                    }else
+                    {
+                        jsonObject.put("CustomerID", getCustomerID);
+
+                    }
+                }catch (Exception e)
+                {
+                    jsonObject.put("CustomerID", "");
+
+                }
 
                /* JSONObject jsonObject1 = new JSONObject();
                 jsonObject1.put("Credentials",jsonObject);*/
@@ -1477,7 +1560,21 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
 
                 jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
                 jsonObject.put("EquipmentNo", getEquipmentNo);
-                jsonObject.put("CustomerID", getCustomerID);
+                try {
+                    if (getCustomerID.equals("")) {
+                        jsonObject.put("CustomerID", "");
+
+                    }else
+                    {
+                        jsonObject.put("CustomerID", getCustomerID);
+
+                    }
+                }catch (Exception e)
+                {
+                    jsonObject.put("CustomerID", "");
+
+                }
+
                 jsonObject.put("StatusID", getCurrentStatusID);
                 jsonObject.put("EquipmentListCOS", SearchValuesObject);
 
@@ -1548,6 +1645,7 @@ public class ChangeOfStatus extends CommonActivity implements NavigationView.OnN
                 if(returnstatus.equalsIgnoreCase("Success"))
                 {
                     shortToast(getApplicationContext(),"Status Changed Successfully..!");
+                    ed_equip_no.setText("");
                     finish();
                     startActivity(getIntent());
                 }else

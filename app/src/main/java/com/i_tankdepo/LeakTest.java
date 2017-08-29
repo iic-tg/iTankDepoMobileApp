@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.HeatingAccordionBean;
 import com.i_tankdepo.Beanclass.LeakTestBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -83,6 +84,14 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
 
     private TextView tv_type,tv_equip_no,tv_cargo,tv_cust_name,tv_toolbarTitle, tv_search_options,no_data,list_noData;
     LinearLayout LL_hole, LL_heat_submit,LL_search_Value,LL_heat;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+
 
     private Spinner sp_fields, sp_operator;
     private String fieldItems, opratorItems;
@@ -92,7 +101,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     private ViewHolder holder;
     private ArrayList<HeatingAccordionBean> heating_accordion_arraylist = new ArrayList<>();
     private HeatingAccordionBean heating_accordion_bean;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products;
     private ArrayList<Product> box;
     private ListAdapter boxAdapter;
     private UserListAdapter adapter;
@@ -150,6 +159,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         heating.setVisibility(View.GONE);
         Leaktest = (Button)findViewById(R.id.leakTest);
         leakTest_text = (TextView)findViewById(R.id.tv_heating);
+        leakTest_text.setGravity(Gravity.CENTER_HORIZONTAL);
         leakTest_text.setText("Add New");
         cleaning = (Button)findViewById(R.id.cleaning);
         inspection = (Button)findViewById(R.id.inspection);
@@ -216,12 +226,17 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
 
                 if(cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_LeakTest_filter().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_LeakTest_filter().execute();
+                        new Get_Leaktest_details().execute();
+                    }
                 }else
                 {
                     shortToast(getApplicationContext(),"Please check Your Internet Connection");
                 }
-
+                new Get_Leaktest_details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -262,7 +277,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_LeakTest_filter().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please Check your Internet Connection..!");
@@ -400,6 +415,9 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="";
+                GlobalConstants.status_id="";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.heat_home:
@@ -413,6 +431,14 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.tv_heating:
                 startActivity(new Intent(getApplicationContext(),LeakTestCreate.class));
@@ -432,6 +458,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -914,6 +941,176 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         LinearLayout whole,LL_username;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(LeakTest.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(LeakTest.this, products);
+                search_heat_list.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Get_LeakTest_filter extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -1130,14 +1327,15 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
 
 
 
-          /*  for(int i=0;i<selected_member_arraylist.size();i++)
-            {
-                if(p.memberId .equalsIgnoreCase(String.valueOf(selected_member_arraylist.get(i).getId())))
-                {
-                    cbBuy.setChecked(true);
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
                 }
             }
-*/
+
+
             return view;
         }
 
@@ -1260,9 +1458,7 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
 //                        longToast("This takes longer than usual time. Connection Timeout !");
 
                                 shortToast(getApplicationContext(), "No Records Found");
-
-
-
+                                listview.setVisibility(View.GONE);
 
                             }
                         });
@@ -1313,17 +1509,29 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
                             leakTest_bean.setSTM_TB_TST(jsonObject.getString("STM_TB_TST"));
                             leakTest_bean.setYRD_LCTN(jsonObject.getString("YRD_LCTN"));
                             leakTest_arraylist.add(leakTest_bean);
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
+
 
 
                         }
@@ -1346,20 +1554,22 @@ public class LeakTest extends CommonActivity implements NavigationView.OnNavigat
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (leakTest_arraylist != null) {
+                    adapter = new LeakTest.UserListAdapter(LeakTest.this, R.layout.list_item_row, leakTest_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(leakTest_arraylist!=null)
+                } else  {
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
+
+                }
+            }else
             {
-                adapter = new LeakTest.UserListAdapter(LeakTest.this, R.layout.list_item_row, leakTest_arraylist);
-                listview.setAdapter(adapter);
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
 
             }
-            else if(leakTest_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
-            }
-
             progressDialog.dismiss();
 
         }

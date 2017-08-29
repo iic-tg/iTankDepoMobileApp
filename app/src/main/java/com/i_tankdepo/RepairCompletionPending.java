@@ -41,6 +41,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
+import com.i_tankdepo.Beanclass.Image_Bean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.RepairCompletionBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -61,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -89,13 +92,21 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist = new ArrayList<>();
     private PendingAccordionBean pending_accordion_bean;
     private ViewHolder holder;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+
 
     private Spinner fieldSpinner, operatorSpinner;
     private String fieldItems, opratorItems;
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -108,6 +119,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
     private String getEditText;
     private ScrollView scrollbar;
     private ImageView iv_changeOfStatus;
+    private String Activity_Date;
 
 
     @Override
@@ -127,7 +139,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
         searchView2 = (EditText) findViewById(R.id.searchView2);
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
-        no_data = (TextView)findViewById(R.id.no_data);
+        no_data = (TextView)findViewById(R.id.list_noData);
         repair_estimate_text = (TextView)findViewById(R.id.tv_heating);
         repair_estimate_text.setText("Repair Completion");
         no_data.setVisibility(View.GONE);
@@ -147,6 +159,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
         repair_approval = (Button)findViewById(R.id.repair_approval);
         repair_approval.setVisibility(View.GONE);
         repair_completion = (Button)findViewById(R.id.repair_completion);
+        repair_completion.setOnClickListener(this);
         survey_completion = (Button)findViewById(R.id.survey_completion);
         survey_completion.setVisibility(View.GONE);
 
@@ -164,7 +177,6 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
 
-        LL_heat.setAlpha(0.5f);
         LL_heat.setClickable(false);
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
@@ -233,10 +245,16 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Survey_Completion_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Survey_Completion_Dropdown_details().execute();
+                        new Get_Repair_Completion_details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_Repair_Completion_details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -278,7 +296,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     if(cd.isConnectingToInternet()) {
-                        new Get_Survey_Completion_Dropdown_details().execute();
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
                     }else{
                         shortToast(getApplicationContext(),"Please check Your Internet Connection");
@@ -418,6 +436,9 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="RPC";
+                GlobalConstants.status_id="11";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.bt_mysubmit:
@@ -427,6 +448,9 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
             case R.id.heat_home:
                 startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 break;
+            case R.id.repair_completion:
+                startActivity(new Intent(getApplicationContext(),Repair_MainActivity.class));
+                break;
             case R.id.heat_refresh:
                 finish();
                 startActivity(getIntent());
@@ -435,6 +459,13 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
@@ -447,6 +478,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -572,8 +604,33 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                             repair_completion_bean = new RepairCompletionBean();
                             jsonObject = jsonarray.getJSONObject(i);
 
+//                            Chk_Activity_Date
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+
+                            Activity_Date=jsonObject.getString("Chk_Activity_Date");
+                            String[] split_LastStatusDate=Activity_Date.split(" ");
+                            Activity_Date=split_LastStatusDate[0];
+                            try {
+                                if (Activity_Date.equals(null) || Activity_Date.length() < 0) {
+
+                                    Activity_Date = "";
+                                } else {
+
+                                    Activity_Date = myFormat.format(fromUser.parse(Activity_Date));
 
 
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                            repair_completion_bean.setActivity_Date(Activity_Date);
                             repair_completion_bean.setCustomer(jsonObject.getString("Customer"));
                             repair_completion_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
                             repair_completion_bean.setType(jsonObject.getString("Type"));
@@ -711,15 +768,18 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                 holder.whole = (LinearLayout) convertView.findViewById(R.id.LL_whole);
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
-                holder.time = (TextView) convertView.findViewById(R.id.text3);
-                holder.previous_crg = (TextView) convertView.findViewById(R.id.text4);
+                holder.estimate_no = (TextView) convertView.findViewById(R.id.text3);
+                holder.estimated_manHr = (TextView) convertView.findViewById(R.id.text4);
+                holder.previous_crg = (TextView) convertView.findViewById(R.id.tv_location);
                 holder.code = (TextView) convertView.findViewById(R.id.text5);
-                holder.estimate_no = (TextView) convertView.findViewById(R.id.tv_type);
+                holder.time = (TextView) convertView.findViewById(R.id.tv_type);
                 holder.repair_type = (TextView) convertView.findViewById(R.id.text6);
                 holder.location = (TextView) convertView.findViewById(R.id.tv_code);
-                holder.estimated_manHr = (TextView) convertView.findViewById(R.id.tv_location);
+                holder.equip_type = (TextView) convertView.findViewById(R.id.text10);
                 holder.actual_manHr = (TextView) convertView.findViewById(R.id.tv_transport);
                 holder.completionDate = (TextView) convertView.findViewById(R.id.tv_vechicle);
+                holder.status = (TextView) convertView.findViewById(R.id.tv_status);
+                holder.attachment = (TextView) convertView.findViewById(R.id.tv_text13);
 
                 holder.remark = (TextView) convertView.findViewById(R.id.text8);
 //                holder.attach = (TextView) convertView.findViewById(R.id.tv_pre_adv_id);
@@ -727,7 +787,6 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
 
                /* holder.repairTypeId = (TextView) convertView.findViewById(R.id.text7);
                 holder.invoicePartyID = (TextView) convertView.findViewById(R.id.text10);
-                holder.invoicePartyCD = (TextView) convertView.findViewById(R.id.tv_status);
                 holder.invoicePartyName = (TextView) convertView.findViewById(R.id.text9);
                 holder.repairEstimateID = (TextView) convertView.findViewById(R.id.tv_pre_code);
                 holder.gi_transNo = (TextView) convertView.findViewById(R.id.tv_pre_id);
@@ -772,9 +831,10 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                 holder.estimated_manHr.setText(userListBean.getEstimatedManHor());
 
                 holder.actual_manHr.setText(userListBean.getActualManHour());
+                holder.equip_type.setText(userListBean.getType());
                 holder.completionDate.setText(userListBean.getCompletionDate());
                 holder.remark.setText(userListBean.getRemarks());
-                holder.attach.setText(userListBean.getAttchement());
+                holder.attachment.setText(userListBean.getAttchement());
 
 
 
@@ -798,8 +858,12 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                         GlobalConstants.completion_date = list.get(position).getCompletionDate();
                         GlobalConstants.time = list.get(position).getTime();
                         GlobalConstants.remark = list.get(position).getRemarks();
-//                        GlobalConstants.attachment = list.get(position).getAttchement();
-
+                        GlobalConstants.repair_completion_arraylist = repair_completion_arraylist;
+                        GlobalConstants.ActivityDate = list.get(position).getActivity_Date();
+                        GlobalConstants.from= "Repairpending";
+                        ArrayList<Image_Bean> encodeArray=new ArrayList();
+                        GlobalConstants.multiple_encodeArray=encodeArray;
+                        startActivity(new Intent(getApplicationContext(),Repair_Completions_wizard.class));
 
 
 
@@ -835,13 +899,183 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
 
     }
     static class ViewHolder {
-        TextView equip_no,time,date,Cust_Name,previous_crg, code, status, estimate_no, location, repair_type, estimated_manHr, actual_manHr, completionDate,
+        TextView equip_no,time,date,Cust_Name,previous_crg, code, status, estimate_no, equip_type,location, repair_type, estimated_manHr, actual_manHr, completionDate,
                  attach,remark,gi_transNo,attachment;
         CheckBox checkBox;
 
         LinearLayout whole,LL_username;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(RepairCompletionPending.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(RepairCompletionPending.this, products);
+                searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
 
     public class Get_Survey_Completion_Dropdown_details extends AsyncTask<Void, Void, Void> {
@@ -1051,7 +1285,13 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
             cbBuy.setOnCheckedChangeListener(myCheckChangList);
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
             return view;
         }
@@ -1173,6 +1413,7 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
                     }else {
@@ -1200,19 +1441,30 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
                             repair_completion_bean.setRemarks(jsonObject.getString("Remarks"));
                             repair_completion_bean.setAttchement(jsonObject.getString("attchement"));
                             repair_completion_arraylist.add(repair_completion_bean);
+                            runOnUiThread(new Runnable(){
+
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1235,18 +1487,19 @@ public class RepairCompletionPending extends CommonActivity implements Navigatio
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (repair_completion_arraylist != null) {
+                    adapter = new UserListAdapter(RepairCompletionPending.this, R.layout.list_item_row, repair_completion_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(repair_completion_arraylist!=null)
-            {
-                adapter = new UserListAdapter(RepairCompletionPending.this, R.layout.list_item_row, repair_completion_arraylist);
-                listview.setAdapter(adapter);
+                } else  {
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
 
-            }
-            else if(repair_completion_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
+                }
+            }else{
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
             }
 
             progressDialog.dismiss();

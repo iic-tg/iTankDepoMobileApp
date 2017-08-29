@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.RepairBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -62,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -70,37 +72,43 @@ import java.util.Locale;
 import static com.i_tankdepo.R.layout.heating;
 
 
-
-
 public class SurveyCompletionMySubmit extends CommonActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
 
     private ListView listview, searchlist;
-    private RelativeLayout RL_musubmit, RL_pending,RL_heating,RL_Repair;
+    private RelativeLayout RL_musubmit, RL_pending, RL_heating, RL_Repair;
     private ImageView menu, im_up, im_down, im_ok, im_close;
     String equip_no, Cust_Name, previous_crg, attachmentstatus, gateIn_Id, code, location, Gate_In, cust_code, type_id, code_id, pre_code, pre_id,
             vechicle, transport, Eir_no, heating_bt, rental_bt, remark, type, status, date, time, pre_adv_id;
-    LinearLayout LL_hole, LL_Submit, LL_footer_delete,LL_search_Value,LL_heat_submit,LL_heat,LL_username;
-    Button repair_approval,survey_completion,repair_completion,repair_estimate,bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print,cleaning,heating,inspection;
+    LinearLayout LL_hole, LL_Submit, LL_footer_delete, LL_search_Value, LL_heat_submit, LL_heat, LL_username;
+    Button repair_approval, survey_completion, repair_completion, repair_estimate, bt_pending, bt_add, bt_mysubmit, bt_home, bt_refresh, im_add, im_print, cleaning, heating, inspection;
     private String[] Fields = {"Customer", "Equipment No", "Type", "Previous Cargo"};
     private String[] Operators = {"Contains", "Does Not Contain", "Equals", "Not Similar", "Similar"};
     ArrayList<String> selectedlist = new ArrayList<>();
-    private TextView tv_type,tv_equip_no,tv_cargo,tv_cust_name,tv_toolbarTitle, tv_add, tv_search_options,no_data,repair_estimate_text,list_noData;
+    private TextView tv_type, tv_equip_no, tv_cargo, tv_cust_name, tv_toolbarTitle, tv_add, tv_search_options, no_data, repair_estimate_text, list_noData;
     private Intent mServiceIntent;
     private ArrayList<RepairBean> repair_arraylist = new ArrayList<>();
     private RepairBean repair_bean;
     private ArrayList<PendingAccordionBean> pending_accordion_arraylist = new ArrayList<>();
     private PendingAccordionBean pending_accordion_bean;
     private ViewHolder holder;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+
 
     private Spinner fieldSpinner, operatorSpinner;
     private String fieldItems, opratorItems;
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products ;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -113,6 +121,8 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
     private String getEditText;
     private ScrollView scrollbar;
     private ImageView iv_changeOfStatus;
+    private ImageView more_info;
+    private String Date_in,SurveyCompletionDate,LastStatusDate;
 
 
     @Override
@@ -132,29 +142,28 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         searchView2 = (EditText) findViewById(R.id.searchView2);
         searchView1 = (EditText) findViewById(R.id.searchView1);
         ed_text = (EditText) findViewById(R.id.editText2);
-        no_data = (TextView)findViewById(R.id.no_data);
-        repair_estimate_text = (TextView)findViewById(R.id.tv_heating);
+        no_data = (TextView) findViewById(R.id.no_data);
+        repair_estimate_text = (TextView) findViewById(R.id.tv_heating);
         repair_estimate_text.setText("Survey Completion");
         no_data.setVisibility(View.GONE);
-        iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
+        iv_changeOfStatus = (ImageView) findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
 
 
         bt_pending = (Button) findViewById(R.id.bt_pending);
         RL_musubmit = (RelativeLayout) findViewById(R.id.RL_mysubmit);
 
-        RL_heating =(RelativeLayout)findViewById(R.id.RL_heating);
-        RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
+        RL_heating = (RelativeLayout) findViewById(R.id.RL_heating);
+        RL_Repair = (RelativeLayout) findViewById(R.id.RL_Repair);
         RL_heating.setVisibility(View.GONE);
-
-        repair_estimate = (Button)findViewById(R.id.repair_estimate);
+        repair_estimate = (Button) findViewById(R.id.repair_estimate);
         repair_estimate.setVisibility(View.GONE);
-        repair_approval = (Button)findViewById(R.id.repair_approval);
+        repair_approval = (Button) findViewById(R.id.repair_approval);
         repair_approval.setVisibility(View.GONE);
-        repair_completion = (Button)findViewById(R.id.repair_completion);
+        repair_completion = (Button) findViewById(R.id.repair_completion);
         repair_completion.setVisibility(View.GONE);
-        survey_completion = (Button)findViewById(R.id.survey_completion);
-
+        survey_completion = (Button) findViewById(R.id.survey_completion);
+        survey_completion.setOnClickListener(this);
 
         LL_hole = (LinearLayout) findViewById(R.id.LL_hole);
         LL_heat_submit = (LinearLayout) findViewById(R.id.LL_heat_submit);
@@ -170,10 +179,9 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         LL_heat_submit.setAlpha(0.5f);
         LL_heat_submit.setClickable(false);
 
-        LL_heat.setAlpha(0.5f);
-        LL_heat.setClickable(false);
+        LL_heat.setOnClickListener(this);
 
-        list_noData = (TextView)findViewById(R.id.list_noData);
+        list_noData = (TextView) findViewById(R.id.list_noData);
         list_noData.setVisibility(View.GONE);
 
         RL_pending = (RelativeLayout) findViewById(R.id.RL_pending);
@@ -190,15 +198,15 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         operatorSpinner = (Spinner) findViewById(R.id.sp_operators);
         tv_toolbarTitle = (TextView) findViewById(R.id.tv_Title);
         tv_search_options = (TextView) findViewById(R.id.tv_search_options);
-        LL_search_Value = (LinearLayout)findViewById(R.id.LL_search_Value);
-        scrollbar = (ScrollView)findViewById(R.id.scrollbar);
+        LL_search_Value = (LinearLayout) findViewById(R.id.LL_search_Value);
+        scrollbar = (ScrollView) findViewById(R.id.scrollbar);
         LL_search_Value.setVisibility(View.GONE);
         tv_toolbarTitle.setText("Survey Completion");
 
-        tv_cust_name = (TextView)findViewById(R.id.tv_cust_name);
-        tv_cargo = (TextView)findViewById(R.id.tv_cargo);
-        tv_equip_no = (TextView)findViewById(R.id.tv_equip_no);
-        tv_type = (TextView)findViewById(R.id.tv_type);
+        tv_cust_name = (TextView) findViewById(R.id.tv_cust_name);
+        tv_cargo = (TextView) findViewById(R.id.tv_cargo);
+        tv_equip_no = (TextView) findViewById(R.id.tv_equip_no);
+        tv_type = (TextView) findViewById(R.id.tv_type);
         tv_cargo.setVisibility(View.GONE);
         tv_type.setVisibility(View.GONE);
         tv_equip_no.setVisibility(View.GONE);
@@ -240,10 +248,16 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_survey_completion_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_survey_completion_Dropdown_details().execute();
+                        new Get_RepairApproval_MySubmit_Details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_RepairApproval_MySubmit_Details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -256,8 +270,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         });
 
 
-
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         ArrayAdapter<String> FieldsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Fields);
@@ -265,7 +277,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
         FieldsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fieldSpinner.setAdapter(FieldsAdapter);
-
 
 
         ArrayAdapter<String> OperatorAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_text, Operators);
@@ -284,11 +295,11 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     tv_cargo.setVisibility(View.GONE);
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
-                    if(cd.isConnectingToInternet()) {
-                        new Get_survey_completion_Dropdown_details().execute();
+                    if (cd.isConnectingToInternet()) {
+                        new Create_GateIn_Customer_details().execute();
                         LL_hole.setVisibility(View.GONE);
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Equipment No")) {
                     fieldItems = "EQPMNT_NO";
@@ -296,10 +307,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.VISIBLE);
                     tv_cargo.setVisibility(View.GONE);
-                    if(cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Type")) {
                     fieldItems = "EQPMNT_TYP_CD";
@@ -307,10 +318,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     tv_type.setVisibility(View.VISIBLE);
                     tv_equip_no.setVisibility(View.GONE);
                     tv_cargo.setVisibility(View.GONE);
-                    if(cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 } else if (fieldItems.equalsIgnoreCase("Previous Cargo")) {
                     fieldItems = "PRDCT_DSCRPTN_VC";
@@ -318,10 +329,10 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                     tv_cargo.setVisibility(View.VISIBLE);
-                    if(cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 }
             }
@@ -339,23 +350,23 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
                 if (opratorItems.equalsIgnoreCase("Does Not Contain")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 } else if (opratorItems.equalsIgnoreCase("Not Similar")) {
                     opratorItems = "";
-                    if(cd.isConnectingToInternet()) {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
-                }else{
-                    if(cd.isConnectingToInternet()) {
+                } else {
+                    if (cd.isConnectingToInternet()) {
                         new Get_survey_completion_Dropdown_details().execute();
-                    }else{
-                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
+                    } else {
+                        shortToast(getApplicationContext(), "Please check your Internet Connection..!");
                     }
                 }
 
@@ -390,8 +401,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
     }
 
 
-
-
     private final TextWatcher editTextWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -408,10 +417,9 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             LL_hole.setVisibility(View.VISIBLE);
             if (cd.isConnectingToInternet()) {
                 new Get_survey_completion_Dropdown_details().execute();
-            }else if(getEditText.length()==0){
+            } else if (getEditText.length() == 0) {
 
-            }
-            else {
+            } else {
                 shortToast(getApplicationContext(), "Please check Your Internet Connection");
             }
 
@@ -420,17 +428,22 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
     @Override
     public void onClick(View view) {
-        switch (view.getId())
-        {
+        switch (view.getId()) {
             case R.id.iv_changeOfStatus:
-                startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="SRV";
+                GlobalConstants.status_id="14";
+                startActivity(new Intent(getApplicationContext(), ChangeOfStatus.class));
                 break;
             case R.id.bt_pending:
                 finish();
-                startActivity(new Intent(getApplicationContext(),SurveyCompletionPending.class));
+                startActivity(new Intent(getApplicationContext(), SurveyCompletionPending.class));
                 break;
             case R.id.heat_home:
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                break;
+            case R.id.survey_completion:
+                startActivity(new Intent(getApplicationContext(), Repair_MainActivity.class));
                 break;
             case R.id.heat_refresh:
                 finish();
@@ -440,11 +453,18 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
-                if(boxAdapter.getBox().size()==0) {
+                if (boxAdapter.getBox().size() == 0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
-                }else {
+                } else {
                     for (Product p : boxAdapter.getBox()) {
                         if (p.box) {
                             if (p.box == true) {
@@ -452,6 +472,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -493,12 +514,12 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
         if (id == R.id.nav_home) {
             finish();
-            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
             // Handle the camera action
-        }else if (id == R.id.nav_changePwd) {
-            startActivity(new Intent(getApplicationContext(),Change_Password.class));
+        } else if (id == R.id.nav_changePwd) {
+            startActivity(new Intent(getApplicationContext(), Change_Password.class));
         } else if (id == R.id.nav_Logout) {
-            if(mServiceIntent!=null)
+            if (mServiceIntent != null)
                 getApplicationContext().stopService(mServiceIntent);
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean(SP_LOGGED_IN, false);
@@ -539,12 +560,12 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLSurveyCompletionList);
             httpPost.setHeader("Content-Type", "application/json");
 
-            try{
+            try {
                 JSONObject jsonObject = new JSONObject();
 
-                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
-                jsonObject.put("Mode","edit");
-                jsonObject.put("PageName","Survey Completion");
+                jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
+                jsonObject.put("Mode", "edit");
+                jsonObject.put("PageName", "Survey Completion");
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -561,7 +582,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 jsonarray = getJsonObject.getJSONArray("Response");
                 if (jsonarray != null) {
 
-                    System.out.println("Am HashMap list"+jsonarray);
+                    System.out.println("Am HashMap list" + jsonarray);
                     if (jsonarray.length() < 1) {
                         runOnUiThread(new Runnable() {
                             public void run() {
@@ -569,7 +590,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                                 shortToast(getApplicationContext(), "No Records Found");
                             }
                         });
-                    }else {
+                    } else {
 
                         repair_arraylist = new ArrayList<RepairBean>();
 
@@ -580,12 +601,59 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                             jsonObject = jsonarray.getJSONObject(i);
 
 
-
                             repair_bean.setCustomer(jsonObject.getString("Customer"));
                             repair_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            repair_bean.setInDate(jsonObject.getString("InDate"));
+                            repair_bean.setCustomer_Id(jsonObject.getString("CSTMR_ID"));
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            LastStatusDate=jsonObject.getString("LastStatusDate");
+                            SurveyCompletionDate=jsonObject.getString("SurveyCompletionDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] split_LastStatusDate=LastStatusDate.split(" ");
+                            String[] split_SurveyCompletionDate=SurveyCompletionDate.split(" ");
+                            Date_in=In_date[0];
+                            LastStatusDate=split_LastStatusDate[0];
+                            SurveyCompletionDate=split_SurveyCompletionDate[0];
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (LastStatusDate.equals(null) || LastStatusDate.length() < 0) {
+
+                                    LastStatusDate = "";
+                                } else {
+
+                                    LastStatusDate = myFormat.format(fromUser.parse(LastStatusDate));
+
+                                }if (SurveyCompletionDate.equals(null) || SurveyCompletionDate.length() < 0) {
+
+                                    SurveyCompletionDate = "";
+                                } else {
+
+                                    SurveyCompletionDate = myFormat.format(fromUser.parse(SurveyCompletionDate));
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+                            repair_bean.setInDate(Date_in);
+                            repair_bean.setLastStatusDate(LastStatusDate);
+                            repair_bean.setSurvey_completionDate(SurveyCompletionDate);
+
                             repair_bean.setPrevious_cargo(jsonObject.getString("PreviousCargo"));
-                            repair_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
                             repair_bean.setLoborRate(jsonObject.getString("LaborRate"));
                             repair_bean.setLastTestType(jsonObject.getString("LastTestType"));
                             repair_bean.setNextTestType(jsonObject.getString("NextTestType"));
@@ -610,21 +678,21 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                             repair_bean.setLineItems(jsonObject.getString("LineItems"));
                             repair_bean.setAttachment(jsonObject.getString("attchement"));
                             repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
+                            repair_bean.setCurencyCD(jsonObject.getString("CurencyCD"));
 
                             repair_arraylist.add(repair_bean);
 
 
-
                         }
                     }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
+                } else if (jsonarray.length() < 1) {
+                    runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run(){
+                        public void run() {
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "No Records Found");
 
 
                         }
@@ -643,15 +711,15 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
             return null;
         }
+
         @Override
-        protected void onPostExecute (Void aVoid){
+        protected void onPostExecute(Void aVoid) {
 
 
             if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            if(repair_arraylist!=null)
-            {
+            if (repair_arraylist != null) {
                 adapter = new UserListAdapter(SurveyCompletionMySubmit.this, R.layout.list_item_row, repair_arraylist);
                 listview.setAdapter(adapter);
 
@@ -676,10 +744,8 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                         // TODO Auto-generated method stub
                     }
                 });
-            }
-            else if(repair_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
+            } else if (repair_arraylist.size() < 1) {
+                shortToast(getApplicationContext(), "Data Not Found");
 
 
             }
@@ -695,6 +761,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         int resource;
         private RepairBean userListBean;
         int lastPosition = -1;
+
         public UserListAdapter(Context context, int resource, ArrayList<RepairBean> list) {
             this.context = context;
             this.list = list;
@@ -758,8 +825,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 holder.party_appRef = (TextView) convertView.findViewById(R.id.tv_text16);
                 holder.surveyor_name = (TextView) convertView.findViewById(R.id.tv_text17);
                 holder.username = (TextView) convertView.findViewById(R.id.tv_username);
-
-
+                holder.currency = (TextView) convertView.findViewById(R.id.text_currency);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -767,23 +833,23 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            if (list.size() < 1){
+            if (list.size() < 1) {
                 Toast.makeText(getApplicationContext(), "NO DATA FOUND", Toast.LENGTH_LONG).show();
-            }else {
+            } else {
 
                 userListBean = list.get(position);
 
 
-
                 holder.equip_no.setText(userListBean.getEquip_no());
 //                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
-                holder.Cust_Name.setText(userListBean.getCustomer());
+                holder.Cust_Name.setText(userListBean.getCustomer()+", "+userListBean.getPrevious_cargo());
                 holder.time.setText(userListBean.getInDate());
                 holder.previous_crg.setText(userListBean.getPrevious_cargo());
-                holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
+                holder.username.setText(sp.getString(SP_USER_ID, "user_Id"));
 
 
                 holder.loborRate.setText(userListBean.getLoborRate());
+                holder.currency.setText(userListBean.getCurencyCD());
                 holder.lastStatusDate.setText(userListBean.getLastStatusDate());
                 holder.lastTestType.setText(userListBean.getLastTestType());
                 holder.nextTestType.setText(userListBean.getNextTestType());
@@ -811,8 +877,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 holder.repairEstimateNo.setText(userListBean.getRepairEstimateNo());
 
 
-
-
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -820,6 +884,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
                         GlobalConstants.indate = list.get(position).getInDate();
+                        GlobalConstants.customer_Id = list.get(position).getCustomer_Id();
                         GlobalConstants.previous_cargo = list.get(position).getPrevious_cargo();
                         GlobalConstants.lastStatusDate = list.get(position).getLastStatusDate();
                         GlobalConstants.lobor_rate = list.get(position).getLoborRate();
@@ -842,11 +907,13 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                         GlobalConstants.Party_AppRef = list.get(position).getParty_appRef();
                         GlobalConstants.revisionNo = list.get(position).getRevision_no();
                         GlobalConstants.Surveyor_name = list.get(position).getSurveyor_name();
-                        GlobalConstants.Survey_CompletionDate= list.get(position).getSurvey_completionDate();
-                        GlobalConstants.lineItems= list.get(position).getLineItems();
-                        GlobalConstants.attchement= list.get(position).getAttachment();
+                        GlobalConstants.Survey_CompletionDate = list.get(position).getSurvey_completionDate();
+                        GlobalConstants.lineItems = list.get(position).getLineItems();
+                        GlobalConstants.attchement = list.get(position).getAttachment();
                         GlobalConstants.repairEstimateNo= list.get(position).getRepairEstimateNo();
-
+                        GlobalConstants.currency = list.get(position).getCurencyCD();
+                        GlobalConstants.from = "MySubmitRepair";
+                        startActivity(new Intent(getApplicationContext(), Survey_Completion_wizard.class));
 
 
                     }
@@ -866,14 +933,14 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 list_noData.setVisibility(View.GONE);*/
             } else {
                 for (RepairBean wp : arraylist) {
-                    if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getEquip_no().toLowerCase(Locale.getDefault()).contains(charText)||
-                            wp.getPrevious_cargo().toLowerCase(Locale.getDefault()).contains(charText)||
+                    if (wp.getCustomer().toLowerCase(Locale.getDefault()).contains(charText) ||
+                            wp.getEquip_no().toLowerCase(Locale.getDefault()).contains(charText) ||
+                            wp.getPrevious_cargo().toLowerCase(Locale.getDefault()).contains(charText) ||
                             wp.getInDate().toLowerCase(Locale.getDefault()).contains(charText)
                             ) {
                         list.add(wp);
                         /*listview.setVisibility(View.VISIBLE);*/
-                    }else{
+                    } else {
                        /* list_noData.setVisibility(View.VISIBLE);
                         listview.setVisibility(View.GONE);*/
                     }
@@ -884,16 +951,186 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
 
     }
+
     static class ViewHolder {
-        TextView username,equip_no,time,date,Cust_Name,previous_crg,loborRate,lastStatusDate,lastTestType,lastTestDate,nextTestType,nextTestDate,lastSurveyor,val_PrdForTest,
-                repairTypeId,repairTypeCd,remark,invoicePartyCD,invoicePartyID,invoicePartyName,gi_transNo,repairEstimateID,revisionNo,
-                cust_appRef,approvalDate,party_appRef,surveyor_name,survey_completion_date,lineItems,attachment,repairEstimateNo;
+        TextView currency,username, equip_no, time, date, Cust_Name, previous_crg, loborRate, lastStatusDate, lastTestType, lastTestDate, nextTestType, nextTestDate, lastSurveyor, val_PrdForTest,
+                repairTypeId, repairTypeCd, remark, invoicePartyCD, invoicePartyID, invoicePartyName, gi_transNo, repairEstimateID, revisionNo,
+                cust_appRef, approvalDate, party_appRef, surveyor_name, survey_completion_date, lineItems, attachment, repairEstimateNo;
         CheckBox checkBox;
 
-        LinearLayout whole,LL_username;
+        LinearLayout whole, LL_username;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(SurveyCompletionMySubmit.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(SurveyCompletionMySubmit.this, products);
+                searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
     public class Get_survey_completion_Dropdown_details extends AsyncTask<Void, Void, Void> {
         ProgressDialog progressDialog;
@@ -921,16 +1158,15 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             HttpPost httpPost = new HttpPost(ConstantValues.baseURLSurveyCompletionFilter);
             httpPost.setHeader("Content-Type", "application/json");
 
-            try{
+            try {
                 JSONObject jsonObject = new JSONObject();
 
-                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("filterCondition", opratorItems);
                 jsonObject.put("filterValue", getEditText);
                 jsonObject.put("Mode", "edit");
-                jsonObject.put("PageName","Survey Completion");
-
+                jsonObject.put("PageName", "Survey Completion");
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -948,7 +1184,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 jsonarray = getJsonObject.getJSONArray("ListGateInss");
                 if (jsonarray != null) {
 
-                    System.out.println("Am HashMap list"+jsonarray);
+                    System.out.println("Am HashMap list" + jsonarray);
                     if (jsonarray.length() < 1) {
                         runOnUiThread(new Runnable() {
                             public void run() {
@@ -959,7 +1195,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
                             }
                         });
-                    }else {
+                    } else {
 
                         pending_accordion_arraylist = new ArrayList<>();
 
@@ -970,17 +1206,17 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                             jsonObject = jsonarray.getJSONObject(i);
 
                             pending_accordion_bean.setValues(jsonObject.getString("Values"));
-                            products.add(new Product(jsonObject.getString("Values"),false));
+                            products.add(new Product(jsonObject.getString("Values"), false));
 
                             pending_accordion_arraylist.add(pending_accordion_bean);
 
                         }
                     }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
+                } else if (jsonarray.length() < 1) {
+                    runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run(){
+                        public void run() {
                             //update ui here
                             // display toast here
 //                            shortToast(getApplicationContext(),"No Records Found.");
@@ -1003,16 +1239,14 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
             return null;
         }
+
         @Override
-        protected void onPostExecute (Void aVoid){
+        protected void onPostExecute(Void aVoid) {
 
 
-
-            if(pending_accordion_arraylist!=null)
-            {
+            if (pending_accordion_arraylist != null) {
                 boxAdapter = new ListAdapter(SurveyCompletionMySubmit.this, products);
                 searchlist.setAdapter(boxAdapter);
-
 
 
                 searchView1.addTextChangedListener(new TextWatcher() {
@@ -1038,12 +1272,8 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 });
 
 
-
-
-            }
-            else if(pending_accordion_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
+            } else if (pending_accordion_arraylist.size() < 1) {
+                shortToast(getApplicationContext(), "Data Not Found");
                 LL_hole.setVisibility(View.GONE);
                 no_data.setVisibility(View.VISIBLE);
                 searchlist.setVisibility(View.GONE);
@@ -1056,6 +1286,7 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
         }
 
     }
+
     public class ListAdapter extends BaseAdapter {
         private final ArrayList<Product> arraylist;
         Context ctx;
@@ -1104,7 +1335,13 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             cbBuy.setOnCheckedChangeListener(myCheckChangList);
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
 
             return view;
         }
@@ -1152,7 +1389,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
     }
 
 
-
     public class Get_Survey_Completion_SearchList_details extends AsyncTask<Void, Void, Void> {
         private JSONArray jsonarray;
         private JSONArray preadvicejsonlist;
@@ -1184,30 +1420,26 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
             httpPost.setHeader("Content-Type", "application/json");
             //     httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
 //            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
-            try{
+            try {
                 JSONObject jsonObject = new JSONObject();
 
                 preadvicejsonlist = new JSONArray();
-                SearchValuesObject=new JSONObject();
+                SearchValuesObject = new JSONObject();
 
-                for (int i = 0; i <selected_name.size(); i++) {
-                    preadvicejsonObject=new JSONObject();
+                for (int i = 0; i < selected_name.size(); i++) {
+                    preadvicejsonObject = new JSONObject();
                     preadvicejsonObject.put("values", selected_name.get(i));
                     preadvicejsonlist.put(preadvicejsonObject);
                 }
 
-                SearchValuesObject.put("SearchValues",preadvicejsonlist);
+                SearchValuesObject.put("SearchValues", preadvicejsonlist);
 
 
-
-
-                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+                jsonObject.put("UserName", sp.getString(SP_USER_ID, "user_Id"));
                 jsonObject.put("filterType", fieldItems);
                 jsonObject.put("Mode", "edit");
                 jsonObject.put("SearchValues", SearchValuesObject);
-                jsonObject.put("PageName","Survey Completion");
-
-
+                jsonObject.put("PageName", "Survey Completion");
 
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -1226,15 +1458,16 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                 jsonarray = getJsonObject.getJSONArray("Response");
                 if (jsonarray != null) {
 
-                    System.out.println("Am HashMap list"+jsonarray);
+                    System.out.println("Am HashMap list" + jsonarray);
                     if (jsonarray.length() < 1) {
                         runOnUiThread(new Runnable() {
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
-                    }else {
+                    } else {
 
                         repair_arraylist = new ArrayList<RepairBean>();
 
@@ -1243,8 +1476,6 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
                             repair_bean = new RepairBean();
                             jsonObject = jsonarray.getJSONObject(i);
-
-
 
 
                             repair_bean.setCustomer(jsonObject.getString("Customer"));
@@ -1277,19 +1508,29 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
                             repair_bean.setAttachment(jsonObject.getString("attchement"));
                             repair_bean.setRepairEstimateNo(jsonObject.getString("RepairEstimateNo"));
                             repair_arraylist.add(repair_bean);
+                            runOnUiThread(new Runnable(){
 
+                                @Override
+                                public void run(){
+                                    //update ui here
+                                    // display toast here
+                                    listview.setVisibility(View.VISIBLE);
+
+                                }
+                            });
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
-                    runOnUiThread(new Runnable(){
+                } else {
+                    runOnUiThread(new Runnable() {
 
                         @Override
-                        public void run(){
+                        public void run() {
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1308,29 +1549,31 @@ public class SurveyCompletionMySubmit extends CommonActivity implements Navigati
 
             return null;
         }
+
         @Override
-        protected void onPostExecute (Void aVoid){
+        protected void onPostExecute(Void aVoid) {
 
+            if (jsonarray != null) {
+                if (repair_arraylist != null) {
+                    adapter = new UserListAdapter(SurveyCompletionMySubmit.this, R.layout.list_item_row, repair_arraylist);
+                    listview.setAdapter(adapter);
 
+                } else{
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
 
-            if(repair_arraylist!=null)
+                }
+            }else
             {
-                adapter = new UserListAdapter(SurveyCompletionMySubmit.this, R.layout.list_item_row, repair_arraylist);
-                listview.setAdapter(adapter);
-
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
             }
-            else if(repair_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
-            }
-
             progressDialog.dismiss();
 
         }
 
     }
+
     @Override
     public void onPause() {
         super.onPause();

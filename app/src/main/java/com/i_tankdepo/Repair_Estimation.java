@@ -41,7 +41,6 @@ import android.widget.Toast;
 
 import com.i_tankdepo.Constants.ConstantValues;
 import com.i_tankdepo.Constants.GlobalConstants;
-import com.i_tankdepo.Fragment.PagerAdapter;
 import com.i_tankdepo.helper.ServiceHandler;
 
 import org.apache.http.HttpEntity;
@@ -95,18 +94,7 @@ public class Repair_Estimation extends FragmentActivity   {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Add Detail").setIcon(R.mipmap.ic_edit));
-        tabLayout.addTab(tabLayout.newTab().setText("Attach File").setIcon(R.mipmap.ic_attach_camera));
-        tabLayout.addTab(tabLayout.newTab().setText("Line Details").setIcon(R.mipmap.ic_edit));
-        tabLayout.addTab(tabLayout.newTab().setText("Summary").setIcon(R.mipmap.ic_edit));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-         PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        menu = (ImageView) findViewById(R.id.iv_menu);
+         menu = (ImageView) findViewById(R.id.iv_menu);
         iv_back = (ImageView) findViewById(R.id.iv_back);
         menu.setVisibility(View.GONE);
 

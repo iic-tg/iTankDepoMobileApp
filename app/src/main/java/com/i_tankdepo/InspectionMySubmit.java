@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.i_tankdepo.Beanclass.CustomerDropdownBean;
 import com.i_tankdepo.Beanclass.PendingAccordionBean;
 import com.i_tankdepo.Beanclass.InspectionBean;
 import com.i_tankdepo.Constants.ConstantValues;
@@ -62,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -100,7 +102,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private EditText searchView2, searchView1, ed_text;
 
     private UserListAdapter adapter;
-    ArrayList<Product> products = new ArrayList<Product>();
+    ArrayList<Product> products;
     private ListAdapter boxAdapter;
     private ArrayList<Product> box;
     List<String> selected_name = new ArrayList<String>();
@@ -113,6 +115,15 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
     private String getEditText;
     private ScrollView scrollbar;
     private ImageView iv_changeOfStatus;
+    List<String> Cust_name = new ArrayList<>();
+    List<String> Cust_code = new ArrayList<>();
+    private ArrayList<String[]> dropdown_customer_list = new ArrayList<>();
+    private ArrayList<String> worldlist;
+    private ArrayList<CustomerDropdownBean> CustomerDropdownArrayList;
+    private CustomerDropdownBean customer_DropdownBean;
+    private String CustomerName,CustomerCode;
+    private String LatestInspectionDate,OriginalInspectionDate,LatestCleaningDate,OriginalCleaningDate,Date_in;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,10 +251,16 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
                 if (cd.isConnectingToInternet()) {
                     getEditText = "";
-                    new Get_Inspection_Dropdown_details().execute();
+                    if (fieldItems.equalsIgnoreCase("Customer") ||fieldItems.equalsIgnoreCase("CSTMR_CD")  ) {
+                        new Create_GateIn_Customer_details().execute();
+                    }else {
+                        new Get_Inspection_Dropdown_details().execute();
+                        new Get_Cleaning_details().execute();
+                    }
                 } else {
                     shortToast(getApplicationContext(), "Please check Your Internet Connection");
                 }
+                new Get_Cleaning_details().execute();
             }
         });
         im_up.setOnClickListener(new View.OnClickListener() {
@@ -285,7 +302,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                     tv_type.setVisibility(View.GONE);
                     tv_equip_no.setVisibility(View.GONE);
                    if(cd.isConnectingToInternet()) {
-                       new Get_Inspection_Dropdown_details().execute();
+                       new Create_GateIn_Customer_details().execute();
                        LL_hole.setVisibility(View.GONE);
                    }else{
                        shortToast(getApplicationContext(),"Please check your Internet Connection..!");
@@ -424,6 +441,9 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         switch (view.getId())
         {
             case R.id.iv_changeOfStatus:
+                GlobalConstants.equipment_no="";
+                GlobalConstants.status="INS";
+                GlobalConstants.status_id="6";
                 startActivity(new Intent(getApplicationContext(),ChangeOfStatus.class));
                 break;
             case R.id.bt_pending:
@@ -441,10 +461,19 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 LL_hole.setVisibility(View.GONE);
                 im_down.setVisibility(View.VISIBLE);
                 im_up.setVisibility(View.GONE);
+                try {
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
+                }catch (Exception e)
+                {
+
+                }
+                finish();
+                startActivity(getIntent());
                 break;
             case R.id.im_ok:
                 if(boxAdapter.getBox().size()==0) {
                     shortToast(getApplicationContext(), "Please Select atleast One Value..!");
+                    GlobalConstants.selected_Stock_Cust_Id.removeAll( GlobalConstants.selected_Stock_Cust_Id);
                 }else {
                     selected_name.clear();
                     for (Product p : boxAdapter.getBox()) {
@@ -454,6 +483,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                                 set[0] = p.name;
 
                                 selected_name.add(set[0]);
+                                GlobalConstants.selected_Stock_Cust_Id=selected_name;
                                 LL_hole.setVisibility(View.GONE);
                                 im_down.setVisibility(View.VISIBLE);
                                 im_up.setVisibility(View.GONE);
@@ -580,27 +610,154 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                             jsonObject = jsonarray.getJSONObject(i);
 
 
+                             /*"EquipmentNo": "AAAA1111111", "EquipmentTypeId": "1", "EquipmentTypeCd": "TNK", "CLNNG_CERT_NO": "6297",
+                    "CustomerId": "181", "CustomerCd": "TSTCUST", "PrevoiusCargo": "Acetic Acid",
+                    "CHMCL_NM": "Acetic Acid","InDate": "10-13-2016 00:00:00", "OriginalCleaningDate": "8-1-2017 00:00:00",
+                    "LatestCleaningDate": "8-1-2017 00:00:00",
+                     "OriginalInspectionDate": "8-2-2017 00:00:00", "LatestInspectionDate":
+                      "8-2-2017 00:00:00", "StatusID": "6", "StatusCD": "INS",
+                     "Cleanedfor": "Chemicals 1", "LocationofCleaning": "Chennai Chemical Lab",
+                     "CleaningStatusIid": "60", "CleaningStatusIcd": "Dry",
+                     "CleaningStatusIIid": "64", "CleaningStatusIIcd": "Odourless", "ConditionID": "62", "ConditionCD": "Clean",
+                     "ValveandFittingConditionID": "63", "ValveandFittingConditionCD": "UnClean",
+                     "ManLidSealNo": "Man", "TopSealNo": "top",
+                     "BottomSealNo": "bottom", "EIR_NO": "", "CleaningReferenceNo": "Ref1234567",
+                      "CleaningRate": "800.00", "Remarks": "Cleaning Remarks",
+                      "InvoiceToID": "183", "InvoiceToCD": "TEST1",
+                     "AdditionalCleaningBit": "False", "GiTransactionNo": "8496", "CleaningId": "4385"*/
 
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
                             inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
+                            inspection_bean.setEquip_no_type(jsonObject.getString("EquipmentTypeCd"));
+                            inspection_bean.setEquip_no_type_id(jsonObject.getString("EquipmentTypeId"));
+                            inspection_bean.setCertification_no(jsonObject.getString("CLNNG_CERT_NO"));
+                            inspection_bean.setCustomer(jsonObject.getString("CustomerCd"));
+                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
                             inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
+                            inspection_bean.setChemical_Name(jsonObject.getString("CHMCL_NM"));
+
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            OriginalCleaningDate=jsonObject.getString("OriginalCleaningDate");
+                            LatestCleaningDate=jsonObject.getString("LatestCleaningDate");
+                            OriginalInspectionDate=jsonObject.getString("OriginalInspectionDate");
+                            LatestInspectionDate=jsonObject.getString("LatestInspectionDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] Original_CleaningDate=OriginalCleaningDate.split(" ");
+                            String[] LastStatus_Date=LatestCleaningDate.split(" ");
+                            String[] OriginalInspection_Date=OriginalInspectionDate.split(" ");
+                            String[] LatestInspection_Date=LatestInspectionDate.split(" ");
+                            Date_in=In_date[0];
+                            OriginalCleaningDate=Original_CleaningDate[0];
+                            OriginalInspectionDate=OriginalInspection_Date[0];
+                            LatestInspectionDate=LatestInspection_Date[0];
+                            LatestCleaningDate=LastStatus_Date[0];
+
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0
+                                        ||Date_in.equals("") ) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (OriginalCleaningDate.equals(null) || OriginalCleaningDate.length() < 0
+                                        ||OriginalCleaningDate.equals("")||OriginalCleaningDate.equals("null") ) {
+
+                                    OriginalCleaningDate = "";
+                                } else {
+
+                                    OriginalCleaningDate = myFormat.format(fromUser.parse(OriginalCleaningDate));
+
+
+
+
+                                }if (LatestCleaningDate.equals(null) || LatestCleaningDate.length() < 0
+                                        ||LatestCleaningDate.equals("") ) {
+
+                                    LatestCleaningDate = "";
+                                } else {
+
+                                    LatestCleaningDate = myFormat.format(fromUser.parse(LatestCleaningDate));
+
+
+
+
+                                }if (OriginalInspectionDate.equals(null) || OriginalInspectionDate.length() < 0
+                                        ||OriginalInspectionDate.equals("") ) {
+
+                                    OriginalInspectionDate = "";
+                                } else {
+
+                                    OriginalInspectionDate = myFormat.format(fromUser.parse(OriginalInspectionDate));
+
+
+
+
+                                }if (LatestInspectionDate.equals(null) || LatestInspectionDate.length() < 0
+                                        ||LatestInspectionDate.equals("") ) {
+
+                                    LatestInspectionDate = "";
+                                } else {
+
+                                    LatestInspectionDate = myFormat.format(fromUser.parse(LatestInspectionDate));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+
+                            inspection_bean.setInDate(Date_in);
+                            inspection_bean.setOrgCleaningDate(OriginalCleaningDate);
+                            inspection_bean.setLastCleaningDate(LatestCleaningDate);
+                            inspection_bean.setOrgInspectionDate(OriginalInspectionDate);
+                            inspection_bean.setLastInspectionDate(LatestInspectionDate);
+
+                            inspection_bean.setEquip_status(jsonObject.getString("StatusCD"));
+                            inspection_bean.setEquip_statusType(jsonObject.getString("StatusID"));
+                            inspection_bean.setCleanedfor(jsonObject.getString("Cleanedfor"));
+                            inspection_bean.setLocationofCleaning(jsonObject.getString("LocationofCleaning"));
+                            inspection_bean.setCleaningStatusIid(jsonObject.getString("CleaningStatusIid"));
+                            inspection_bean.setCleaningStatusIcd(jsonObject.getString("CleaningStatusIcd"));
+                            inspection_bean.setCleaningStatusIIid(jsonObject.getString("CleaningStatusIIid"));
+                            inspection_bean.setCleaningStatusIIcd(jsonObject.getString("CleaningStatusIIcd"));
+                            inspection_bean.setConditionID(jsonObject.getString("ConditionID"));
+                            inspection_bean.setConditionCD(jsonObject.getString("ConditionCD"));
+                            inspection_bean.setValveandFittingConditionID(jsonObject.getString("ValveandFittingConditionID"));
+                            inspection_bean.setValveandFittingConditionCD(jsonObject.getString("ValveandFittingConditionCD"));
+                            inspection_bean.setManLidSealNo(jsonObject.getString("ManLidSealNo"));
+                            inspection_bean.setTopSealNo(jsonObject.getString("TopSealNo"));
+                            inspection_bean.setBottomSealNo(jsonObject.getString("BottomSealNo"));
+                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
                             inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
+                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
                             inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
+                            inspection_bean.setInvoiceToID(jsonObject.getString("InvoiceToID"));
+                            inspection_bean.setInvoiceToCD(jsonObject.getString("InvoiceToCD"));
+                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
+                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
+
+
+
+
+/*
                             inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
                             inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+
+                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));*/
 
                             inspection_arraylist.add(inspection_bean);
 
@@ -641,34 +798,43 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             if ((progressDialog != null) && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            if(inspection_arraylist!=null)
+            if(jsonarray!=null)
             {
-                adapter = new UserListAdapter(InspectionMySubmit.this, R.layout.list_item_row, inspection_arraylist);
-                listview.setAdapter(adapter);
+                if(inspection_arraylist!=null)
+                {
+                    adapter = new UserListAdapter(InspectionMySubmit.this, R.layout.list_item_row_inspection, inspection_arraylist);
+                    listview.setAdapter(adapter);
 
-                searchView2.addTextChangedListener(new TextWatcher() {
+                    searchView2.addTextChangedListener(new TextWatcher() {
 
-                    @Override
-                    public void afterTextChanged(Editable arg0) {
-                        // TODO Auto-generated method stub
-                        String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
-                        adapter.filter(text);
-                    }
+                        @Override
+                        public void afterTextChanged(Editable arg0) {
+                            // TODO Auto-generated method stub
+                            String text = searchView2.getText().toString().toLowerCase(Locale.getDefault());
+                            adapter.filter(text);
+                        }
 
-                    @Override
-                    public void beforeTextChanged(CharSequence arg0, int arg1,
-                                                  int arg2, int arg3) {
-                        // TODO Auto-generated method stub
-                    }
+                        @Override
+                        public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                      int arg2, int arg3) {
+                            // TODO Auto-generated method stub
+                        }
 
-                    @Override
-                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-                                              int arg3) {
-                        // TODO Auto-generated method stub
-                    }
-                });
+                        @Override
+                        public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                                  int arg3) {
+                            // TODO Auto-generated method stub
+                        }
+                    });
+                } else
+                {
+                    shortToast(getApplicationContext(),"Data Not Found");
+
+
+                }
+
             }
-            else if(inspection_arraylist.size()<1)
+            else
             {
                 shortToast(getApplicationContext(),"Data Not Found");
 
@@ -722,6 +888,8 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 holder.Cust_Name = (TextView) convertView.findViewById(R.id.text1);
                 holder.equip_no = (TextView) convertView.findViewById(R.id.text2);
                 holder.time = (TextView) convertView.findViewById(R.id.text3);
+                holder.tv_Bill_to = (TextView) convertView.findViewById(R.id.tv_Bill_to);
+                holder.tv_Billing_type = (TextView) convertView.findViewById(R.id.tv_Billing_type);
                 holder.previous_crg = (TextView) convertView.findViewById(R.id.text4);
                 holder.equipStatusType = (TextView) convertView.findViewById(R.id.text5);
                 holder.orgCleaningDate = (TextView) convertView.findViewById(R.id.tv_type);
@@ -743,8 +911,9 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 holder.code_id = (TextView) convertView.findViewById(R.id.tv_code_id);
                 holder.cleaningMethod = (TextView) convertView.findViewById(R.id.tv_cleaning_method);
                 holder.add_Cleaning = (TextView) convertView.findViewById(R.id.tv_additional_cleraning);
-                holder.username = (TextView) convertView.findViewById(R.id.tv_username);
-
+                holder.LL_username = (LinearLayout)convertView.findViewById(R.id.LL_username);
+                holder.LL_username.setVisibility(View.GONE);
+                holder.tv_Billing_type.setVisibility(View.INVISIBLE);
 
 
                 // R.id.tv_customerName,R.id.tv_Inv_no,R.id.tv_date,R.id.tv_val,R.id.tv_due
@@ -760,11 +929,12 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
 
 
-                holder.equip_no.setText(userListBean.getEquip_no() + "," + userListBean.getEquip_statusType());
-                holder.Cust_Name.setText(userListBean.getCustomer());
-                holder.time.setText(userListBean.getInDate());
-                holder.previous_crg.setText(userListBean.getPrevious_cargo());
-                holder.username.setText(sp.getString(SP_USER_ID,"user_Id"));
+                holder.equip_no.setText(userListBean.getEquip_no() );
+                holder.Cust_Name.setText(userListBean.getCustomer()+ "," + userListBean.getEquip_no_type());
+                holder.time.setText(userListBean.getOrgCleaningDate());
+                holder.previous_crg.setText(userListBean.getLastCleaningDate());
+                holder.tv_Bill_to.setText(userListBean.getCertification_no());
+                holder.tv_Billing_type.setText(userListBean.getPrevious_cargo());
 
 
 
@@ -799,16 +969,20 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                 holder.whole.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent i = new Intent(getApplicationContext(), InspectionUpdate.class);
+
+                        Intent i = new Intent(getApplicationContext(), InspectionUpdate_MySubmit.class);
 
                         GlobalConstants.equipment_no = list.get(position).getEquip_no();
                         GlobalConstants.customer_name = list.get(position).getCustomer();
                         GlobalConstants.customer_Id = list.get(position).getCustomerId();
-                        GlobalConstants.equip_status = list.get(position).getEquip_status();
-                        GlobalConstants.equip_status_type = list.get(position).getEquip_statusType();
+                        GlobalConstants.status = list.get(position).getEquip_status();
+                        GlobalConstants.status_id = list.get(position).getEquip_statusType();
+                        GlobalConstants.equip_status_type = list.get(position).getEquip_no_type();
+                        GlobalConstants.equip_status_id = list.get(position).getEquip_no_type_id();
+                        GlobalConstants.LatestInspectionDate = list.get(position).getLastInspectionDate();
+                        GlobalConstants.OriginalInspectionDate = list.get(position).getOrgInspectionDate();
                         GlobalConstants.indate = list.get(position).getInDate();
                         GlobalConstants.previous_cargo = list.get(position).getPrevious_cargo();
-                        GlobalConstants.lastStatusDate = list.get(position).getLastStatusDate();
                         GlobalConstants.add_cleaning_bit = list.get(position).getAdd_cleaningBit();
                         GlobalConstants.cleaning_id = list.get(position).getCleaningId();
                         GlobalConstants.cleaning_RefNo = list.get(position).getCleaningRefNo();
@@ -820,9 +994,27 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                         GlobalConstants.eir_no = list.get(position).getEir_no();
                         GlobalConstants.clean_rate = list.get(position).getCleaningRate();
                         GlobalConstants.slab_rate = list.get(position).getSlabrate();
+                        GlobalConstants.LocationofCleaning = list.get(position).getLocationofCleaning();
+                        GlobalConstants.Cleanedfor = list.get(position).getCleanedfor();
+                        GlobalConstants.CleaningRate = list.get(position).getCleaningRate();
                         GlobalConstants.gi_trans_no = list.get(position).getGi_trans_no();
+                        GlobalConstants.BottomSealNo = list.get(position).getBottomSealNo();
+                        GlobalConstants.TopSealNo = list.get(position).getTopSealNo();
+                        GlobalConstants.ManLidSealNo = list.get(position).getManLidSealNo();
+                        GlobalConstants.ConditionCD = list.get(position).getConditionCD();
+                        GlobalConstants.ConditionID = list.get(position).getConditionID();
+                        GlobalConstants.CleaningStatusIIcd = list.get(position).getCleaningStatusIIcd();
+                        GlobalConstants.CleaningStatusIIid = list.get(position).getCleaningStatusIIid();
+                        GlobalConstants.CleaningStatusIcd = list.get(position).getCleaningStatusIcd();
+                        GlobalConstants.CleaningStatusIid = list.get(position).getCleaningStatusIid();
+                        GlobalConstants.InvoiceToCD = list.get(position).getInvoiceToCD();
+                        GlobalConstants.ValveandFittingConditionCD = list.get(position).getValveandFittingConditionCD();
+                        GlobalConstants.ValveandFittingConditionID = list.get(position).getValveandFittingConditionID();
+
 
                         startActivity(i);
+
+
 
                     }
                 });
@@ -838,7 +1030,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             list.clear();
             if (charText.length() == 0) {
                 list.addAll(arraylist);
-               /* listview.setVisibility(View.VISIBLE);
+                /*listview.setVisibility(View.VISIBLE);
                 list_noData.setVisibility(View.GONE);*/
             } else {
                 for (InspectionBean wp : arraylist) {
@@ -864,13 +1056,183 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
 
     }
     static class ViewHolder {
-        TextView username,equip_no,time, date,Cust_Name,equipStatusType,previous_crg, equipStatus,cleaningMethod,add_Cleaning,customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
+        TextView equip_no,tv_Billing_type,tv_Bill_to,time, date,Cust_Name,equipStatusType,previous_crg, equipStatus,cleaningMethod,add_Cleaning,customer_Id, cleaningRate, lastStatusDate, gi_transNo,pre_code,cust_code,type_id,code_id,
                 vechicle, add_cleaning_bit, cleaningId, cleaningRefNo,rental_bt,remark, eir_no,orgInspectionDate,clean_unclean,Seal_no,slabRate,pre_adv_id, orgCleaningDate;
         CheckBox checkBox;
 
-        LinearLayout whole;
+        LinearLayout whole,LL_username;
     }
 
+    public class Create_GateIn_Customer_details extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+        private JSONArray jsonarray;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(InspectionMySubmit.this);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.setIndeterminate(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            ServiceHandler sh = new ServiceHandler();
+            HttpParams httpParameters = new BasicHttpParams();
+            DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
+            HttpEntity httpEntity = null;
+            HttpResponse response = null;
+            HttpPost httpPost = new HttpPost(ConstantValues.baseURLCreateGateInCustomer);
+//            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-Type", "application/json");
+//            httpPost.addHeader("content-orgCleaningDate", "application/x-www-form-urlencoded");
+//            httpPost.setHeader("SecurityToken", sp.getString(SP_TOKEN,"token"));
+            try{
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("UserName", sp.getString(SP_USER_ID,"user_Id"));
+
+               /* JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("Credentials",jsonObject);*/
+
+                StringEntity stringEntity = new StringEntity(jsonObject.toString());
+                httpPost.setEntity(stringEntity);
+                response = httpClient.execute(httpPost);
+                httpEntity = response.getEntity();
+                String resp = EntityUtils.toString(httpEntity);
+
+                Log.d("rep", resp);
+                JSONObject jsonrootObject = new JSONObject(resp);
+                JSONObject getJsonObject = jsonrootObject.getJSONObject("d");
+
+
+                jsonarray = getJsonObject.getJSONArray("arrayOfDropdowns");
+                if (jsonarray != null) {
+
+                    System.out.println("Am HashMap list"+jsonarray);
+                    if (jsonarray.length() < 1) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+//                        longToast("This takes longer than usual time. Connection Timeout !");
+                                shortToast(getApplicationContext(), "No Records Found.");
+                            }
+                        });
+                    }else {
+
+                        dropdown_customer_list = new ArrayList<>();
+
+
+                       /* businessAccessDetailsBeanArrayList = new ArrayList<>();
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            businessAccessDetailsBean = new BusinessAccessDetailsBean();
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            businessAccessDetailsBean.setBusinessCode(jsonObject.getString("BUSINESS CODE"));
+                            businessAccessDetailsBean.setBusinessDescription(jsonObject.getString("BUSINESS DESC"));
+                            businessAccessDetailsBeanArrayList.add(businessAccessDetailsBean);
+                        }*/
+                        worldlist = new ArrayList<String>();
+                        products = new ArrayList<Product>();
+                        CustomerDropdownArrayList=new ArrayList<CustomerDropdownBean>();
+                        for (int i = 0; i < jsonarray.length(); i++) {
+
+                            customer_DropdownBean = new CustomerDropdownBean();
+                            jsonObject = jsonarray.getJSONObject(i);
+
+
+                            customer_DropdownBean.setName(jsonObject.getString("Name"));
+                            customer_DropdownBean.setCode(jsonObject.getString("Code"));
+                            CustomerName = jsonObject.getString("Name");
+                            CustomerCode = jsonObject.getString("Code");
+                            String[] set1 = new String[2];
+                            set1[0] = CustomerName;
+                            set1[1] = CustomerCode;
+                            dropdown_customer_list.add(set1);
+                            Cust_name.add(set1[0]);
+                            Cust_code.add(set1[1]);
+                            CustomerDropdownArrayList.add(customer_DropdownBean);
+                            worldlist.add(CustomerName);
+                            products.add(new Product(jsonObject.getString("Name"),false));
+
+                        }
+                    }
+                }else if(jsonarray.length()<1){
+                    runOnUiThread(new Runnable(){
+
+                        @Override
+                        public void run(){
+                            //update ui here
+                            // display toast here
+                            shortToast(getApplicationContext(),"No Records Found.");
+
+
+                        }
+                    });
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute (Void aVoid){
+
+
+
+            if(dropdown_customer_list!=null)
+            {
+                boxAdapter = new ListAdapter(InspectionMySubmit.this, products);
+                searchlist.setAdapter(boxAdapter);
+
+             /*   UserListAdapterDropdown adapter = new UserListAdapterDropdown(GateIn.this, R.layout.list_item_row_accordion, pending_accordion_arraylist);
+                searchlist.setAdapter(adapter);*/
+
+                searchView1.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable arg0) {
+                        // TODO Auto-generated method stub
+                        String text = searchView1.getText().toString().toLowerCase(Locale.getDefault());
+                        boxAdapter.filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence arg0, int arg1,
+                                                  int arg2, int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+                                              int arg3) {
+                        // TODO Auto-generated method stub
+                    }
+                });
+
+
+
+            }
+            else if(dropdown_customer_list.size()<1)
+            {
+                shortToast(getApplicationContext(),"Data Not Found");
+
+            }
+
+            progressDialog.dismiss();
+
+        }
+
+    }
 
 
     public class Get_Inspection_Dropdown_details extends AsyncTask<Void, Void, Void> {
@@ -1082,7 +1444,13 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
             cbBuy.setTag(position);
             cbBuy.setChecked(p.box);
 
-
+            if(GlobalConstants.selected_Stock_Cust_Id!=null) {
+                for (int i = 0; i < GlobalConstants.selected_Stock_Cust_Id.size(); i++) {
+                    if (p.name.equalsIgnoreCase(String.valueOf(GlobalConstants.selected_Stock_Cust_Id.get(i)))) {
+                        cbBuy.setChecked(true);
+                    }
+                }
+            }
             return view;
         }
 
@@ -1208,6 +1576,7 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                             public void run() {
 //                        longToast("This takes longer than usual time. Connection Timeout !");
                                 shortToast(getApplicationContext(), "No Records Found");
+                                listview.setVisibility(View.GONE);
                             }
                         });
                     }else {
@@ -1221,42 +1590,170 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
                             jsonObject = jsonarray.getJSONObject(i);
 
 
+                             /*"EquipmentNo": "AAAA1111111", "EquipmentTypeId": "1", "EquipmentTypeCd": "TNK", "CLNNG_CERT_NO": "6297",
+                    "CustomerId": "181", "CustomerCd": "TSTCUST", "PrevoiusCargo": "Acetic Acid",
+                    "CHMCL_NM": "Acetic Acid","InDate": "10-13-2016 00:00:00", "OriginalCleaningDate": "8-1-2017 00:00:00",
+                    "LatestCleaningDate": "8-1-2017 00:00:00",
+                     "OriginalInspectionDate": "8-2-2017 00:00:00", "LatestInspectionDate":
+                      "8-2-2017 00:00:00", "StatusID": "6", "StatusCD": "INS",
+                     "Cleanedfor": "Chemicals 1", "LocationofCleaning": "Chennai Chemical Lab",
+                     "CleaningStatusIid": "60", "CleaningStatusIcd": "Dry",
+                     "CleaningStatusIIid": "64", "CleaningStatusIIcd": "Odourless", "ConditionID": "62", "ConditionCD": "Clean",
+                     "ValveandFittingConditionID": "63", "ValveandFittingConditionCD": "UnClean",
+                     "ManLidSealNo": "Man", "TopSealNo": "top",
+                     "BottomSealNo": "bottom", "EIR_NO": "", "CleaningReferenceNo": "Ref1234567",
+                      "CleaningRate": "800.00", "Remarks": "Cleaning Remarks",
+                      "InvoiceToID": "183", "InvoiceToCD": "TEST1",
+                     "AdditionalCleaningBit": "False", "GiTransactionNo": "8496", "CleaningId": "4385"*/
 
-
-                            inspection_bean.setCustomer(jsonObject.getString("Customer"));
-                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
                             inspection_bean.setEquip_no(jsonObject.getString("EquipmentNo"));
-                            inspection_bean.setEquip_status(jsonObject.getString("EquipmentStatus"));
-                            inspection_bean.setEquip_statusType(jsonObject.getString("EquipmentStatusType"));
-                            inspection_bean.setInDate(jsonObject.getString("InDate"));
+                            inspection_bean.setEquip_no_type(jsonObject.getString("EquipmentTypeCd"));
+                            inspection_bean.setEquip_no_type_id(jsonObject.getString("EquipmentTypeId"));
+                            inspection_bean.setCertification_no(jsonObject.getString("CLNNG_CERT_NO"));
+                            inspection_bean.setCustomer(jsonObject.getString("CustomerCd"));
+                            inspection_bean.setCustomerId(jsonObject.getString("CustomerId"));
                             inspection_bean.setPrevious_cargo(jsonObject.getString("PrevoiusCargo"));
-                            inspection_bean.setLastStatusDate(jsonObject.getString("LastStatusDate"));
-                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
-                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
+                            inspection_bean.setChemical_Name(jsonObject.getString("CHMCL_NM"));
+
+
+                            SimpleDateFormat fromUser = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+                            SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+
+                            Date_in=jsonObject.getString("InDate");
+                            OriginalCleaningDate=jsonObject.getString("OriginalCleaningDate");
+                            LatestCleaningDate=jsonObject.getString("LatestCleaningDate");
+                            OriginalInspectionDate=jsonObject.getString("OriginalInspectionDate");
+                            LatestInspectionDate=jsonObject.getString("LatestInspectionDate");
+                            String[] In_date=Date_in.split(" ");
+                            String[] Original_CleaningDate=OriginalCleaningDate.split(" ");
+                            String[] LastStatus_Date=LatestCleaningDate.split(" ");
+                            String[] OriginalInspection_Date=OriginalInspectionDate.split(" ");
+                            String[] LatestInspection_Date=LatestInspectionDate.split(" ");
+                            Date_in=In_date[0];
+                            OriginalCleaningDate=Original_CleaningDate[0];
+                            OriginalInspectionDate=OriginalInspection_Date[0];
+                            LatestInspectionDate=LatestInspection_Date[0];
+                            LatestCleaningDate=LastStatus_Date[0];
+
+                            try {
+                                if (Date_in.equals(null) || Date_in.length() < 0
+                                        ||Date_in.equals("") ) {
+
+                                    Date_in = "";
+                                } else {
+
+                                    Date_in = myFormat.format(fromUser.parse(Date_in));
+
+
+
+
+                                } if (OriginalCleaningDate.equals(null) || OriginalCleaningDate.length() < 0
+                                        ||OriginalCleaningDate.equals("")||OriginalCleaningDate.equals("null") ) {
+
+                                    OriginalCleaningDate = "";
+                                } else {
+
+                                    OriginalCleaningDate = myFormat.format(fromUser.parse(OriginalCleaningDate));
+
+
+
+
+                                }if (LatestCleaningDate.equals(null) || LatestCleaningDate.length() < 0
+                                        ||LatestCleaningDate.equals("") ) {
+
+                                    LatestCleaningDate = "";
+                                } else {
+
+                                    LatestCleaningDate = myFormat.format(fromUser.parse(LatestCleaningDate));
+
+
+
+
+                                }if (OriginalInspectionDate.equals(null) || OriginalInspectionDate.length() < 0
+                                        ||OriginalInspectionDate.equals("") ) {
+
+                                    OriginalInspectionDate = "";
+                                } else {
+
+                                    OriginalInspectionDate = myFormat.format(fromUser.parse(OriginalInspectionDate));
+
+
+
+
+                                }if (LatestInspectionDate.equals(null) || LatestInspectionDate.length() < 0
+                                        ||LatestInspectionDate.equals("") ) {
+
+                                    LatestInspectionDate = "";
+                                } else {
+
+                                    LatestInspectionDate = myFormat.format(fromUser.parse(LatestInspectionDate));
+
+
+
+
+                                }
+
+                            }catch (Exception e)
+                            {
+
+                            }
+
+
+                            inspection_bean.setInDate(Date_in);
+                            inspection_bean.setOrgCleaningDate(OriginalCleaningDate);
+                            inspection_bean.setLastCleaningDate(LatestCleaningDate);
+                            inspection_bean.setOrgInspectionDate(OriginalInspectionDate);
+                            inspection_bean.setLastInspectionDate(LatestInspectionDate);
+
+                            inspection_bean.setEquip_status(jsonObject.getString("StatusCD"));
+                            inspection_bean.setEquip_statusType(jsonObject.getString("StatusID"));
+                            inspection_bean.setCleanedfor(jsonObject.getString("Cleanedfor"));
+                            inspection_bean.setLocationofCleaning(jsonObject.getString("LocationofCleaning"));
+                            inspection_bean.setCleaningStatusIid(jsonObject.getString("CleaningStatusIid"));
+                            inspection_bean.setCleaningStatusIcd(jsonObject.getString("CleaningStatusIcd"));
+                            inspection_bean.setCleaningStatusIIid(jsonObject.getString("CleaningStatusIIid"));
+                            inspection_bean.setCleaningStatusIIcd(jsonObject.getString("CleaningStatusIIcd"));
+                            inspection_bean.setConditionID(jsonObject.getString("ConditionID"));
+                            inspection_bean.setConditionCD(jsonObject.getString("ConditionCD"));
+                            inspection_bean.setValveandFittingConditionID(jsonObject.getString("ValveandFittingConditionID"));
+                            inspection_bean.setValveandFittingConditionCD(jsonObject.getString("ValveandFittingConditionCD"));
+                            inspection_bean.setManLidSealNo(jsonObject.getString("ManLidSealNo"));
+                            inspection_bean.setTopSealNo(jsonObject.getString("TopSealNo"));
+                            inspection_bean.setBottomSealNo(jsonObject.getString("BottomSealNo"));
+                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
                             inspection_bean.setCleaningRefNo(jsonObject.getString("CleaningReferenceNo"));
+                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
                             inspection_bean.setRemark(jsonObject.getString("Remarks"));
-                            inspection_bean.setOrgCleaningDate(jsonObject.getString("OriginalCleaningDate"));
-                            inspection_bean.setOrgInspectionDate(jsonObject.getString("OriginalInspectionDate"));
+                            inspection_bean.setInvoiceToID(jsonObject.getString("InvoiceToID"));
+                            inspection_bean.setInvoiceToCD(jsonObject.getString("InvoiceToCD"));
+                            inspection_bean.setAdd_cleaningBit(jsonObject.getString("AdditionalCleaningBit"));
+                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+                            inspection_bean.setCleaningId(jsonObject.getString("CleaningId"));
+
+
+
+
+/*
                             inspection_bean.setClean_unclean(jsonObject.getString("Clean_Unclean"));
                             inspection_bean.setSeal_no(jsonObject.getString("Seal_No"));
-                            inspection_bean.setEir_no(jsonObject.getString("EIR_NO"));
-                            inspection_bean.setCleaningRate(jsonObject.getString("CleaningRate"));
-                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));
-                            inspection_bean.setGi_trans_no(jsonObject.getString("GiTransactionNo"));
+
+                            inspection_bean.setSlabrate(jsonObject.getString("SlabRate"));*/
+
                             inspection_arraylist.add(inspection_bean);
 
 
 
                         }
                     }
-                }else if(jsonarray.length()<1){
+                }else {
                     runOnUiThread(new Runnable(){
 
                         @Override
                         public void run(){
                             //update ui here
                             // display toast here
-                            shortToast(getApplicationContext(),"No Records Found");
+                            shortToast(getApplicationContext(), "Data Not Found");
+                            listview.setVisibility(View.GONE);
 
 
                         }
@@ -1279,20 +1776,21 @@ public class InspectionMySubmit extends CommonActivity implements NavigationView
         protected void onPostExecute (Void aVoid){
 
 
+            if (jsonarray != null) {
+                if (inspection_arraylist != null) {
+                    adapter = new UserListAdapter(InspectionMySubmit.this, R.layout.list_item_row_inspection, inspection_arraylist);
+                    listview.setAdapter(adapter);
 
-            if(inspection_arraylist!=null)
+                } else {
+                    shortToast(getApplicationContext(), "Data Not Found");
+                    listview.setVisibility(View.GONE);
+
+                }
+            }else
             {
-                adapter = new UserListAdapter(InspectionMySubmit.this, R.layout.list_item_row, inspection_arraylist);
-                listview.setAdapter(adapter);
-
+                shortToast(getApplicationContext(), "Data Not Found");
+                listview.setVisibility(View.GONE);
             }
-            else if(inspection_arraylist.size()<1)
-            {
-                shortToast(getApplicationContext(),"Data Not Found");
-
-
-            }
-
             progressDialog.dismiss();
 
         }

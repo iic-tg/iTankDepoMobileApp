@@ -62,13 +62,13 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-
-
+import java.util.Locale;
 
 
 /**
@@ -83,7 +83,7 @@ public class HeatingPeriod extends CommonActivity  {
     private ListView heating_list_view;
 
     private TextView tv_totalCost,tv_heat_refresh,text1,text2,text3,
-            df_startDate,df_endDate,df_temp,df_total_period,text4,tv_toolbarTitle,tv_startdate,tv_startTime,tv_endDate,tv_temp,tv_endTime;
+            df_startDate,df_endDate,df_temp,df_total_period,text4,tv_toolbarTitle,tv_startdate,tv_startTime,tv_endDate,tv_temp,tv_heating,tv_endTime;
     LinearLayout LL_Add_New,LL_heat_submit;
     private ProgressDialog progressDialog;
     private ArrayList<HeatingBean> heating_arraylist=new ArrayList<>();
@@ -110,6 +110,7 @@ public class HeatingPeriod extends CommonActivity  {
     private RelativeLayout RL_heating,RL_Repair;
     private ImageView iv_changeOfStatus;
     private DBAdapter db;
+    private Date date1;
 
 
     @Override
@@ -152,8 +153,7 @@ public class HeatingPeriod extends CommonActivity  {
         RL_Repair =(RelativeLayout)findViewById(R.id.RL_Repair);
         RL_Repair.setVisibility(View.GONE);
 
-        /*LL_heat_submit.setAlpha(0.5f);
-        LL_heat_submit.setClickable(false);*/
+        LL_heat_submit.setOnClickListener(this);
         ed_totalPrd = (EditText)findViewById(R.id.ed_totalPrd);
         ed_minRate = (EditText)findViewById(R.id.ed_minRate);
         ed_hourlyRate = (EditText)findViewById(R.id.ed_hourlyRate);
@@ -177,6 +177,9 @@ public class HeatingPeriod extends CommonActivity  {
         tv_startTime = (TextView)findViewById(R.id.tv_startTime);
         tv_endDate = (TextView)findViewById(R.id.tv_endDate);
         tv_endTime = (TextView)findViewById(R.id.tv_endTime);
+        tv_heating = (TextView)findViewById(R.id.tv_heating);
+        tv_heating.setText("Heating");
+        tv_heating.setGravity(Gravity.CENTER_HORIZONTAL);
         tv_temp = (TextView)findViewById(R.id.tv_temp);
         iv_changeOfStatus = (ImageView)findViewById(R.id.iv_changeOfStatus);
         iv_changeOfStatus.setOnClickListener(this);
@@ -190,6 +193,16 @@ public class HeatingPeriod extends CommonActivity  {
         Equip_NO = GlobalConstants.equipment_no;
         Equip_Type = GlobalConstants.type;
         In_date = GlobalConstants.date;
+        Log.i("date1", String.valueOf(In_date));
+
+        try {
+            date1 = new SimpleDateFormat("dd-MMM-yyyy").parse(In_date);
+            Log.i("date1", String.valueOf(date1));
+        }catch (Exception e)
+        {
+
+        }
+
         Cargo = GlobalConstants.previous_cargo;
         Total_Peroid = GlobalConstants.ttl_htngPrd;
         Min_Rate = GlobalConstants.min_htng_rate;
@@ -203,6 +216,9 @@ public class HeatingPeriod extends CommonActivity  {
         heat_endTime = GlobalConstants.htng_EndTime;
         heat_temp = GlobalConstants.htng_temp;
 
+        Log.i("heat_startDate",heat_startDate);
+        Log.i("heat_endDate",heat_endDate);
+
         if((Min_Rate==null || Min_Rate.equals("") ||Min_Rate=="null") ||
                 (Hourly_Rate==null || Hourly_Rate.equals("") ||Hourly_Rate=="null") ||
                 (Min_Htng_Prd==null || Min_Htng_Prd.equals("") ||Min_Htng_Prd=="null")||
@@ -213,11 +229,43 @@ public class HeatingPeriod extends CommonActivity  {
             Min_Htng_Prd="0.00";
             Total_Peroid="0.00";
         }
+        SimpleDateFormat fromUser = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd-MMM-yyyy",Locale.ENGLISH);
+        String datePattern = "\\d{2}-\\d{2}-\\d{4}";
+        try {
+            if (heat_startDate.equals(null) || heat_startDate.length() < 0) {
+                heat_startDate = "";
+            } else {
+                Boolean is_app_Date1 = heat_startDate.matches(datePattern);
+                if (is_app_Date1 == true) {
+                    heat_startDate = myFormat.format(fromUser.parse(heat_startDate));
 
-        ed_startDate.setText(systemDate);
-        ed_startTime.setText(curTime);
-        ed_endDate.setText(systemDate);
-        ed_endTime.setText(curTime);
+                }
+
+            }
+        }catch (Exception e)
+        {
+            heat_startDate = "";
+        }
+        try {
+            if (heat_endDate.equals(null) || heat_endDate.length() < 0) {
+                heat_endDate = "";
+            } else {
+                Boolean is_app_Date1 = heat_endDate.matches(datePattern);
+                if (is_app_Date1 == true) {
+                    heat_endDate = myFormat.format(fromUser.parse(heat_endDate));
+
+                }
+
+            }
+        }catch (Exception e)
+        {
+            heat_endDate = "";
+        }
+        ed_startDate.setText(heat_startDate);
+        ed_startTime.setText(heat_startTime);
+        ed_endDate.setText(heat_endDate);
+        ed_endTime.setText(heat_endTime);
         get_HourlyRate = ed_hourlyRate.getText().toString();
         get_MinRate = ed_minRate.getText().toString();
 /*
@@ -241,6 +289,7 @@ public class HeatingPeriod extends CommonActivity  {
         text3.setText(In_date);
         text4.setText(Cargo);
         ed_totalPrd.setText(Total_Peroid);
+        ed_totalPrd.getEditableText();
         ed_minRate.setText(Min_Rate);
         ed_hourlyRate.setText(Hourly_Rate);
         if((heat_startDate==null||heat_startDate=="null"|| heat_startDate.trim().equals("")) ||
@@ -257,8 +306,9 @@ public class HeatingPeriod extends CommonActivity  {
             df_endDate.setText(part1_enddate+","+ heat_endTime);
         }
 
-
-        df_temp.setText(heat_temp);
+        final String DEGREE  = "\u00b0";
+        df_temp.setText(heat_temp+"("+DEGREE+"C)");
+        ed_temp.setText(heat_temp);
         df_total_period.setText(Total_Peroid);
 
         if(Total_Cost == null || Total_Cost.equals("")|| Total_Cost=="null"){
@@ -292,14 +342,11 @@ public class HeatingPeriod extends CommonActivity  {
         int hour = c.get(Calendar.HOUR);
         //24 hour format
         int hourofday = c.get(Calendar.HOUR_OF_DAY);
-        SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat time = new SimpleDateFormat("HH:MM");
         curTime = time.format(new Date());
-        systemDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        systemDate = new SimpleDateFormat("dd-MMM-yyyy").format(new Date());
 
-        ed_startDate.setText(systemDate);
-        ed_endDate.setText(systemDate);
-        ed_startTime.setText(curTime);
-//        ed_startTime.setText(curTime);
+
 
         
         String startDate = getColoredSpanned("Start Date","#bbbbbb");
@@ -344,10 +391,7 @@ public class HeatingPeriod extends CommonActivity  {
 
         navigationView.setNavigationItemSelectedListener(this);*/
     }
-    private String getColoredSpanned(String text, String color) {
-        String input = "<font color=" + color + ">" + text + "</font>";
-        return input;
-    }
+
 
 
     @Override
@@ -399,6 +443,50 @@ public class HeatingPeriod extends CommonActivity  {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         ed_startTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
+                        get_startDate = ed_startDate.getText().toString();
+                        get_startTime = ed_startTime.getText().toString();
+                        get_endDate = ed_endDate.getText().toString();
+                        get_endTime = ed_endTime.getText().toString();
+
+                        if((get_startDate.equals("") || get_startDate == null) ||
+                                (get_startTime.equals("") || get_startTime == null )||
+                                (get_endDate.equals("") || get_endDate == null) ||
+                                (get_endTime.equals("")|| get_endTime == null) ){
+//                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                        }else{
+                            if (cd.isConnectingToInternet()){
+                                SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+
+                                try {
+                                    Date start = parser.parse(get_startTime);
+                                    Date end = parser.parse(get_endTime);
+                                    if(get_startDate.compareTo(get_endDate)==0)
+                                    {
+                                        if (end.before(start)) {
+                                            shortToast(getApplicationContext(),"cannot select past time");
+                                        }else
+                                        {
+                                            new Post_Calc_Heating_period().execute();
+
+                                        }
+                                    }else
+                                    {
+                                        new Post_Calc_Heating_period().execute();
+
+                                    }
+
+                                } catch (ParseException e) {
+
+                                    // Invalid date was entered
+
+                                }
+
+
+                            }else{
+                                shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                            }
+                        }
 
                     }
                 }, hour, minute,true
@@ -425,14 +513,36 @@ public class HeatingPeriod extends CommonActivity  {
                                 (get_startTime.equals("") || get_startTime == null ) ||
                                 (get_endDate.equals("") || get_endDate == null) ||
                                 (get_endTime.equals("")|| get_endTime == null) ){
-                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+//                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
                         }else{
                             if (cd.isConnectingToInternet()){
-                                new Post_Calc_Heating_period().execute();
-                               /* ed_startDate.setText("");
-                                ed_startTime.setText("");
-                                ed_endDate.setText("");
-                                ed_endTime.setText("");*/
+                                SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+
+                                try {
+                                    Date start = parser.parse(get_startTime);
+                                    Date end = parser.parse(get_endTime);
+                                    if(get_startDate.compareTo(get_endDate)==0)
+                                    {
+                                        if (end.before(start)) {
+                                            shortToast(getApplicationContext(),"cannot select past time");
+                                        }else
+                                        {
+                                            new Post_Calc_Heating_period().execute();
+
+                                        }
+                                    }else
+                                    {
+                                        new Post_Calc_Heating_period().execute();
+
+                                    }
+
+                                } catch (ParseException e) {
+
+                                    // Invalid date was entered
+
+                                }
+
 
                             }else{
                                 shortToast(getApplicationContext(),"Please Check Your Internet Connection");
@@ -455,6 +565,51 @@ public class HeatingPeriod extends CommonActivity  {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         ed_startTime.setText(String.format("%02d:%02d",selectedHour,selectedMinute));
+
+                        get_startDate = ed_startDate.getText().toString();
+                        get_startTime = ed_startTime.getText().toString();
+                        get_endDate = ed_endDate.getText().toString();
+                        get_endTime = ed_endTime.getText().toString();
+
+                        if((get_startDate.equals("") || get_startDate == null) ||
+                                (get_startTime.equals("") || get_startTime == null )||
+                                (get_endDate.equals("") || get_endDate == null) ||
+                                (get_endTime.equals("")|| get_endTime == null) ){
+//                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                        }else{
+                            if (cd.isConnectingToInternet()){
+                                SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+
+                                try {
+                                    Date start = parser.parse(get_startTime);
+                                    Date end = parser.parse(get_endTime);
+                                    if(get_startDate.compareTo(get_endDate)==0)
+                                    {
+                                        if (end.before(start)) {
+                                            shortToast(getApplicationContext(),"cannot select past time");
+                                        }else
+                                        {
+                                            new Post_Calc_Heating_period().execute();
+
+                                        }
+                                    }else
+                                    {
+                                        new Post_Calc_Heating_period().execute();
+
+                                    }
+
+                                } catch (ParseException e) {
+
+                                    // Invalid date was entered
+
+                                }
+
+
+                            }else{
+                                shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                            }
+                        }
                     }
                 }, hour, minute,true
                 );
@@ -478,14 +633,39 @@ public class HeatingPeriod extends CommonActivity  {
                         get_endTime = ed_endTime.getText().toString();
 
                         if((get_startDate.equals("") || get_startDate == null) ||
-                                (get_startTime.equals("") || get_startTime == null ) ||
+                                (get_startTime.equals("") || get_startTime == null )||
                                 (get_endDate.equals("") || get_endDate == null) ||
                                 (get_endTime.equals("")|| get_endTime == null) ){
-                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+//                            shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
                         }else{
                             if (cd.isConnectingToInternet()){
+                                SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
 
-                                new Post_Calc_Heating_period().execute();
+
+                                try {
+                                    Date start = parser.parse(get_startTime);
+                                    Date end = parser.parse(get_endTime);
+                                    if(get_startDate.compareTo(get_endDate)==0)
+                                    {
+                                        if (end.before(start)) {
+                                            shortToast(getApplicationContext(),"Heating End Time Should be greater than Heating Start Time");
+                                        }else
+                                        {
+                                            new Post_Calc_Heating_period().execute();
+
+                                        }
+                                    }else
+                                    {
+                                        new Post_Calc_Heating_period().execute();
+
+                                    }
+
+                                } catch (ParseException e) {
+
+                                    // Invalid date was entered
+
+                                }
+
 
                             }else{
                                 shortToast(getApplicationContext(),"Please Check Your Internet Connection");
@@ -520,7 +700,37 @@ public class HeatingPeriod extends CommonActivity  {
                         shortToast(getApplicationContext(), "Please select the Mandatory Fields.");
                     } else {
                         if (cd.isConnectingToInternet()) {
-                            new Post_Heating_Update().execute();
+
+                            if(get_endDate.compareTo(get_startDate)<0) {
+
+                                shortToast(getApplicationContext(), "Heating End Date should be greater then or equal to Heating Start Date");
+
+                            }else{
+                                try {
+                                    SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+                                    Date start = parser.parse(get_startTime);
+                                    Date end = parser.parse(get_endTime);
+                                    if (get_startDate.compareTo(get_endDate) == 0) {
+
+                                        if (end.before(start)) {
+                                            shortToast(getApplicationContext(), "Heating End Time Should be greater than Heating Start Time");
+                                        } else {
+                                            new Post_Heating_Update().execute();
+                                        }
+                                    }else {
+                                        new Post_Heating_Update().execute();
+                                    }
+
+                                }catch (Exception e)
+                                {
+
+                                }
+                            }
+
+
+
+
                         } else {
                             shortToast(getApplicationContext(), "Please check your Internet Connection");
                         }
@@ -553,16 +763,20 @@ public class HeatingPeriod extends CommonActivity  {
 
     @Override
     protected Dialog onCreateDialog(int id) {
+        Calendar c = Calendar.getInstance();
+        int cyear = c.get(Calendar.YEAR);
+        int cmonth = c.get(Calendar.MONTH);
+        int cday = c.get(Calendar.DAY_OF_MONTH);
         switch (id) {
             case DATE_DIALOG_ID:
+                //start changes...
+                DatePickerDialog dialog = new DatePickerDialog(this, pickerListener, cyear, cmonth, cday);
+                dialog.getDatePicker().setMaxDate(new Date().getTime());
 
-                // open datepicker dialog.
-                // set date picker for current date
-                // add pickerListener listner to date picker
-                return new DatePickerDialog(this, pickerListener, year, month,day);
+                dialog.getDatePicker().setMinDate(date1.getTime());
 
-
-
+                return dialog;
+            //end changes...
         }
         return null;
     }
@@ -572,7 +786,7 @@ public class HeatingPeriod extends CommonActivity  {
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 
         return sdf.format(date).toString();
     }
@@ -593,10 +807,98 @@ public class HeatingPeriod extends CommonActivity  {
             if(endDate==true)
             {
                 ed_endDate.setText(formatDate(year, month, day));
+                get_startDate = ed_startDate.getText().toString();
+                get_startTime = ed_startTime.getText().toString();
+                get_endDate = ed_endDate.getText().toString();
+                get_endTime = ed_endTime.getText().toString();
+
+                if((get_startDate.equals("") || get_startDate == null) ||
+                        (get_startTime.equals("") || get_startTime == null )||
+                        (get_endDate.equals("") || get_endDate == null) ||
+                        (get_endTime.equals("")|| get_endTime == null) ){
+//                    shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                }else{
+                    if (cd.isConnectingToInternet()){
+                        SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+
+                        try {
+                            Date start = parser.parse(get_startTime);
+                            Date end = parser.parse(get_endTime);
+                            if(get_startDate.compareTo(get_endDate)==0)
+                            {
+                                if (end.before(start)) {
+                                    shortToast(getApplicationContext(),"cannot select past time");
+                                }else
+                                {
+                                    new Post_Calc_Heating_period().execute();
+
+                                }
+                            }else
+                            {
+                                new Post_Calc_Heating_period().execute();
+
+                            }
+
+                        } catch (ParseException e) {
+
+                            // Invalid date was entered
+
+                        }
+
+
+                    }else{
+                        shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                    }
+                }
 
             }else {
                 ed_startDate.setText(formatDate(year, month, day));
 
+                get_startDate = ed_startDate.getText().toString();
+                get_startTime = ed_startTime.getText().toString();
+                get_endDate = ed_endDate.getText().toString();
+                get_endTime = ed_endTime.getText().toString();
+
+                if((get_startDate.equals("") || get_startDate == null) ||
+                        (get_startTime.equals("") || get_startTime == null )||
+                        (get_endDate.equals("") || get_endDate == null) ||
+                        (get_endTime.equals("")|| get_endTime == null) ){
+//                    shortToast(getApplicationContext(),"Please select the Mandatory Fields.");
+                }else{
+                    if (cd.isConnectingToInternet()){
+                        SimpleDateFormat parser = new SimpleDateFormat("HH:mm");
+
+
+                        try {
+                            Date start = parser.parse(get_startTime);
+                            Date end = parser.parse(get_endTime);
+                            if(get_startDate.compareTo(get_endDate)==0)
+                            {
+                                if (end.before(start)) {
+                                    shortToast(getApplicationContext(),"cannot select past time");
+                                }else
+                                {
+                                    new Post_Calc_Heating_period().execute();
+
+                                }
+                            }else
+                            {
+                                new Post_Calc_Heating_period().execute();
+
+                            }
+
+                        } catch (ParseException e) {
+
+                            // Invalid date was entered
+
+                        }
+
+
+                    }else{
+                        shortToast(getApplicationContext(),"Please Check Your Internet Connection");
+                    }
+                }
             }
 
         }
@@ -638,9 +940,9 @@ public class HeatingPeriod extends CommonActivity  {
             httpPost.setHeader("Content-Type", "application/json");
             try{
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("str_HeatingStartDate", get_startDate +" "+ get_startTime  );
+                jsonObject.put("str_HeatingStartDate", get_startDate);
                 jsonObject.put("str_HeatingStartTime",get_startTime);
-                jsonObject.put("str_HeatingEndDate", get_endDate+" "+ get_endTime);
+                jsonObject.put("str_HeatingEndDate", get_endDate);
                 jsonObject.put("str_HeatingEndTime", get_endTime);
 
                 StringEntity stringEntity = new StringEntity(jsonObject.toString());
@@ -681,12 +983,10 @@ public class HeatingPeriod extends CommonActivity  {
                     ed_totalPrd.setText("0.00");
                     get_htngPeriod = ed_totalPrd.getText().toString();
                     new Post_Calc_Total_Rate().execute();
-                    ed_temp.setText("");
                 }else{
                     ed_totalPrd.setText(total_htng_period);
                     get_htngPeriod = ed_totalPrd.getText().toString();
                     new Post_Calc_Total_Rate().execute();
-                    ed_temp.setText("");
                 }
             }
             else
